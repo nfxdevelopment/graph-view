@@ -1,4 +1,4 @@
-package com.nfx.android.nfxlibrary.androidgraph;
+package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

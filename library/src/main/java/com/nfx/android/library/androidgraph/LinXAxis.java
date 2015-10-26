@@ -1,4 +1,4 @@
-package com.nfx.android.nfxlibrary.androidgraph;
+package com.nfx.android.library.androidgraph;
 
 /**
  * Created by nick on 25/10/15.
