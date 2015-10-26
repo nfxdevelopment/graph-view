@@ -35,6 +35,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * Handles the drawing of a unlimited amount of Signals
      **/
     private Collection<Signal> mSignals = new ArrayList<>();
+    /**
+     * The thread that updates the surface
+     **/
     private GraphManagerThread mGraphManagerThread;
 
     public GraphManager(Context context, AttributeSet attrs) {
@@ -85,6 +88,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     protected void doDraw(Canvas canvas) {
         // TODO Call all the onDraw methods from here
         mBackground.doDraw(canvas);
+    }
+
+    public Background getMBackground(){
+        return mBackground;
     }
 
     class GraphManagerThread extends Thread {

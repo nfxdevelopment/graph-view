@@ -11,7 +11,7 @@ public abstract class DrawableObject {
     /**
      * Advises the background in which area it can draw.
      **/
-    private DrawableArea mDrawableArea;
+    protected DrawableArea mDrawableArea;
 
     public DrawableObject(DrawableArea drawableArea) {
         mDrawableArea = drawableArea;
