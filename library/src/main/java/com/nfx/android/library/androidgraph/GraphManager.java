@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * NFX Development
  * Created by nick on 25/10/15.
  */
 public class GraphManager extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "GraphManager";
+    private static final float sGridLineStrokeWidth = 5;
     /**
      * Handle to the application context, used to e.g. fetch Drawables.
      */
@@ -61,6 +63,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mBackground = new Background(new DrawableArea(0, 0, 0, 0));
+        mXAxis = new LinXAxis(new DrawableArea(0, 0, 0, 0));
+        mXAxis.setGridStrokeWidth(sGridLineStrokeWidth);
+
+        mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
+        mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
+
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
     }
@@ -68,7 +76,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         // TODO Handle the changing of canvas size.
-        mBackground.surfaceChange(new DrawableArea(0, 0, width, height));
+        mBackground.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
+
+        mXAxis.surfaceChange(new DrawableArea(0, height - getPaddingBottom() -
+                (int) sGridLineStrokeWidth, width, (int) sGridLineStrokeWidth));
+
+        mYAxis.surfaceChange(new DrawableArea(0, 0, (int) sGridLineStrokeWidth, height));
     }
 
     @Override
@@ -88,6 +101,8 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     protected void doDraw(Canvas canvas) {
         // TODO Call all the onDraw methods from here
         mBackground.doDraw(canvas);
+        mXAxis.doDraw(canvas);
+        mYAxis.doDraw(canvas);
     }
 
     public Background getMBackground(){
