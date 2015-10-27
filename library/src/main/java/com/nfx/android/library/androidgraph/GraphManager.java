@@ -25,10 +25,14 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      **/
     private Background mBackground;
     /**
-     * Handles the drawing of each axis
+     * Handles the drawing of each axis text
      **/
     private XAxis mXAxis;
     private YAxis mYAxis;
+    /**
+     * Handles the drawing of all grid lines
+     */
+    private Collection<GridLines> mGridLines = new ArrayList<>();
     /**
      * Handles the drawing of a unlimited amount of Markers
      **/
@@ -69,14 +73,19 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
         mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
 
+        mGridLines.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0)));
+        mGridLines.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0)));
+
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        // TODO Handle the changing of canvas size.
         mBackground.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
+        for (GridLines gridLines : mGridLines) {
+            gridLines.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
+        }
 
         mXAxis.surfaceChange(new DrawableArea(0, height - getPaddingBottom() -
                 (int) sGridLineStrokeWidth, width, (int) sGridLineStrokeWidth));
@@ -99,10 +108,13 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     }
 
     protected void doDraw(Canvas canvas) {
-        // TODO Call all the onDraw methods from here
         mBackground.doDraw(canvas);
-        mXAxis.doDraw(canvas);
-        mYAxis.doDraw(canvas);
+//        mXAxis.doDraw(canvas);
+//        mYAxis.doDraw(canvas);
+
+        for (GridLines gridLines : mGridLines) {
+            gridLines.doDraw(canvas);
+        }
     }
 
     public Background getMBackground(){
