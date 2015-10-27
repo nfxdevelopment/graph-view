@@ -13,6 +13,16 @@ public class LinYGridLines extends YGridLines {
     }
 
     @Override
+    public float yIntersect(int gridLine) {
+        // This will ensure that we see all of the paint stoke
+        float strokePadding = mGridStrokeWidth / 2f;
+        // -1 due to drawing the surrounding frames along with the intersections
+        // We also have to take the size of the line into account
+        float spacing = ((float) heightOfViewInsideGridStoke) / (float) (mNumberOfGridLines - 1);
+        return ((spacing * (float) gridLine) + strokePadding);
+    }
+
+    @Override
     public void doDraw(Canvas canvas) {
         super.doDraw(canvas);
         Paint paint = new Paint();
@@ -21,16 +31,10 @@ public class LinYGridLines extends YGridLines {
 
         // This will ensure that we see all of the paint stoke
         float strokePadding = mGridStrokeWidth / 2f;
-        // -1 due to drawing the surrounding frames along with the intersections
-        // We also have to take the size of the line into account
-        float spacing = ((float) heightInsideGridStoke) / (float)
-                (mNumberOfGridLines - 1);
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
-            int offset = (int) ((spacing * (float) i) + strokePadding);
-
-            canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getTop() + offset,
-                    mDrawableArea.getRight(), mDrawableArea.getTop() + offset, paint);
+            canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getTop() + yIntersect(i),
+                    mDrawableArea.getRight(), mDrawableArea.getTop() + yIntersect(i), paint);
         }
     }
 }

@@ -18,8 +18,26 @@ public class LogXGridLines extends XGridLines {
     public void surfaceChange(DrawableArea drawableArea) {
         super.surfaceChange(drawableArea);
 
-        widthInsideGridStoke = drawableArea.getWidth() - (int) mGridStrokeWidth;
-        maxLogValue = Math.log(widthInsideGridStoke);
+        widthOfViewInsideGridStoke = drawableArea.getWidth() - (int) mGridStrokeWidth;
+        maxLogValue = Math.log(widthOfViewInsideGridStoke);
+    }
+
+    @Override
+    public float xIntersect(int gridLine) {
+        // This will ensure that we see all of the paint stoke
+        float strokePadding = mGridStrokeWidth / 2f;
+        // -1 due to drawing the surrounding frames along with the intersections
+        // We also have to take the size of the line into account
+        float spacing = ((float) widthOfViewInsideGridStoke) / (float) (mNumberOfGridLines - 1);
+        float linearOffset = ((spacing * (float) gridLine));
+
+        // Ensure we are not trying to find the log of 0 on first pass
+        if (linearOffset == 0) {
+            linearOffset = 1;
+        }
+
+        return (float) ((Math.log(linearOffset) / maxLogValue) *
+                (float) (widthOfViewInsideGridStoke)) + strokePadding;
     }
 
     @Override
@@ -29,28 +47,9 @@ public class LogXGridLines extends XGridLines {
         paint.setColor(mGridColor);
         paint.setStrokeWidth(mGridStrokeWidth);
 
-        // This will ensure that we see all of the paint stoke
-        float strokePadding = mGridStrokeWidth / 2f;
-        // -1 due to drawing the surrounding frames along with the intersections
-        // We also have to take the size of the line into account
-        float spacing = ((float) widthInsideGridStoke) / (float) (mNumberOfGridLines - 1);
-
         for (int i = 0; i < mNumberOfGridLines; ++i) {
-            float linearOffset = (spacing * (float) i);
-
-            // Ensure we are not trying to find the log of 0 on first pass
-            if (linearOffset == 0) {
-                linearOffset = 1;
-            }
-
-            // Calculate the offset based on the log value / view width maximum, which will give
-            // a percentage across the screen. use the percentage against the width to find the
-            // exact screen position
-            int offset = (int) ((Math.log(linearOffset) / maxLogValue) *
-                    (double) (widthInsideGridStoke)) + (int) strokePadding;
-
-            canvas.drawLine(mDrawableArea.getLeft() + offset, mDrawableArea.getTop(),
-                    mDrawableArea.getLeft() + offset, mDrawableArea.getBottom(), paint);
+            canvas.drawLine(mDrawableArea.getLeft() + xIntersect(i), mDrawableArea.getTop(),
+                    mDrawableArea.getLeft() + xIntersect(i), mDrawableArea.getBottom(), paint);
         }
     }
 }

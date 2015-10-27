@@ -73,8 +73,8 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
         mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
 
-        mGridLines.add(new LogYGridLines(new DrawableArea(0, 0, 0, 0)));
-        mGridLines.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0)));
+        mGridLines.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0)));
+        mGridLines.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0)));
 
 
         mGraphManagerThread.setRun(true);

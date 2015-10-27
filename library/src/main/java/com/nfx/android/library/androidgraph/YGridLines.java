@@ -4,18 +4,21 @@ package com.nfx.android.library.androidgraph;
  * NFX Development
  * Created by nick on 27/10/15.
  */
-public class YGridLines extends GridLines {
+public abstract class YGridLines extends GridLines {
 
-    protected int heightInsideGridStoke;
+    protected int heightOfViewInsideGridStoke;
 
     public YGridLines(DrawableArea drawableArea) {
         super(drawableArea);
     }
 
+
+    public abstract float yIntersect(int gridLine);
+
     @Override
     public void surfaceChange(DrawableArea drawableArea) {
         super.surfaceChange(drawableArea);
 
-        heightInsideGridStoke = drawableArea.getHeight() - (int) mGridStrokeWidth;
+        heightOfViewInsideGridStoke = drawableArea.getHeight() - (int) mGridStrokeWidth;
     }
 }
