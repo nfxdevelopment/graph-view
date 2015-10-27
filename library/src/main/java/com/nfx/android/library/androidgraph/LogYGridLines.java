@@ -17,7 +17,8 @@ public class LogYGridLines extends YGridLines {
     @Override
     public void surfaceChange(DrawableArea drawableArea) {
         super.surfaceChange(drawableArea);
-        maxLogValue = Math.log(drawableArea.getHeight() - mGridStrokeWidth);
+
+        maxLogValue = Math.log(heightInsideGridStoke);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class LogYGridLines extends YGridLines {
         float strokePadding = mGridStrokeWidth / 2f;
         // -1 due to drawing the surrounding frames along with the intersections
         // We also have to take the size of the line into account
-        float spacing = ((float) mDrawableArea.getHeight() - mGridStrokeWidth) / (float)
+        float spacing = ((float) heightInsideGridStoke) / (float)
                 (mNumberOfGridLines - 1);
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
@@ -46,7 +47,8 @@ public class LogYGridLines extends YGridLines {
             // a percentage across the screen. use the percentage against the width to find the
             // exact screen position
             int offset = (int) ((Math.log(linearOffset) / maxLogValue) *
-                    (double) (mDrawableArea.getHeight() - mGridStrokeWidth)) + (int) strokePadding;
+                    (double) heightInsideGridStoke) + (int) strokePadding;
+
             canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getTop() + offset,
                     mDrawableArea.getRight(), mDrawableArea.getTop() + offset, paint);
         }

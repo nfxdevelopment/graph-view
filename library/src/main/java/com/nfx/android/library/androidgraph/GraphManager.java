@@ -76,6 +76,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mGridLines.add(new LogYGridLines(new DrawableArea(0, 0, 0, 0)));
         mGridLines.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0)));
 
+
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
     }
@@ -87,10 +88,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
             gridLines.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
         }
 
-        mXAxis.surfaceChange(new DrawableArea(0, height - getPaddingBottom() -
-                (int) sGridLineStrokeWidth, width, (int) sGridLineStrokeWidth));
-
-        mYAxis.surfaceChange(new DrawableArea(0, 0, (int) sGridLineStrokeWidth, height));
+//        mXAxis.surfaceChange(new DrawableArea(0, height - getPaddingBottom() -
+//                (int) sGridLineStrokeWidth, width, (int) sGridLineStrokeWidth));
+//
+//        mYAxis.surfaceChange(new DrawableArea(0, 0, (int) sGridLineStrokeWidth, height));
     }
 
     @Override

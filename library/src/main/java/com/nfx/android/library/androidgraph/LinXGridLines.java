@@ -23,11 +23,12 @@ public class LinXGridLines extends XGridLines {
         float strokePadding = mGridStrokeWidth / 2f;
         // -1 due to drawing the surrounding frames along with the intersections
         // We also have to take the size of the line into account
-        float spacing = ((float) mDrawableArea.getWidth() - mGridStrokeWidth) / (float)
+        float spacing = ((float) widthInsideGridStoke) / (float)
                 (mNumberOfGridLines - 1);
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             int offset = (int) ((spacing * (float) i) + strokePadding);
+
             canvas.drawLine(mDrawableArea.getLeft() + offset, mDrawableArea.getTop(),
                     mDrawableArea.getLeft() + offset, mDrawableArea.getBottom(), paint);
         }
