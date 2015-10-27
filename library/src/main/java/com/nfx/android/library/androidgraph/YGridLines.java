@@ -9,9 +9,8 @@ public abstract class YGridLines extends GridLines {
     protected int heightOfViewInsideGridStoke;
 
     public YGridLines(DrawableArea drawableArea) {
-        super(drawableArea);
+        super(drawableArea, AxisOrientation.yAxis);
     }
-
 
     public abstract float yIntersect(int gridLine);
 

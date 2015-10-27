@@ -32,7 +32,8 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     /**
      * Handles the drawing of all grid lines
      */
-    private Collection<GridLines> mGridLines = new ArrayList<>();
+    private Collection<GridLines> mGridLinesMajor = new ArrayList<>();
+    private Collection<GridLines> mGridLinesMinor = new ArrayList<>();
     /**
      * Handles the drawing of a unlimited amount of Markers
      **/
@@ -73,9 +74,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
         mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
 
-        mGridLines.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0)));
-        mGridLines.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0)));
-
+        mGridLinesMajor.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0)));
+        mGridLinesMajor.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0)));
+        mGridLinesMinor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0)));
 
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
@@ -84,9 +85,22 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         mBackground.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
-        for (GridLines gridLines : mGridLines) {
+        for (GridLines gridLines : mGridLinesMajor) {
             gridLines.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
+
+            if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
+                XGridLines xGridLinesMajor = (XGridLines) gridLines;
+                for (GridLines gridLinesMinor : mGridLinesMinor) {
+                    if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
+                        int xOffset = (int) xGridLinesMajor.xIntersect(0);
+                        int minorGridLineWidth = (int) xGridLinesMajor.xIntersect(1) - xOffset;
+                        gridLinesMinor.surfaceChange(new DrawableArea(xOffset, 0,
+                                minorGridLineWidth, getHeight()));
+                    }
+                }
+            }
         }
+
 
 //        mXAxis.surfaceChange(new DrawableArea(0, height - getPaddingBottom() -
 //                (int) sGridLineStrokeWidth, width, (int) sGridLineStrokeWidth));
@@ -113,7 +127,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 //        mXAxis.doDraw(canvas);
 //        mYAxis.doDraw(canvas);
 
-        for (GridLines gridLines : mGridLines) {
+        for (GridLines gridLines : mGridLinesMajor) {
+            gridLines.doDraw(canvas);
+        }
+        for (GridLines gridLines : mGridLinesMinor) {
             gridLines.doDraw(canvas);
         }
     }
@@ -125,14 +142,13 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     class GraphManagerThread extends Thread {
 
         /**
+         * Handle to the surface manager object we interact with
+         */
+        private final SurfaceHolder mSurfaceHolder;
+        /**
          * Indicate whether the surface has been created & is ready to draw
          */
         private boolean mRun = false;
-
-        /**
-         * Handle to the surface manager object we interact with
-         */
-        private SurfaceHolder mSurfaceHolder;
 
         public GraphManagerThread(Context context, SurfaceHolder surfaceHolder) {
             mContext = context;

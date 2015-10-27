@@ -9,7 +9,7 @@ public abstract class XGridLines extends GridLines {
     protected int widthOfViewInsideGridStoke;
 
     public XGridLines(DrawableArea drawableArea) {
-        super(drawableArea);
+        super(drawableArea, AxisOrientation.xAxis);
     }
 
     public abstract float xIntersect(int gridLine);
