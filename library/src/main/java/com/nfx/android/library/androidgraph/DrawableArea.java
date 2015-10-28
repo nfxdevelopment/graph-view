@@ -13,18 +13,33 @@ public class DrawableArea {
     private int mYOffset = 0;
     private int mHeight = 0;
     private int mWidth = 0;
-
     private Rect rect;
 
+    /**
+     * Initial values can be set in the constructor
+     *
+     * @param xOffset far left side of area
+     * @param yOffset top most side of area
+     * @param width   width dimension
+     * @param height  height dimension
+     */
     public DrawableArea(int xOffset, int yOffset, int width, int height) {
         mXOffset = xOffset;
         mYOffset = yOffset;
         mHeight = height;
         mWidth = width;
 
-        rect = new Rect(xOffset , yOffset , xOffset + width , yOffset + height );
+        rect = new Rect(xOffset, yOffset, xOffset + width, yOffset + height);
     }
 
+    /**
+     * Use this function to be able to change the area at runtime
+     *
+     * @param xOffset far left side of area
+     * @param yOffset top most side of area
+     * @param width   width dimension
+     * @param height  height dimension
+     */
     public void setDrawableArea(int xOffset, int yOffset, int width, int height) {
         mXOffset = xOffset;
         mYOffset = yOffset;

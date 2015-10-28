@@ -12,6 +12,10 @@ import java.util.Collection;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
+ *
+ * The GraphManager handles or instructs the drawing of the graph. It will start displaying when
+ * the surface is created and will only stop when the surface is destroyed. It has the ability to
+ * handle a resize at runtime.
  */
 public class GraphManager extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "GraphManager";
@@ -42,6 +46,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      **/
     private GraphManagerThread mGraphManagerThread;
 
+    /**
+     * Constructor for graph manager
+     *
+     * @param context current application context
+     * @param attrs   attributes
+     */
     public GraphManager(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -51,6 +61,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mGraphManagerThread = new GraphManagerThread(context, holder);
     }
 
+    /**
+     * Constructor for graph manager
+     *
+     * @param context current application context
+     */
     public GraphManager(Context context) {
         super(context);
 
@@ -60,6 +75,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mGraphManagerThread = new GraphManagerThread(context, holder);
     }
 
+    /**
+     * The graphManager thread is started in here which will cause the surface view to start
+     * displaying
+     * @param holder the current surface holder
+     */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mZoomDisplayX = new ZoomDisplay(0, 1f);
@@ -70,11 +90,23 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mGraphManagerThread.start();
     }
 
+    /**
+     * Any time a change in size is seen this is called, this information is used to manipulate
+     * any drawable areas graph manager knows of
+     * @param holder the surface holder that has changed
+     * @param format the new pixelformat
+     * @param width the new width
+     * @param height the new height
+     */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         mBackgroundManager.surfaceChanged(width, height);
     }
 
+    /**
+     * Called when surface is destroyed. Here we kill the thread cleanly
+     * @param holder the surface holder that has been destroyed
+     */
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         boolean retry = true;

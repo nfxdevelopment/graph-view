@@ -5,15 +5,32 @@ import android.graphics.Canvas;
 /**
  * NFX Development
  * Created by nick on 28/10/15.
+ *
+ * To be extend by a axis specific class.
  */
 public abstract class LogGridLines extends GridLines {
+    /**
+     * Used to work out positions relative to this value
+     */
     protected double maxLogValue;
 
+    /**
+     * Contructor which passes straight through
+     *
+     * @param zoomDisplay     zoom information for the orientation
+     * @param axisOrientation either the x or y axis
+     */
     public LogGridLines(ZoomDisplay zoomDisplay, AxisOrientation
             axisOrientation) {
         super(zoomDisplay, axisOrientation);
     }
 
+    /**
+     * Ensures maxLogValue is always up to date when we use it. This super has to be called before
+     * any drawing is done
+     *
+     * @param canvas a canvas to draw onto
+     */
     @Override
     public void doDraw(Canvas canvas) {
         maxLogValue = Math.log(getDrawableArea().getHeight());
@@ -21,7 +38,6 @@ public abstract class LogGridLines extends GridLines {
 
     /**
      * Gives the value of where a grid line will interest x on the screen
-     *
      * @param gridLine        grid line to find, base 0
      * @param dimensionLength Either the width or length
      * @return the x Intersect or -1 if the grid line is out of range

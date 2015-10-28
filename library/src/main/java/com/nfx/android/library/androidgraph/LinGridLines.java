@@ -3,8 +3,16 @@ package com.nfx.android.library.androidgraph;
 /**
  * NFX Development
  * Created by nick on 28/10/15.
+ *
+ * To be extend by a axis specific class.
  */
 public abstract class LinGridLines extends GridLines {
+    /**
+     * Contructor which passes straight through
+     *
+     * @param zoomDisplay     zoom information for the orientation
+     * @param axisOrientation either the x or y axis
+     */
     public LinGridLines(ZoomDisplay zoomDisplay, AxisOrientation
             axisOrientation) {
         super(zoomDisplay, axisOrientation);
@@ -12,7 +20,6 @@ public abstract class LinGridLines extends GridLines {
 
     /**
      * Gives the value of where a grid line will interest x on the screen
-     *
      * @param gridLine        grid line to find, base 0
      * @param dimensionLength Either width or height
      * @return the x Intersect or -1 if the grid line is out of range or grid Line should not be

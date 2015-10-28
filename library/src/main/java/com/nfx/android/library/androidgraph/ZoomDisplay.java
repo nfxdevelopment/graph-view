@@ -5,6 +5,9 @@ import android.util.Log;
 /**
  * NFX Development
  * Created by nick on 27/10/15.
+ *
+ * A helper class which will hold the zoom values of a given view. A listener can get updates
+ * when the surface size has changed.
  */
 public class ZoomDisplay {
     private static final String TAG = "ZoomDisplay";
@@ -25,7 +28,6 @@ public class ZoomDisplay {
 
     /**
      * Initial values of the zoom level
-     *
      * @param zoomLevelPercentage     a float referenced as 0% = 0 100% = 1 if outside this value a
      *                                warning is logged and 1 will be assigned
      * @param displayOffsetPercentage a float referenced as 0% = 0 100% = 1 if outside this value a
@@ -47,7 +49,6 @@ public class ZoomDisplay {
 
     /**
      * register a listener for zoom changed reports
-     *
      * @param listener register listener
      */
     public void setTheListener(ZoomChangedListener listener) {
@@ -63,7 +64,6 @@ public class ZoomDisplay {
 
     /**
      * change the view offset
-     *
      * @param displayOffsetPercentage a float referenced as a percentage across the screen 0% = 0
      *                                100% = 1 if outside this value a warning is logged and
      *                                nothing happens
@@ -95,7 +95,6 @@ public class ZoomDisplay {
 
     /**
      * change the zoom level of the view
-     *
      * @param zoomLevelPercentage a float referenced as 0% = 0 100% = 1 if outside this value a
      *                            warning is logged and nothing happens
      */

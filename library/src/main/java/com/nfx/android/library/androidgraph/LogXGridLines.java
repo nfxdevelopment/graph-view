@@ -6,16 +6,26 @@ import android.graphics.Paint;
 /**
  * NFX Development
  * Created by nick on 27/10/15.
+ *
+ * Draws logarithmic style grid lines in the x plane. Call doDraw with the canvas in which to
+ * draw on
  */
 public class LogXGridLines extends LogGridLines {
 
+    /**
+     * Constructor
+     *
+     * @param zoomDisplay zoom information for the orientation
+     */
     public LogXGridLines(ZoomDisplay zoomDisplay) {
         super(zoomDisplay, AxisOrientation.xAxis);
     }
 
-    public void surfaceChange() {
-    }
-
+    /**
+     * Draws all lines which are viewable on screen
+     *
+     * @param canvas a canvas to draw onto
+     */
     @Override
     public void doDraw(Canvas canvas) {
         super.doDraw(canvas);
@@ -30,6 +40,11 @@ public class LogXGridLines extends LogGridLines {
         }
     }
 
+    /**
+     * calls the dimension specific intersect workout
+     * @param gridLine grid line to find out the intersecting value
+     * @return value where line intersects
+     */
     @Override
     public float intersect(int gridLine) {
         return intersect(gridLine, getDrawableArea().getWidth());
