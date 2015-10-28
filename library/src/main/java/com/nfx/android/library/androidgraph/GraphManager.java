@@ -15,25 +15,15 @@ import java.util.Collection;
  */
 public class GraphManager extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "GraphManager";
-    private static final float sGridLineStrokeWidth = 5;
+    /**
+     * An object to draw all of the background information, including gridlines, axis information
+     * and a background color
+     */
+    BackgroundManager mBackgroundManager;
     /**
      * Handle to the application context, used to e.g. fetch Drawables.
      */
     private Context mContext;
-    /**
-     * An object which draws onto the canvas
-     **/
-    private Background mBackground;
-    /**
-     * Handles the drawing of each axis text
-     **/
-    private XAxis mXAxis;
-    private YAxis mYAxis;
-    /**
-     * Handles the drawing of all grid lines
-     */
-    private Collection<GridLines> mGridLinesMajor = new ArrayList<>();
-    private Collection<GridLines> mGridLinesMinor = new ArrayList<>();
     /**
      * Handles the drawing of a unlimited amount of Markers
      **/
@@ -74,17 +64,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     public void surfaceCreated(SurfaceHolder holder) {
         mZoomDisplayX = new ZoomDisplay(0, 1f);
         mZoomDisplayY = new ZoomDisplay(0, 1f);
-
-        mBackground = new Background(new DrawableArea(0, 0, 0, 0));
-        mXAxis = new LinXAxis(new DrawableArea(0, 0, 0, 0));
-        mXAxis.setGridStrokeWidth(sGridLineStrokeWidth);
-
-        mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
-        mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
-
-        mGridLinesMajor.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayY));
-        mGridLinesMajor.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
-        mGridLinesMinor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
+        mBackgroundManager = new BackgroundManager(mZoomDisplayX, mZoomDisplayY);
 
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
@@ -92,28 +72,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        mBackground.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
-        for (GridLines gridLines : mGridLinesMajor) {
-            gridLines.surfaceChange(new DrawableArea(0, 0, getWidth(), getHeight()));
-
-            if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
-                XGridLines xGridLinesMajor = (XGridLines) gridLines;
-                for (GridLines gridLinesMinor : mGridLinesMinor) {
-                    if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
-                        int xOffset = (int) xGridLinesMajor.xIntersect(0);
-                        int minorGridLineWidth = (int) xGridLinesMajor.xIntersect(1) - xOffset;
-                        gridLinesMinor.surfaceChange(new DrawableArea(xOffset, 0,
-                                minorGridLineWidth, getHeight()));
-                    }
-                }
-            }
-        }
-
-
-//        mXAxis.surfaceChange(new DrawableArea(0, height - getPaddingBottom() -
-//                (int) sGridLineStrokeWidth, width, (int) sGridLineStrokeWidth));
-//
-//        mYAxis.surfaceChange(new DrawableArea(0, 0, (int) sGridLineStrokeWidth, height));
+        mBackgroundManager.surfaceChanged(width, height);
     }
 
     @Override
@@ -131,20 +90,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     }
 
     protected void doDraw(Canvas canvas) {
-        mBackground.doDraw(canvas);
-//        mXAxis.doDraw(canvas);
-//        mYAxis.doDraw(canvas);
-
-        for (GridLines gridLines : mGridLinesMajor) {
-            gridLines.doDraw(canvas);
-        }
-        for (GridLines gridLines : mGridLinesMinor) {
-            gridLines.doDraw(canvas);
-        }
+        mBackgroundManager.doDraw(canvas);
     }
 
-    public Background getMBackground(){
-        return mBackground;
+    public BackgroundManager getBackgroundManager() {
+        return mBackgroundManager;
     }
 
     class GraphManagerThread extends Thread {
