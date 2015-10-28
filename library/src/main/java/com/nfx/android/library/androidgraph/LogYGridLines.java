@@ -10,8 +10,8 @@ import android.graphics.Paint;
 public class LogYGridLines extends YGridLines {
     private double maxLogValue;
 
-    public LogYGridLines(DrawableArea drawableArea) {
-        super(drawableArea);
+    public LogYGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay) {
+        super(drawableArea, zoomDisplay);
     }
 
     @Override

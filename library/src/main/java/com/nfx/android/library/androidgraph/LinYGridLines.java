@@ -8,8 +8,8 @@ import android.graphics.Paint;
  * Created by nick on 27/10/15.
  */
 public class LinYGridLines extends YGridLines {
-    public LinYGridLines(DrawableArea drawableArea) {
-        super(drawableArea);
+    public LinYGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay) {
+        super(drawableArea, zoomDisplay);
     }
 
     @Override

@@ -8,8 +8,8 @@ public abstract class YGridLines extends GridLines {
 
     protected int heightOfViewInsideGridStoke;
 
-    public YGridLines(DrawableArea drawableArea) {
-        super(drawableArea, AxisOrientation.yAxis);
+    public YGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay) {
+        super(drawableArea, zoomDisplay, AxisOrientation.yAxis);
     }
 
     public abstract float yIntersect(int gridLine);

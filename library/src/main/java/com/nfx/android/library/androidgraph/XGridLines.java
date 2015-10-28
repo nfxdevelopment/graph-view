@@ -8,8 +8,8 @@ public abstract class XGridLines extends GridLines {
 
     protected int widthOfViewInsideGridStoke;
 
-    public XGridLines(DrawableArea drawableArea) {
-        super(drawableArea, AxisOrientation.xAxis);
+    public XGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay) {
+        super(drawableArea, zoomDisplay, AxisOrientation.xAxis);
     }
 
     public abstract float xIntersect(int gridLine);

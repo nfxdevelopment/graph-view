@@ -8,8 +8,8 @@ import android.graphics.Paint;
  * Created by nick on 27/10/15.
  */
 public class LinXGridLines extends XGridLines {
-    public LinXGridLines(DrawableArea drawableArea) {
-        super(drawableArea);
+    public LinXGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay) {
+        super(drawableArea, zoomDisplay);
     }
 
     @Override
@@ -28,8 +28,6 @@ public class LinXGridLines extends XGridLines {
         Paint paint = new Paint();
         paint.setColor(mGridColor);
         paint.setStrokeWidth(mGridStrokeWidth);
-
-
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             canvas.drawLine(mDrawableArea.getLeft() + xIntersect(i), mDrawableArea.getTop(),

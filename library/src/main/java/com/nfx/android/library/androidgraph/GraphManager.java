@@ -43,6 +43,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      **/
     private Collection<Signal> mSignals = new ArrayList<>();
     /**
+     * These object will be passed into drawable objects that need to be resized based on zoom level
+     */
+    private ZoomDisplay mZoomDisplayX;
+    private ZoomDisplay mZoomDisplayY;
+    /**
      * The thread that updates the surface
      **/
     private GraphManagerThread mGraphManagerThread;
@@ -67,6 +72,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        mZoomDisplayX = new ZoomDisplay(0, 1f);
+        mZoomDisplayY = new ZoomDisplay(0, 1f);
+
         mBackground = new Background(new DrawableArea(0, 0, 0, 0));
         mXAxis = new LinXAxis(new DrawableArea(0, 0, 0, 0));
         mXAxis.setGridStrokeWidth(sGridLineStrokeWidth);
@@ -74,9 +82,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
         mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
 
-        mGridLinesMajor.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0)));
-        mGridLinesMajor.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0)));
-        mGridLinesMinor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0)));
+        mGridLinesMajor.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayY));
+        mGridLinesMajor.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
+        mGridLinesMinor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
 
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();

@@ -16,12 +16,18 @@ public class GridLines extends DrawableObject {
      */
     protected float mGridStrokeWidth = 4f;
     /**
+     * Describes the viewable part of the grid
+     */
+    ZoomDisplay mZoomDisplay;
+    /**
      * This allows us to know the axis at runtime
      */
     private AxisOrientation mAxisOrientation;
 
-    public GridLines(DrawableArea drawableArea, AxisOrientation axisOrientation) {
+    public GridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay, AxisOrientation
+            axisOrientation) {
         super(drawableArea);
+        mZoomDisplay = zoomDisplay;
         mAxisOrientation = axisOrientation;
     }
 
