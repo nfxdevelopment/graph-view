@@ -55,27 +55,10 @@ public class ZoomDisplay {
     }
 
     /**
-     * change the zoom level of the view
-     *
-     * @param zoomLevelPercentage a float referenced as 0% = 0 100% = 1 if outside this value a
-     *                            warning is logged and nothing happens
+     * @return the value of mDisplayOffsetPercentage
      */
-    public void setZoomLevelPercentage(float zoomLevelPercentage) {
-        if (zoomLevelPercentage < 0f || zoomLevelPercentage > 1f) {
-            Log.w(TAG, "zoom level out of bounds 0-1");
-            return;
-        }
-
-        // Ensure that the zoom level will be within the bounds of the screen
-        if ((zoomLevelPercentage + mDisplayOffsetPercentage) > 1f) {
-            mDisplayOffsetPercentage = 1f - zoomLevelPercentage;
-        }
-
-        mZoomLevelPercentage = zoomLevelPercentage;
-
-        if (mZoomChangedListener != null) {
-            mZoomChangedListener.zoomChanged();
-        }
+    public float getDisplayOffsetPercentage() {
+        return mDisplayOffsetPercentage;
     }
 
     /**
@@ -97,6 +80,37 @@ public class ZoomDisplay {
         } else {
             mDisplayOffsetPercentage = displayOffsetPercentage;
         }
+
+        if (mZoomChangedListener != null) {
+            mZoomChangedListener.zoomChanged();
+        }
+    }
+
+    /**
+     * @return the value of mZoomLevelPercentage
+     */
+    public float getZoomLevelPercentage() {
+        return mZoomLevelPercentage;
+    }
+
+    /**
+     * change the zoom level of the view
+     *
+     * @param zoomLevelPercentage a float referenced as 0% = 0 100% = 1 if outside this value a
+     *                            warning is logged and nothing happens
+     */
+    public void setZoomLevelPercentage(float zoomLevelPercentage) {
+        if (zoomLevelPercentage < 0f || zoomLevelPercentage > 1f) {
+            Log.w(TAG, "zoom level out of bounds 0-1");
+            return;
+        }
+
+        // Ensure that the zoom level will be within the bounds of the screen
+        if ((zoomLevelPercentage + mDisplayOffsetPercentage) > 1f) {
+            mDisplayOffsetPercentage = 1f - zoomLevelPercentage;
+        }
+
+        mZoomLevelPercentage = zoomLevelPercentage;
 
         if (mZoomChangedListener != null) {
             mZoomChangedListener.zoomChanged();

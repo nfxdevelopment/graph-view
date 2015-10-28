@@ -30,6 +30,23 @@ public abstract class LogGridLines extends GridLines {
         // The first line lies at on the area boundary of the first block hence +1
         float linearOffset = spacing * (float) (gridLine + 1);
 
-        return (float) (Math.log(linearOffset) / maxLogValue) * (float) dimensionLength;
+        float virtualIntersect =
+                (float) (Math.log(linearOffset) / maxLogValue) * (float) dimensionLength;
+
+        float virtualIntersectPercentage = virtualIntersect / (float) dimensionLength;
+
+        if (virtualIntersectPercentage > mZoomDisplay.getDisplayOffsetPercentage() &&
+                virtualIntersectPercentage < mZoomDisplay.getZoomLevelPercentage() +
+                        mZoomDisplay.getDisplayOffsetPercentage()) {
+
+            float intersectPercentage =
+                    (virtualIntersectPercentage - mZoomDisplay.getDisplayOffsetPercentage()) /
+                            mZoomDisplay.getZoomLevelPercentage();
+
+            return dimensionLength * intersectPercentage;
+        } else {
+            // It is outside our desired viewable area
+            return -1f;
+        }
     }
 }

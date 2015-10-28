@@ -9,8 +9,9 @@ import android.graphics.Color;
  */
 public abstract class GridLines extends DrawableObject {
 
-    protected int mNumberOfGridLines = 4;
+    protected int mNumberOfGridLines = 2;
     protected int mGridColor = Color.GRAY;
+
     /**
      * Use an even number to ensure all grid line strokes look the same
      */
