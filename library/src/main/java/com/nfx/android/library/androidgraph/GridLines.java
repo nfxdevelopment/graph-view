@@ -7,7 +7,7 @@ import android.graphics.Color;
  * NFX Development
  * Created by nick on 27/10/15.
  */
-public class GridLines extends DrawableObject {
+public abstract class GridLines extends DrawableObject {
 
     protected int mNumberOfGridLines = 4;
     protected int mGridColor = Color.GRAY;
@@ -51,6 +51,10 @@ public class GridLines extends DrawableObject {
     public void setColor(int color) {
         mGridColor = color;
     }
+
+    public abstract float intersect(int gridLine);
+
+    protected abstract float intersect(int gridLine, int dimensionLength);
 
     enum AxisOrientation {
         xAxis,

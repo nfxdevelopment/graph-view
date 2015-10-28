@@ -103,10 +103,9 @@ public class BackgroundManager {
                     height - (2 * mBoarder.getStrokeWidth())));
 
             if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
-                XGridLines xGridLinesMajor = (XGridLines) gridLines;
                 for (GridLines gridLinesMinor : mGridLinesMinor) {
                     if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
-                        int minorGridLineWidth = (int) xGridLinesMajor.xIntersect(0);
+                        int minorGridLineWidth = (int) gridLines.intersect(0);
                         gridLinesMinor.surfaceChange(new DrawableArea(0, 0,
                                 minorGridLineWidth, height));
                     }
