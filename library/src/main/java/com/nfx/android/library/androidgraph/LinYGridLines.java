@@ -12,14 +12,23 @@ public class LinYGridLines extends YGridLines {
         super(drawableArea, zoomDisplay);
     }
 
+    /**
+     * Gives the value of where a grid line will interest y on the screen
+     *
+     * @param gridLine grid line to find, base 0
+     * @return the y Intersect or -1 if the grid line is out of range
+     */
     @Override
     public float yIntersect(int gridLine) {
-        // This will ensure that we see all of the paint stoke
-        float strokePadding = mGridStrokeWidth / 2f;
-        // -1 due to drawing the surrounding frames along with the intersections
-        // We also have to take the size of the line into account
-        float spacing = ((float) heightOfViewInsideGridStoke) / (float) (mNumberOfGridLines - 1);
-        return ((spacing * (float) gridLine) + strokePadding);
+        if (gridLine >= mNumberOfGridLines || gridLine < 0) {
+            return -1f;
+        }
+
+        // +1 as there would be mNumberOfGridLines intersecting the graph which splits
+        // mNumberOfGridLines + 1 areas
+        float spacing = (float) mDrawableArea.getHeight() / (float) (mNumberOfGridLines + 1);
+        // The first line lies at on the area boundary of the first block hence +1
+        return spacing * (float) (gridLine + 1);
     }
 
     @Override
@@ -28,9 +37,6 @@ public class LinYGridLines extends YGridLines {
         Paint paint = new Paint();
         paint.setColor(mGridColor);
         paint.setStrokeWidth(mGridStrokeWidth);
-
-        // This will ensure that we see all of the paint stoke
-        float strokePadding = mGridStrokeWidth / 2f;
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getTop() + yIntersect(i),

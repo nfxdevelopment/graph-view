@@ -13,7 +13,7 @@ public class Boarder extends DrawableObject {
     /**
      * Stroke width of the board line
      */
-    private static final int strokeWidth = 4;
+    private static final int mStrokeWidth = 4;
     /**
      * Color of the boarder this can be updated at runtime
      */
@@ -36,9 +36,9 @@ public class Boarder extends DrawableObject {
     public void doDraw(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(color);
-        paint.setStrokeWidth(strokeWidth);
+        paint.setStrokeWidth(mStrokeWidth);
 
-        int halfStrokeWidth = strokeWidth / 2;
+        int halfStrokeWidth = mStrokeWidth / 2;
 
         // Draw the left boarder
         canvas.drawLine(mDrawableArea.getLeft() + halfStrokeWidth, mDrawableArea.getTop(),
@@ -52,5 +52,9 @@ public class Boarder extends DrawableObject {
         // draw the bottom boader
         canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getBottom() - halfStrokeWidth,
                 mDrawableArea.getRight(), mDrawableArea.getBottom() - halfStrokeWidth, paint);
+    }
+
+    public int getStrokeWidth() {
+        return mStrokeWidth;
     }
 }

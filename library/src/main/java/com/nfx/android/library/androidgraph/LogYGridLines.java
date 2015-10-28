@@ -21,22 +21,25 @@ public class LogYGridLines extends YGridLines {
         maxLogValue = Math.log(heightOfViewInsideGridStoke);
     }
 
+    /**
+     * Gives the value of where a grid line will interest y on the screen
+     *
+     * @param gridLine grid line to find, base 0
+     * @return the y Intersect or -1 if the grid line is out of range
+     */
     @Override
     public float yIntersect(int gridLine) {
-        // This will ensure that we see all of the paint stoke
-        float strokePadding = mGridStrokeWidth / 2f;
-        // -1 due to drawing the surrounding frames along with the intersections
-        // We also have to take the size of the line into account
-        float spacing = ((float) heightOfViewInsideGridStoke) / (float) (mNumberOfGridLines - 1);
-        float linearOffset = ((spacing * (float) gridLine));
-
-        // Ensure we are not trying to find the log of 0 on first pass
-        if (linearOffset == 0) {
-            linearOffset = 1;
+        if (gridLine >= mNumberOfGridLines || gridLine < 0) {
+            return -1f;
         }
 
-        return (float) ((Math.log(linearOffset) / maxLogValue) *
-                (float) (heightOfViewInsideGridStoke)) + strokePadding;
+        // +1 as there would be mNumberOfGridLines intersecting the graph which splits
+        // mNumberOfGridLines + 1 areas
+        float spacing = (float) mDrawableArea.getHeight() / (float) (mNumberOfGridLines + 1);
+        // The first line lies at on the area boundary of the first block hence +1
+        float linearOffset = spacing * (float) (gridLine + 1);
+
+        return (float) (Math.log(linearOffset) / maxLogValue) * (float) mDrawableArea.getHeight();
     }
 
     @Override

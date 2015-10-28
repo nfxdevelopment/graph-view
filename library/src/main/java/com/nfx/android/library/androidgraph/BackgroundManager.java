@@ -1,6 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,9 +49,15 @@ public class BackgroundManager {
 //        mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
 //        mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
 
-        mGridLinesMajor.add(new LinYGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayY));
-        mGridLinesMajor.add(new LinXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
+        mGridLinesMajor.add(new LogYGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayY));
+        mGridLinesMajor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
+
         mGridLinesMinor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
+
+        for (GridLines gridLines : mGridLinesMinor) {
+            gridLines.setGridStrokeWidth(2);
+            gridLines.setColor(Color.DKGRAY);
+        }
     }
 
     public void surfaceChanged(int width, int height) {
@@ -59,15 +66,17 @@ public class BackgroundManager {
         mBoarder.surfaceChange(new DrawableArea(0, 0, width, height));
 
         for (GridLines gridLines : mGridLinesMajor) {
-            gridLines.surfaceChange(new DrawableArea(0, 0, width, height));
+            // We have to take into account the size of the boarders
+            gridLines.surfaceChange(new DrawableArea(mBoarder.getStrokeWidth(),
+                    mBoarder.getStrokeWidth(), width - (2 * mBoarder.getStrokeWidth()),
+                    height - (2 * mBoarder.getStrokeWidth())));
 
             if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                 XGridLines xGridLinesMajor = (XGridLines) gridLines;
                 for (GridLines gridLinesMinor : mGridLinesMinor) {
                     if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
-                        int xOffset = (int) xGridLinesMajor.xIntersect(0);
-                        int minorGridLineWidth = (int) xGridLinesMajor.xIntersect(1) - xOffset;
-                        gridLinesMinor.surfaceChange(new DrawableArea(xOffset, 0,
+                        int minorGridLineWidth = (int) xGridLinesMajor.xIntersect(0);
+                        gridLinesMinor.surfaceChange(new DrawableArea(0, 0,
                                 minorGridLineWidth, height));
                     }
                 }
@@ -87,11 +96,11 @@ public class BackgroundManager {
 //        mXAxis.doDraw(canvas);
 //        mYAxis.doDraw(canvas);
 //
-//        for (GridLines gridLines : mGridLinesMajor) {
-//            gridLines.doDraw(canvas);
-//        }
-//        for (GridLines gridLines : mGridLinesMinor) {
-//            gridLines.doDraw(canvas);
-//        }
+        for (GridLines gridLines : mGridLinesMajor) {
+            gridLines.doDraw(canvas);
+        }
+        for (GridLines gridLines : mGridLinesMinor) {
+            gridLines.doDraw(canvas);
+        }
     }
 }
