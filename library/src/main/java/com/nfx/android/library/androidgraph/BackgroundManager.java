@@ -41,6 +41,37 @@ public class BackgroundManager {
         mZoomDisplayX = zoomDisplayX;
         mZoomDisplayY = zoomDisplayY;
 
+        zoomDisplayX.setTheListener(new ZoomDisplay.ZoomChangedListener() {
+            @Override
+            public void zoomChanged() {
+//                for (GridLines gridLines : mGridLinesMajor) {
+//                    if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
+//                        gridLines.updateZoomLevel();
+//                    }
+//                }
+//                for (GridLines gridLines : mGridLinesMinor) {
+//                    if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
+//                        gridLines.updateZoomLevel();
+//                    }
+//                }
+            }
+        });
+        zoomDisplayY.setTheListener(new ZoomDisplay.ZoomChangedListener() {
+            @Override
+            public void zoomChanged() {
+//                for (GridLines gridLines : mGridLinesMajor) {
+//                    if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.yAxis) {
+//                        gridLines.updateZoomLevel();
+//                    }
+//                }
+//                for (GridLines gridLines : mGridLinesMinor) {
+//                    if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.yAxis) {
+//                        gridLines.updateZoomLevel();
+//                    }
+//                }
+            }
+        });
+
         mBackground = new Background(new DrawableArea(0, 0, 0, 0));
         mBoarder = new Boarder(new DrawableArea(0, 0, 0, 0));
 //        mXAxis = new LinXAxis(new DrawableArea(0, 0, 0, 0));
