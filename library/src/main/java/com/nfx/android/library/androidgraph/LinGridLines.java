@@ -5,9 +5,9 @@ package com.nfx.android.library.androidgraph;
  * Created by nick on 28/10/15.
  */
 public abstract class LinGridLines extends GridLines {
-    public LinGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay, AxisOrientation
+    public LinGridLines(ZoomDisplay zoomDisplay, AxisOrientation
             axisOrientation) {
-        super(drawableArea, zoomDisplay, axisOrientation);
+        super(zoomDisplay, axisOrientation);
     }
 
     /**

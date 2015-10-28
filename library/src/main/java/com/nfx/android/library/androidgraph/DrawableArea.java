@@ -25,6 +25,15 @@ public class DrawableArea {
         rect = new Rect(xOffset , yOffset , xOffset + width , yOffset + height );
     }
 
+    public void setDrawableArea(int xOffset, int yOffset, int width, int height) {
+        mXOffset = xOffset;
+        mYOffset = yOffset;
+        mHeight = height;
+        mWidth = width;
+
+        rect.set(xOffset, yOffset, xOffset + width, yOffset + height);
+    }
+
     public Rect getRect(){ return rect; }
 
     public int getLeft() { return mXOffset; }

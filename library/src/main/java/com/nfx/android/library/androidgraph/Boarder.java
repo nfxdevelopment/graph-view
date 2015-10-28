@@ -20,13 +20,6 @@ public class Boarder extends DrawableObject {
     private int color = Color.GRAY;
 
     /**
-     * @param drawableArea the area in which the boarder can be drawn
-     */
-    public Boarder(DrawableArea drawableArea) {
-        super(drawableArea);
-    }
-
-    /**
      * This will draw 4 lines around the outer edge of the viewable area.
      * It will also take into account the stroke width to ensure the whole line is viewable
      *
@@ -41,17 +34,20 @@ public class Boarder extends DrawableObject {
         int halfStrokeWidth = mStrokeWidth / 2;
 
         // Draw the left boarder
-        canvas.drawLine(mDrawableArea.getLeft() + halfStrokeWidth, mDrawableArea.getTop(),
-                mDrawableArea.getLeft() + halfStrokeWidth, mDrawableArea.getBottom(), paint);
+        canvas.drawLine(getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getTop(),
+                getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getBottom(),
+                paint);
         // Draw the right boader
-        canvas.drawLine(mDrawableArea.getRight() - halfStrokeWidth, mDrawableArea.getTop(),
-                mDrawableArea.getRight() - halfStrokeWidth, mDrawableArea.getBottom(), paint);
+        canvas.drawLine(getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getTop(),
+                getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getBottom(),
+                paint);
         // Draw the top boarder
-        canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getTop() + halfStrokeWidth,
-                mDrawableArea.getRight(), mDrawableArea.getTop() + halfStrokeWidth, paint);
+        canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() + halfStrokeWidth,
+                getDrawableArea().getRight(), getDrawableArea().getTop() + halfStrokeWidth, paint);
         // draw the bottom boader
-        canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getBottom() - halfStrokeWidth,
-                mDrawableArea.getRight(), mDrawableArea.getBottom() - halfStrokeWidth, paint);
+        canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getBottom() -
+                        halfStrokeWidth,
+                getDrawableArea().getRight(), getDrawableArea().getBottom() - halfStrokeWidth, paint);
     }
 
     public int getStrokeWidth() {

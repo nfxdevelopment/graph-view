@@ -25,9 +25,8 @@ public abstract class GridLines extends DrawableObject {
      */
     private AxisOrientation mAxisOrientation;
 
-    public GridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay, AxisOrientation
+    public GridLines(ZoomDisplay zoomDisplay, AxisOrientation
             axisOrientation) {
-        super(drawableArea);
         mZoomDisplay = zoomDisplay;
         mAxisOrientation = axisOrientation;
     }

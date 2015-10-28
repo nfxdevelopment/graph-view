@@ -11,19 +11,22 @@ public abstract class DrawableObject {
     /**
      * Advises the background in which area it can draw.
      **/
-    protected DrawableArea mDrawableArea;
-
-    public DrawableObject(DrawableArea drawableArea) {
-        mDrawableArea = drawableArea;
-    }
+    private DrawableArea mDrawableArea = new DrawableArea(0, 0, 0, 0);
 
     /**
-     * Called to change the drawable area for the object
-     **/
-    public void surfaceChange(DrawableArea drawableArea) {
-        mDrawableArea = drawableArea;
-    }
-
+     * Override and implement the specific drawing onto the canvas
+     *
+     * @param canvas a canvas to draw onto
+     */
     public abstract void doDraw(Canvas canvas);
+
+    /**
+     * Get the DrawableArea to change the area in which the object draws in
+     *
+     * @return the drawableArea of the object
+     */
+    public DrawableArea getDrawableArea() {
+        return mDrawableArea;
+    }
 
 }

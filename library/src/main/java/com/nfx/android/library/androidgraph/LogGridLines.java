@@ -1,5 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
+import android.graphics.Canvas;
+
 /**
  * NFX Development
  * Created by nick on 28/10/15.
@@ -7,9 +9,14 @@ package com.nfx.android.library.androidgraph;
 public abstract class LogGridLines extends GridLines {
     protected double maxLogValue;
 
-    public LogGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay, AxisOrientation
+    public LogGridLines(ZoomDisplay zoomDisplay, AxisOrientation
             axisOrientation) {
-        super(drawableArea, zoomDisplay, axisOrientation);
+        super(zoomDisplay, axisOrientation);
+    }
+
+    @Override
+    public void doDraw(Canvas canvas) {
+        maxLogValue = Math.log(getDrawableArea().getHeight());
     }
 
     /**
@@ -19,6 +26,7 @@ public abstract class LogGridLines extends GridLines {
      * @param dimensionLength Either the width or length
      * @return the x Intersect or -1 if the grid line is out of range
      */
+    @Override
     public float intersect(int gridLine, int dimensionLength) {
         if (gridLine >= mNumberOfGridLines || gridLine < 0) {
             return -1f;

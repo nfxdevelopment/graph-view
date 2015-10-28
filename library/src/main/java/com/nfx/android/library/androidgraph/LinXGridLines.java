@@ -8,8 +8,8 @@ import android.graphics.Paint;
  * Created by nick on 27/10/15.
  */
 public class LinXGridLines extends LinGridLines {
-    public LinXGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay) {
-        super(drawableArea, zoomDisplay, AxisOrientation.xAxis);
+    public LinXGridLines(ZoomDisplay zoomDisplay) {
+        super(zoomDisplay, AxisOrientation.xAxis);
     }
 
     @Override
@@ -21,13 +21,13 @@ public class LinXGridLines extends LinGridLines {
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float xIntersect = intersect(i);
-            canvas.drawLine(mDrawableArea.getLeft() + xIntersect, mDrawableArea.getTop(),
-                    mDrawableArea.getLeft() + xIntersect, mDrawableArea.getBottom(), paint);
+            canvas.drawLine(getDrawableArea().getLeft() + xIntersect, getDrawableArea().getTop(),
+                    getDrawableArea().getLeft() + xIntersect, getDrawableArea().getBottom(), paint);
         }
     }
 
     @Override
     public float intersect(int gridLine) {
-        return intersect(gridLine, mDrawableArea.getWidth());
+        return intersect(gridLine, getDrawableArea().getWidth());
     }
 }

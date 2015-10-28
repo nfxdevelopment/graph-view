@@ -21,11 +21,6 @@ public class BackgroundManager {
      */
     private Boarder mBoarder;
     /**
-     * Handles the drawing of each axis text
-     **/
-    private XAxis mXAxis;
-    private YAxis mYAxis;
-    /**
      * Handles the drawing of all grid lines
      */
     private Collection<GridLines> mGridLinesMajor = new ArrayList<>();
@@ -72,18 +67,13 @@ public class BackgroundManager {
             }
         });
 
-        mBackground = new Background(new DrawableArea(0, 0, 0, 0));
-        mBoarder = new Boarder(new DrawableArea(0, 0, 0, 0));
-//        mXAxis = new LinXAxis(new DrawableArea(0, 0, 0, 0));
-//        mXAxis.setGridStrokeWidth(sGridLineStrokeWidth);
-//
-//        mYAxis = new LinYAxis(new DrawableArea(0, 0, 0, 0));
-//        mYAxis.setGridStrokeWidth(sGridLineStrokeWidth);
+        mBackground = new Background();
+        mBoarder = new Boarder();
 
-        mGridLinesMajor.add(new LogYGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayY));
-        mGridLinesMajor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
+        mGridLinesMajor.add(new LogYGridLines(mZoomDisplayY));
+        mGridLinesMajor.add(new LogXGridLines(mZoomDisplayX));
 
-        mGridLinesMinor.add(new LogXGridLines(new DrawableArea(0, 0, 0, 0), mZoomDisplayX));
+        mGridLinesMinor.add(new LogXGridLines(mZoomDisplayX));
 
         for (GridLines gridLines : mGridLinesMinor) {
             gridLines.setGridStrokeWidth(2);
@@ -92,39 +82,31 @@ public class BackgroundManager {
     }
 
     public void surfaceChanged(int width, int height) {
-        mBackground.surfaceChange(new DrawableArea(0, 0, width, height));
+        mBackground.getDrawableArea().setDrawableArea(0, 0, width, height);
 
-        mBoarder.surfaceChange(new DrawableArea(0, 0, width, height));
+        mBoarder.getDrawableArea().setDrawableArea(0, 0, width, height);
 
         for (GridLines gridLines : mGridLinesMajor) {
             // We have to take into account the size of the boarders
-            gridLines.surfaceChange(new DrawableArea(mBoarder.getStrokeWidth(),
+            gridLines.getDrawableArea().setDrawableArea(mBoarder.getStrokeWidth(),
                     mBoarder.getStrokeWidth(), width - (2 * mBoarder.getStrokeWidth()),
-                    height - (2 * mBoarder.getStrokeWidth())));
+                    height - (2 * mBoarder.getStrokeWidth()));
 
             if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                 for (GridLines gridLinesMinor : mGridLinesMinor) {
                     if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                         int minorGridLineWidth = (int) gridLines.intersect(0);
-                        gridLinesMinor.surfaceChange(new DrawableArea(0, 0,
-                                minorGridLineWidth, height));
+                        gridLinesMinor.getDrawableArea().setDrawableArea(0, 0,
+                                minorGridLineWidth, height);
                     }
                 }
             }
         }
-
-
-//        mXAxis.surfaceChange(new DrawableArea(0, height - getPaddingBottom() -
-//                (int) sGridLineStrokeWidth, width, (int) sGridLineStrokeWidth));
-//
-//        mYAxis.surfaceChange(new DrawableArea(0, 0, (int) sGridLineStrokeWidth, height));
     }
 
     public void doDraw(Canvas canvas) {
         mBackground.doDraw(canvas);
         mBoarder.doDraw(canvas);
-//        mXAxis.doDraw(canvas);
-//        mYAxis.doDraw(canvas);
 //
         for (GridLines gridLines : mGridLinesMajor) {
             gridLines.doDraw(canvas);

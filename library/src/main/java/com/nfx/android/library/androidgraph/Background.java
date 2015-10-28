@@ -5,7 +5,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 /**
+ * NFX Development
  * Created by nick on 25/10/15.
+ *
+ * Fills the given drawableArea with a color. The default is Black
  */
 public class Background extends DrawableObject {
 
@@ -14,15 +17,11 @@ public class Background extends DrawableObject {
      **/
     private int mBackgroundColor = Color.BLACK;
 
-    public Background(DrawableArea drawableArea) {
-        super(drawableArea);
-    }
-
     @Override
     public void doDraw(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(mBackgroundColor);
-        canvas.drawRect(mDrawableArea.getRect() , paint);
+        canvas.drawRect(getDrawableArea().getRect(), paint);
     }
 
     /**

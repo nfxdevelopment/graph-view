@@ -9,15 +9,8 @@ import android.graphics.Paint;
  */
 public class LogYGridLines extends LogGridLines {
 
-    public LogYGridLines(DrawableArea drawableArea, ZoomDisplay zoomDisplay) {
-        super(drawableArea, zoomDisplay, AxisOrientation.yAxis);
-    }
-
-    @Override
-    public void surfaceChange(DrawableArea drawableArea) {
-        super.surfaceChange(drawableArea);
-
-        maxLogValue = Math.log(mDrawableArea.getHeight());
+    public LogYGridLines(ZoomDisplay zoomDisplay) {
+        super(zoomDisplay, AxisOrientation.yAxis);
     }
 
     @Override
@@ -29,13 +22,13 @@ public class LogYGridLines extends LogGridLines {
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float yIntersect = intersect(i);
-            canvas.drawLine(mDrawableArea.getLeft(), mDrawableArea.getTop() + yIntersect,
-                    mDrawableArea.getRight(), mDrawableArea.getTop() + yIntersect, paint);
+            canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() + yIntersect,
+                    getDrawableArea().getRight(), getDrawableArea().getTop() + yIntersect, paint);
         }
     }
 
     @Override
     public float intersect(int gridLine) {
-        return intersect(gridLine, mDrawableArea.getHeight());
+        return intersect(gridLine, getDrawableArea().getHeight());
     }
 }
