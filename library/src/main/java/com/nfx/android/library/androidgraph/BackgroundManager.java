@@ -16,6 +16,10 @@ public class BackgroundManager {
      **/
     private Background mBackground;
     /**
+     * An object to draw a board around the graph
+     */
+    private Boarder mBoarder;
+    /**
      * Handles the drawing of each axis text
      **/
     private XAxis mXAxis;
@@ -37,6 +41,7 @@ public class BackgroundManager {
         mZoomDisplayY = zoomDisplayY;
 
         mBackground = new Background(new DrawableArea(0, 0, 0, 0));
+        mBoarder = new Boarder(new DrawableArea(0, 0, 0, 0));
 //        mXAxis = new LinXAxis(new DrawableArea(0, 0, 0, 0));
 //        mXAxis.setGridStrokeWidth(sGridLineStrokeWidth);
 //
@@ -50,6 +55,9 @@ public class BackgroundManager {
 
     public void surfaceChanged(int width, int height) {
         mBackground.surfaceChange(new DrawableArea(0, 0, width, height));
+
+        mBoarder.surfaceChange(new DrawableArea(0, 0, width, height));
+
         for (GridLines gridLines : mGridLinesMajor) {
             gridLines.surfaceChange(new DrawableArea(0, 0, width, height));
 
@@ -75,14 +83,15 @@ public class BackgroundManager {
 
     public void doDraw(Canvas canvas) {
         mBackground.doDraw(canvas);
+        mBoarder.doDraw(canvas);
 //        mXAxis.doDraw(canvas);
 //        mYAxis.doDraw(canvas);
-
-        for (GridLines gridLines : mGridLinesMajor) {
-            gridLines.doDraw(canvas);
-        }
-        for (GridLines gridLines : mGridLinesMinor) {
-            gridLines.doDraw(canvas);
-        }
+//
+//        for (GridLines gridLines : mGridLinesMajor) {
+//            gridLines.doDraw(canvas);
+//        }
+//        for (GridLines gridLines : mGridLinesMinor) {
+//            gridLines.doDraw(canvas);
+//        }
     }
 }
