@@ -105,60 +105,56 @@ public class BackgroundManager {
     }
 
     /**
-     * Call when the surface view changes it's dimensions
+     * Call when the surface view changes it's dimensions the objects have to called in the correct
+     * order to ensure they take up the correct space
      *
-     * @param width  passed throught from surfaceview
-     * @param height passed throught from surfaceview
+     * @param width  passed through from surfaceview
+     * @param height passed through from surfaceview
      */
     public void surfaceChanged(int width, int height) {
-        mBackground.getDrawableArea().setDrawableArea(0, 0, width, height);
-
-        int boarderXOffset = 0;
-        int boarderYOffset = 0;
-        int boarderWidth = 0;
-        int boarderHeight = 0;
+        DrawableArea drawableArea = new DrawableArea(0, 0, width, height);
+        mBackground.surfaceChanged(drawableArea);
 
         if (mShowAxisText) {
-            for (AxisText axisText : mXAxisText) {
-                axisText.getDrawableArea().setDrawableArea(0, height - (int) axisText.getTextSize(),
-                        width, (int) axisText.getTextSize());
-
-                boarderYOffset = 0;
-                boarderHeight = height - (int) axisText.getTextSize();
-            }
             for (AxisText axisText : mYAxisText) {
-                axisText.getDrawableArea().setDrawableArea(0, 0,
-                        (int) axisText.getMaximumTextWidth(), height);
-
-                boarderXOffset = (int) axisText.getMaximumTextWidth();
-                boarderWidth = width - (int) axisText.getMaximumTextWidth();
+                axisText.surfaceChanged(drawableArea);
             }
-        } else {
-            boarderXOffset = 0;
-            boarderYOffset = 0;
-            boarderWidth = width;
-            boarderHeight = height;
+            for (AxisText axisText : mXAxisText) {
+                axisText.surfaceChanged(drawableArea);
+            }
         }
 
-        mBoarder.getDrawableArea().setDrawableArea(boarderXOffset, boarderYOffset, boarderWidth,
-                boarderHeight);
+        mBoarder.surfaceChanged(drawableArea);
 
-        int gridLinesXOffset = boarderXOffset + mBoarder.getStrokeWidth();
-        int gridLinesYOffset = boarderYOffset + mBoarder.getStrokeWidth();
-        int gridLinesWidth = boarderWidth - (mBoarder.getStrokeWidth() * 2);
-        int gridLinesHeight = boarderHeight - (mBoarder.getStrokeWidth() * 2);
+        // When the boarder is used we have to shift the axis text as it would no longer be inline
+        // with the grid lines
+        if (mShowAxisText) {
+            for (AxisText axisText : mYAxisText) {
+                axisText.getDrawableArea().setDrawableArea(axisText.getDrawableArea().getLeft(),
+                        axisText.getDrawableArea().getTop() + mBoarder.getStrokeWidth(),
+                        axisText.getDrawableArea().getWidth(),
+                        axisText.getDrawableArea().getHeight() - mBoarder.getStrokeWidth());
+            }
+            for (AxisText axisText : mXAxisText) {
+                axisText.getDrawableArea().setDrawableArea(
+                        axisText.getDrawableArea().getLeft() + mBoarder.getStrokeWidth(),
+                        axisText.getDrawableArea().getTop(),
+                        axisText.getDrawableArea().getWidth() - mBoarder.getStrokeWidth(),
+                        axisText.getDrawableArea().getHeight());
+            }
+        }
 
         for (GridLines gridLines : mGridLinesMajor) {
             // We have to take into account the size of the boarders
-            gridLines.getDrawableArea().setDrawableArea(gridLinesXOffset, gridLinesYOffset,
-                    gridLinesWidth, gridLinesHeight);
+            gridLines.surfaceChanged(drawableArea);
 
             if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                 for (GridLines gridLinesMinor : mGridLinesMinor) {
                     if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                         int minorGridLineWidth = (int) gridLines.intersect(0);
-                        gridLinesMinor.getDrawableArea().setDrawableArea(gridLinesXOffset,
-                                gridLinesYOffset, minorGridLineWidth, gridLinesHeight);
+                        gridLinesMinor.getDrawableArea().setDrawableArea(drawableArea.getLeft(),
+                                drawableArea.getTop(), minorGridLineWidth, drawableArea.getHeight
+                                        ());
                     }
                 }
             }

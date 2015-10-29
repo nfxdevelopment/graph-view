@@ -12,4 +12,9 @@ public class Marker extends DrawableObject {
     public void doDraw(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
     }
+
+    @Override
+    public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+
+    }
 }

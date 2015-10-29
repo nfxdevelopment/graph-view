@@ -15,7 +15,7 @@ public class Boarder extends DrawableObject {
     /**
      * Stroke width of the board line
      */
-    private static final int mStrokeWidth = 4;
+    private static final int mStrokeWidth = 10;
     /**
      * Color of the boarder this can be updated at runtime
      */
@@ -23,6 +23,7 @@ public class Boarder extends DrawableObject {
 
     /**
      * Called from BackManager when a draw is needed
+     *
      * @param canvas draw directly onto this canvas
      */
     @Override
@@ -57,5 +58,21 @@ public class Boarder extends DrawableObject {
      */
     public int getStrokeWidth() {
         return mStrokeWidth;
+    }
+
+    /**
+     * This will change the drawable area passed in to reflect the new drawable area after the
+     * Boarder object is finished with it
+     *
+     * @param currentDrawableArea will reflect the new drawable area pass in current drawableArea
+     */
+    @Override
+    public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+        int xOffset = currentDrawableArea.getLeft() + mStrokeWidth;
+        int yOffset = currentDrawableArea.getTop() + mStrokeWidth;
+        int width = currentDrawableArea.getWidth() - (mStrokeWidth * 2);
+        int height = currentDrawableArea.getHeight() - (mStrokeWidth * 2);
+
+        currentDrawableArea.setDrawableArea(xOffset, yOffset, width, height);
     }
 }

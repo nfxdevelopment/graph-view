@@ -53,6 +53,7 @@ public abstract class GridLines extends DrawableObject {
 
     /**
      * Number of grid lines at 100% zoom
+     *
      * @return current number of grid lines
      */
     public int getNumberOfGridLines() {
@@ -61,6 +62,7 @@ public abstract class GridLines extends DrawableObject {
 
     /**
      * Change the stroke width of the lines at runtime
+     *
      * @param strokeWidth new stroke width value
      */
     public void setGridStrokeWidth(int strokeWidth) {
@@ -69,6 +71,7 @@ public abstract class GridLines extends DrawableObject {
 
     /**
      * Change the color of the lines at runtime
+     *
      * @param color new color value
      */
     public void setColor(int color) {
@@ -77,6 +80,7 @@ public abstract class GridLines extends DrawableObject {
 
     /**
      * To be implemented when axis orientation is know
+     *
      * @param gridLine grid line to find out the intersecting value
      * @return intersecting point
      */
@@ -84,11 +88,22 @@ public abstract class GridLines extends DrawableObject {
 
     /**
      * To be implemented when scale is know LOG/LIN
+     *
      * @param gridLine grid line to find out the intersecting value
      * @param dimensionLength length of width or height
      * @return intersecting point
      */
     protected abstract float intersect(int gridLine, int dimensionLength);
+
+    /**
+     * The grid lines are a underlay and is considered a underlay there we do not change the
+     * drawable area.
+     *
+     * @param currentDrawableArea will reflect the new drawable area pass in current drawableArea
+     */
+    @Override
+    public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+    }
 
     enum AxisOrientation {
         xAxis,

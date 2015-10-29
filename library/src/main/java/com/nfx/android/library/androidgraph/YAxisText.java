@@ -19,9 +19,46 @@ public class YAxisText extends AxisText {
             Rect bounds = new Rect();
             String textString = String.valueOf(i);
             mTextPaint.getTextBounds(textString, 0, textString.length(), bounds);
-            int y = (int) mGridLines.intersect(i) + (bounds.height() / 2);
+            int y = getDrawableArea().getTop() + (int) mGridLines.intersect(i)
+                    + (bounds.height() / 2);
 
-            canvas.drawText(textString, getDrawableArea().getLeft(), y, mTextPaint);
+            canvas.drawText(textString, getDrawableArea().getWidth() / 2, y, mTextPaint);
         }
+    }
+
+    /**
+     * The surface size has changed update the current object to resize drawing
+     * This will align the yAxis to the top left for now
+     *
+     * @param drawableArea new surface size
+     */
+    @Override
+    public void surfaceChanged(DrawableArea drawableArea) {
+        getDrawableArea().setDrawableArea(drawableArea.getLeft(), drawableArea.getTop(),
+                (int) getMaximumTextWidth(), drawableArea.getHeight());
+        calculateRemainingDrawableArea(drawableArea);
+    }
+
+    /**
+     * This will change the drawable area passed in to reflect the new drawable area after the
+     * Axis object is finished with it
+     *
+     * @param currentDrawableArea will reflect the new drawable area pass in current drawableArea
+     */
+    @Override
+    public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+        int xOffset = currentDrawableArea.getLeft();
+        int yOffset = currentDrawableArea.getTop();
+        int width = currentDrawableArea.getWidth();
+        int height = currentDrawableArea.getHeight();
+
+        // If it is equal to zero we assume it is top aligned
+        if (getDrawableArea().getLeft() == 0) {
+            xOffset += getDrawableArea().getWidth();
+        }
+
+        width -= getDrawableArea().getWidth();
+
+        currentDrawableArea.setDrawableArea(xOffset, yOffset, width, height);
     }
 }

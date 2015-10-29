@@ -49,6 +49,20 @@ public class DrawableArea {
         rect.set(xOffset, yOffset, xOffset + width, yOffset + height);
     }
 
+    /**
+     * Use this function to be able to change the area at runtime
+     *
+     * @param drawableArea drawable area to copy from
+     */
+    public void setDrawableArea(DrawableArea drawableArea) {
+        mXOffset = drawableArea.mXOffset;
+        mYOffset = drawableArea.mYOffset;
+        mHeight = drawableArea.mHeight;
+        mWidth = drawableArea.mWidth;
+
+        rect.set(mXOffset, mYOffset, mXOffset + mWidth, mYOffset + mHeight);
+    }
+
     public Rect getRect(){ return rect; }
 
     public int getLeft() { return mXOffset; }

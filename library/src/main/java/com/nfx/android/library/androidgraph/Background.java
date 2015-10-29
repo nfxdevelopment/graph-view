@@ -25,6 +25,16 @@ public class Background extends DrawableObject {
     }
 
     /**
+     * The background is a underlay and is considered a underlay there we do not change the
+     * drawable area.
+     *
+     * @param currentDrawableArea will reflect the new drawable area pass in current drawableArea
+     */
+    @Override
+    public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+    }
+
+    /**
      * Use this to change the color at any point, changes will be seen after doDraw is called
      **/
     public void setBackgroundColor(int color){

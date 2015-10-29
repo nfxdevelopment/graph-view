@@ -24,18 +24,19 @@ public abstract class AxisText extends DrawableObject {
         float textScale = mContext.getResources().getDisplayMetrics().density;
 
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setColor(Color.GRAY);
         mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
         mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-    }
-
-    public float getTextSize() {
-        return mTextPaint.getTextSize();
     }
 
     public float getMaximumTextWidth() {
         Rect bounds = new Rect();
         mTextPaint.getTextBounds(sWidthTextString, 0, sWidthTextString.length(), bounds);
         return bounds.width();
+    }
+
+    public float getRealTextHeight() {
+        return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
     }
 }
