@@ -7,12 +7,25 @@ import android.graphics.Rect;
 /**
  * NFX Development
  * Created by nick on 29/10/15.
+ *
+ * Used to draw text onto a canvas to display the values of grid lines in the Y axis
  */
 public class YAxisText extends AxisText {
+    /**
+     * Constructor
+     *
+     * @param context   application context is used for dimension reasons
+     * @param gridLines grid lines axis is related to
+     */
     YAxisText(Context context, GridLines gridLines) {
         super(context, gridLines);
     }
 
+    /**
+     * draw the axis text on to canvas
+     *
+     * @param canvas a canvas to draw onto
+     */
     @Override
     public void doDraw(Canvas canvas) {
         for (int i = 0; i < mGridLines.getNumberOfGridLines(); ++i) {
