@@ -1,5 +1,6 @@
 package com.nfx.android.library.androidgraph;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
@@ -30,6 +31,12 @@ public class BackgroundManager {
     private Collection<GridLines> mGridLinesMajor = new ArrayList<>();
     private Collection<GridLines> mGridLinesMinor = new ArrayList<>();
     /**
+     * Handles the drawing of all text on axis
+     */
+    private Collection<AxisText> mXAxisText = new ArrayList<>();
+    private Collection<AxisText> mYAxisText = new ArrayList<>();
+    private boolean mShowAxisText = true;
+    /**
      * These object will be passed into drawable objects that need to be resized based on zoom level
      */
     private ZoomDisplay mZoomDisplayX;
@@ -37,11 +44,11 @@ public class BackgroundManager {
 
     /**
      * Constructor for Background Manager, all drawable objects are created here
-     *
+     * @param context application context
      * @param zoomDisplayX reference to graphManagers zoomDisplay for x
      * @param zoomDisplayY reference to graphManagers zoomDisplay for y
      */
-    public BackgroundManager(ZoomDisplay zoomDisplayX, ZoomDisplay zoomDisplayY) {
+    public BackgroundManager(Context context, ZoomDisplay zoomDisplayX, ZoomDisplay zoomDisplayY) {
 
         mZoomDisplayX = zoomDisplayX;
         mZoomDisplayY = zoomDisplayY;
@@ -80,10 +87,16 @@ public class BackgroundManager {
         mBackground = new Background();
         mBoarder = new Boarder();
 
-        mGridLinesMajor.add(new LogYGridLines(mZoomDisplayY));
-        mGridLinesMajor.add(new LogXGridLines(mZoomDisplayX));
+
+        GridLines xGridLines = new LinXGridLines(mZoomDisplayX);
+        GridLines yGridLines = new LinYGridLines(mZoomDisplayY);
+        mGridLinesMajor.add(xGridLines);
+        mGridLinesMajor.add(yGridLines);
 
         mGridLinesMinor.add(new LogXGridLines(mZoomDisplayX));
+
+        mXAxisText.add(new XAxisText(context, xGridLines));
+        mYAxisText.add(new YAxisText(context, yGridLines));
 
         for (GridLines gridLines : mGridLinesMinor) {
             gridLines.setGridStrokeWidth(2);
@@ -100,20 +113,52 @@ public class BackgroundManager {
     public void surfaceChanged(int width, int height) {
         mBackground.getDrawableArea().setDrawableArea(0, 0, width, height);
 
-        mBoarder.getDrawableArea().setDrawableArea(0, 0, width, height);
+        int boarderXOffset = 0;
+        int boarderYOffset = 0;
+        int boarderWidth = 0;
+        int boarderHeight = 0;
+
+        if (mShowAxisText) {
+            for (AxisText axisText : mXAxisText) {
+                axisText.getDrawableArea().setDrawableArea(0, height - (int) axisText.getTextSize(),
+                        width, (int) axisText.getTextSize());
+
+                boarderYOffset = 0;
+                boarderHeight = height - (int) axisText.getTextSize();
+            }
+            for (AxisText axisText : mYAxisText) {
+                axisText.getDrawableArea().setDrawableArea(0, 0,
+                        (int) axisText.getMaximumTextWidth(), height);
+
+                boarderXOffset = (int) axisText.getMaximumTextWidth();
+                boarderWidth = width - (int) axisText.getMaximumTextWidth();
+            }
+        } else {
+            boarderXOffset = 0;
+            boarderYOffset = 0;
+            boarderWidth = width;
+            boarderHeight = height;
+        }
+
+        mBoarder.getDrawableArea().setDrawableArea(boarderXOffset, boarderYOffset, boarderWidth,
+                boarderHeight);
+
+        int gridLinesXOffset = boarderXOffset + mBoarder.getStrokeWidth();
+        int gridLinesYOffset = boarderYOffset + mBoarder.getStrokeWidth();
+        int gridLinesWidth = boarderWidth - (mBoarder.getStrokeWidth() * 2);
+        int gridLinesHeight = boarderHeight - (mBoarder.getStrokeWidth() * 2);
 
         for (GridLines gridLines : mGridLinesMajor) {
             // We have to take into account the size of the boarders
-            gridLines.getDrawableArea().setDrawableArea(mBoarder.getStrokeWidth(),
-                    mBoarder.getStrokeWidth(), width - (2 * mBoarder.getStrokeWidth()),
-                    height - (2 * mBoarder.getStrokeWidth()));
+            gridLines.getDrawableArea().setDrawableArea(gridLinesXOffset, gridLinesYOffset,
+                    gridLinesWidth, gridLinesHeight);
 
             if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                 for (GridLines gridLinesMinor : mGridLinesMinor) {
                     if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                         int minorGridLineWidth = (int) gridLines.intersect(0);
-                        gridLinesMinor.getDrawableArea().setDrawableArea(0, 0,
-                                minorGridLineWidth, height);
+                        gridLinesMinor.getDrawableArea().setDrawableArea(gridLinesXOffset,
+                                gridLinesYOffset, minorGridLineWidth, gridLinesHeight);
                     }
                 }
             }
@@ -133,6 +178,13 @@ public class BackgroundManager {
         }
         for (GridLines gridLines : mGridLinesMinor) {
             gridLines.doDraw(canvas);
+        }
+
+        for (AxisText axisText : mXAxisText) {
+            axisText.doDraw(canvas);
+        }
+        for (AxisText axisText : mYAxisText) {
+            axisText.doDraw(canvas);
         }
     }
 }
