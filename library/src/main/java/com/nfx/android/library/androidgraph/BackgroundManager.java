@@ -35,7 +35,7 @@ public class BackgroundManager {
      */
     private Collection<AxisText> mXAxisText = new ArrayList<>();
     private Collection<AxisText> mYAxisText = new ArrayList<>();
-    private boolean mShowAxisText = true;
+    private boolean mShowAxisText = false;
     /**
      * These object will be passed into drawable objects that need to be resized based on zoom level
      */
@@ -87,7 +87,6 @@ public class BackgroundManager {
         mBackground = new Background();
         mBoarder = new Boarder();
 
-
         GridLines xGridLines = new LinXGridLines(mZoomDisplayX);
         GridLines yGridLines = new LinYGridLines(mZoomDisplayY);
         mGridLinesMajor.add(xGridLines);
@@ -95,8 +94,10 @@ public class BackgroundManager {
 
         mGridLinesMinor.add(new LogXGridLines(mZoomDisplayX));
 
-        mXAxisText.add(new XAxisText(context, xGridLines));
-        mYAxisText.add(new YAxisText(context, yGridLines));
+        if (mShowAxisText) {
+            mXAxisText.add(new XAxisText(context, xGridLines));
+            mYAxisText.add(new YAxisText(context, yGridLines));
+        }
 
         for (GridLines gridLines : mGridLinesMinor) {
             gridLines.setGridStrokeWidth(2);
@@ -176,11 +177,13 @@ public class BackgroundManager {
             gridLines.doDraw(canvas);
         }
 
-        for (AxisText axisText : mXAxisText) {
-            axisText.doDraw(canvas);
-        }
-        for (AxisText axisText : mYAxisText) {
-            axisText.doDraw(canvas);
+        if (mShowAxisText) {
+            for (AxisText axisText : mXAxisText) {
+                axisText.doDraw(canvas);
+            }
+            for (AxisText axisText : mYAxisText) {
+                axisText.doDraw(canvas);
+            }
         }
     }
 }
