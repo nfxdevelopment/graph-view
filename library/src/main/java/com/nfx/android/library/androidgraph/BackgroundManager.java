@@ -28,19 +28,45 @@ public class BackgroundManager {
     /**
      * Handles the drawing of all grid lines
      */
-    private Collection<GridLines> mGridLinesMajor = new ArrayList<>();
+    private GridLines mYMajorGridLines;
+    private GridLines mXMajorGridLines;
     private Collection<GridLines> mGridLinesMinor = new ArrayList<>();
     /**
      * Handles the drawing of all text on axis
      */
     private Collection<AxisText> mXAxisText = new ArrayList<>();
     private Collection<AxisText> mYAxisText = new ArrayList<>();
+    /**
+     * Set dependant which constuctor is called
+     */
     private boolean mShowAxisText = false;
     /**
      * These object will be passed into drawable objects that need to be resized based on zoom level
      */
     private ZoomDisplay mZoomDisplayX;
     private ZoomDisplay mZoomDisplayY;
+
+    /**
+     * Constructor for Background Manager, all drawable objects are created here. Call this
+     * constructor if you want the axis text to be shown
+     *
+     * @param context       application context
+     * @param zoomDisplayX  reference to graphManagers zoomDisplay for x
+     * @param zoomDisplayY  reference to graphManagers zoomDisplay for y
+     * @param minimumXValue minimum value graph represents for x
+     * @param maximumXValue maximum value graph represents for x
+     * @param minimumYValue minimum value graph represents for y
+     * @param maximumYValue maximum value graph represents for y
+     */
+    public BackgroundManager(Context context, ZoomDisplay zoomDisplayX, ZoomDisplay zoomDisplayY,
+                             float minimumXValue, float maximumXValue, float minimumYValue,
+                             float maximumYValue) {
+        this(context, zoomDisplayX, zoomDisplayY);
+
+        mXAxisText.add(new XAxisText(context, mXMajorGridLines, minimumXValue, maximumXValue));
+        mYAxisText.add(new YAxisText(context, mYMajorGridLines, minimumYValue, maximumYValue));
+        mShowAxisText = true;
+    }
 
     /**
      * Constructor for Background Manager, all drawable objects are created here
@@ -87,17 +113,10 @@ public class BackgroundManager {
         mBackground = new Background();
         mBoarder = new Boarder();
 
-        GridLines xGridLines = new LinXGridLines(mZoomDisplayX);
-        GridLines yGridLines = new LinYGridLines(mZoomDisplayY);
-        mGridLinesMajor.add(xGridLines);
-        mGridLinesMajor.add(yGridLines);
+        mXMajorGridLines = new LinXGridLines(mZoomDisplayX);
+        mYMajorGridLines = new LinYGridLines(mZoomDisplayY);
 
         mGridLinesMinor.add(new LogXGridLines(mZoomDisplayX));
-
-        if (mShowAxisText) {
-            mXAxisText.add(new XAxisText(context, xGridLines));
-            mYAxisText.add(new YAxisText(context, yGridLines));
-        }
 
         for (GridLines gridLines : mGridLinesMinor) {
             gridLines.setGridStrokeWidth(2);
@@ -145,19 +164,14 @@ public class BackgroundManager {
             }
         }
 
-        for (GridLines gridLines : mGridLinesMajor) {
-            // We have to take into account the size of the boarders
-            gridLines.surfaceChanged(drawableArea);
+        mXMajorGridLines.surfaceChanged(drawableArea);
+        mYMajorGridLines.surfaceChanged(drawableArea);
 
-            if (gridLines.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
-                for (GridLines gridLinesMinor : mGridLinesMinor) {
-                    if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
-                        int minorGridLineWidth = (int) gridLines.intersect(0);
-                        gridLinesMinor.getDrawableArea().setDrawableArea(drawableArea.getLeft(),
-                                drawableArea.getTop(), minorGridLineWidth, drawableArea.getHeight
-                                        ());
-                    }
-                }
+        for (GridLines gridLinesMinor : mGridLinesMinor) {
+            if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
+                int minorGridLineWidth = (int) mXMajorGridLines.intersect(0);
+                gridLinesMinor.getDrawableArea().setDrawableArea(drawableArea.getLeft(),
+                        drawableArea.getTop(), minorGridLineWidth, drawableArea.getHeight());
             }
         }
     }
@@ -170,9 +184,9 @@ public class BackgroundManager {
         mBackground.doDraw(canvas);
         mBoarder.doDraw(canvas);
 
-        for (GridLines gridLines : mGridLinesMajor) {
-            gridLines.doDraw(canvas);
-        }
+        mXMajorGridLines.doDraw(canvas);
+        mYMajorGridLines.doDraw(canvas);
+
         for (GridLines gridLines : mGridLinesMinor) {
             gridLines.doDraw(canvas);
         }

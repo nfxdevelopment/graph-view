@@ -16,9 +16,12 @@ public class YAxisText extends AxisText {
      *
      * @param context   application context is used for dimension reasons
      * @param gridLines grid lines axis is related to
+     * @param minimumAxisValue the lowest number that the axis displays
+     * @param maximumAxisValue the highest number the axis displays
      */
-    YAxisText(Context context, GridLines gridLines) {
-        super(context, gridLines);
+    YAxisText(Context context, GridLines gridLines, float minimumAxisValue,
+              float maximumAxisValue) {
+        super(context, gridLines, minimumAxisValue, maximumAxisValue);
     }
 
     /**
@@ -29,13 +32,17 @@ public class YAxisText extends AxisText {
     @Override
     public void doDraw(Canvas canvas) {
         for (int i = 0; i < mGridLines.getNumberOfGridLines(); ++i) {
-            Rect bounds = new Rect();
-            String textString = String.valueOf(i);
-            mTextPaint.getTextBounds(textString, 0, textString.length(), bounds);
-            int y = getDrawableArea().getTop() + (int) mGridLines.intersect(i)
-                    + (bounds.height() / 2);
+            String displayString = displayString(i);
 
-            canvas.drawText(textString, getDrawableArea().getWidth() / 2, y, mTextPaint);
+            Rect bounds = new Rect();
+            mTextPaint.getTextBounds(displayString, 0, displayString.length(), bounds);
+            float yIntersect = mGridLines.intersect(i);
+            // Ensure the grid line is on screen
+            if (yIntersect > 0) {
+                int y = getDrawableArea().getTop() + (int) yIntersect + (bounds.height() / 2);
+
+                canvas.drawText(displayString, getDrawableArea().getWidth() / 2, y, mTextPaint);
+            }
         }
     }
 

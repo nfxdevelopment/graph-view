@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
 /**
  * NFX Development
@@ -12,11 +13,8 @@ import android.graphics.Rect;
  * Base class for drawing axis text onto a canvas
  */
 public abstract class AxisText extends DrawableObject {
+    private static final String TAG = "AxisText";
 
-    /**
-     * string used to calculated maximum string width
-     */
-    private static final String sWidthTextString = "00";
     /**
      * grid lines that text is relating to
      */
@@ -33,16 +31,39 @@ public abstract class AxisText extends DrawableObject {
      * text size before scaling for screen has been applied
      */
     private int mUnscaledTextSize = 16;
+    /**
+     * the lowest number that the axis displays
+     */
+    private float mMinimumAxisValue = 0;
+    /**
+     * the highest number the axis displays
+     */
+    private float mMaximumAxisValue = 0;
+    /**
+     * the span of the values displayed on the axis
+     */
+    private float mAxisValueSpan = 1;
 
     /**
      * Constructor
      *
      * @param context   application context is used for dimension reasons
      * @param gridLines grid lines axis is related to
+     * @param minimumAxisValue the lowest number that the axis displays
+     * @param maximumAxisValue the highest number the axis displays
      */
-    AxisText(Context context, GridLines gridLines) {
+    AxisText(Context context, GridLines gridLines, float minimumAxisValue, float maximumAxisValue) {
         mContext = context;
         mGridLines = gridLines;
+
+        // Check to ensure the minimum is less that the maximum
+        if (maximumAxisValue > minimumAxisValue) {
+            mMinimumAxisValue = minimumAxisValue;
+            mMaximumAxisValue = maximumAxisValue;
+            mAxisValueSpan = maximumAxisValue - minimumAxisValue;
+        } else {
+            Log.w(TAG, "Given maximum value is less than minimum value");
+        }
 
         float textScale = mContext.getResources().getDisplayMetrics().density;
 
@@ -54,14 +75,31 @@ public abstract class AxisText extends DrawableObject {
     }
 
     /**
-     * Uses the static member sWidthTextString to workout the maximum size of axis text this can
-     * be changed in the future to reflect a true value
+     * calculates the string to display for a given grid number
+     *
+     * @param lineNumber line number to calculate for
+     * @return a string which represents the value of the grid line
+     */
+    protected String displayString(int lineNumber) {
+        // +1 as the first grid line is not 0 i.e not the minimum, this would be the boarder along
+        // with the maximum, which is on the boarder
+        float percentageAcrossScale =
+                (float) (lineNumber + 1) / (float) (mGridLines.getNumberOfGridLines() + 1);
+        float valueWithoutOffset = mAxisValueSpan * percentageAcrossScale;
+        float valueToDisplay = valueWithoutOffset + mMinimumAxisValue;
+        return String.valueOf(valueToDisplay);
+    }
+
+    /**
+     * This uses the maximum number which will be displayed on the axis, it still may be wider than
+     * this though change in the future TODO
      *
      * @return maximum width of text
      */
     public float getMaximumTextWidth() {
         Rect bounds = new Rect();
-        mTextPaint.getTextBounds(sWidthTextString, 0, sWidthTextString.length(), bounds);
+        mTextPaint.getTextBounds(String.valueOf(mMaximumAxisValue), 0,
+                String.valueOf(mMaximumAxisValue).length(), bounds);
         return bounds.width();
     }
 

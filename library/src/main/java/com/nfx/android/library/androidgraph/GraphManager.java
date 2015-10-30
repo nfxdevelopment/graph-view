@@ -82,9 +82,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mZoomDisplayX = new ZoomDisplay(0, 1f);
-        mZoomDisplayY = new ZoomDisplay(0, 1f);
-        mBackgroundManager = new BackgroundManager(mContext, mZoomDisplayX, mZoomDisplayY);
+        mZoomDisplayX = new ZoomDisplay(1f, 0f);
+        mZoomDisplayY = new ZoomDisplay(1f, 0f);
+        mBackgroundManager = new BackgroundManager(mContext, mZoomDisplayX, mZoomDisplayY,
+                0, 3, 0, 3);
 
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
