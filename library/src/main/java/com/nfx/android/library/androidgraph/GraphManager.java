@@ -87,6 +87,8 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mBackgroundManager = new BackgroundManager(mContext, mZoomDisplayX, mZoomDisplayY,
                 0, 3, 0, 3);
 
+        mSignals.add(new Signal());
+
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
     }
@@ -101,7 +103,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        mBackgroundManager.surfaceChanged(width, height);
+        DrawableArea drawableArea = new DrawableArea(0, 0, width, height);
+        mBackgroundManager.surfaceChanged(drawableArea);
+
+        for (Signal signal : mSignals) {
+            signal.surfaceChanged(drawableArea);
+        }
     }
 
     /**
@@ -124,6 +131,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     protected void doDraw(Canvas canvas) {
         mBackgroundManager.doDraw(canvas);
+
+        for (Signal signal : mSignals) {
+            signal.doDraw(canvas);
+        }
     }
 
     public BackgroundManager getBackgroundManager() {

@@ -128,11 +128,9 @@ public class BackgroundManager {
      * Call when the surface view changes it's dimensions the objects have to called in the correct
      * order to ensure they take up the correct space
      *
-     * @param width  passed through from surfaceview
-     * @param height passed through from surfaceview
+     * @param drawableArea the avaiable area to draw
      */
-    public void surfaceChanged(int width, int height) {
-        DrawableArea drawableArea = new DrawableArea(0, 0, width, height);
+    public void surfaceChanged(DrawableArea drawableArea) {
         mBackground.surfaceChanged(drawableArea);
 
         if (mShowAxisText) {
