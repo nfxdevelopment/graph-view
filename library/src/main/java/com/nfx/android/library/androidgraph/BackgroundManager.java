@@ -113,7 +113,7 @@ public class BackgroundManager {
         mBackground = new Background();
         mBoarder = new Boarder();
 
-        mXMajorGridLines = new LinXGridLines(mZoomDisplayX);
+        mXMajorGridLines = new LogXGridLines(mZoomDisplayX);
         mYMajorGridLines = new LinYGridLines(mZoomDisplayY);
 
         mGridLinesMinor.add(new LogXGridLines(mZoomDisplayX));

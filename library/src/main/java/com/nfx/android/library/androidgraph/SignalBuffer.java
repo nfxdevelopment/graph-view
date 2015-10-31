@@ -36,6 +36,12 @@ public class SignalBuffer {
         mBuffer = new float[sizeOfBuffer];
     }
 
+    public float[] getBuffer() {
+        synchronized (this) {
+            return mBuffer;
+        }
+    }
+
     /**
      * Sets the member buffer. Please ensure data is normalised to 0-1 before setting. If the
      * buffer passed in does not match the size of the member buffer. It will not be set and a
@@ -44,10 +50,12 @@ public class SignalBuffer {
      * @param buffer source for buffer copy
      */
     public void setBuffer(float[] buffer) {
-        if (mBuffer.length == buffer.length) {
-            System.arraycopy(buffer, 0, mBuffer, 0, mBuffer.length);
-        } else {
-            Log.w(TAG, "Buffer passed in does not match size of signal buffer");
+        synchronized (this) {
+            if (mBuffer.length == buffer.length) {
+                System.arraycopy(buffer, 0, mBuffer, 0, mBuffer.length);
+            } else {
+                Log.w(TAG, "Buffer passed in does not match size of signal buffer");
+            }
         }
     }
 

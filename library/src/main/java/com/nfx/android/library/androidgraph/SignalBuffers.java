@@ -20,9 +20,17 @@ public class SignalBuffers {
     private float mXScale = 1f;
 
     /**
+     * So we now if the data is logarithmic or linear
+     */
+    private SignalScale mSignalScale;
+    /**
      * A collection of signal buffers which is synchronized
      */
     private Map<Integer, SignalBuffer> mSignalBuffers = new ConcurrentHashMap<>();
+
+    SignalBuffers(SignalScale signalScale) {
+        mSignalScale = signalScale;
+    }
 
     public void addSignalBuffer(int id, SignalBuffer signalBuffer) {
         if (mSignalBuffers.put(id, signalBuffer) != null) {
@@ -34,8 +42,8 @@ public class SignalBuffers {
         mSignalBuffers.remove(id);
     }
 
-    public SignalBuffer getSignalBuffer(int id) {
-        return mSignalBuffers.get(id);
+    public Map<Integer, SignalBuffer> getSignalBuffer() {
+        return mSignalBuffers;
     }
 
     public float getXScale() {
@@ -49,5 +57,14 @@ public class SignalBuffers {
             Log.w(TAG, "xScale is out of range not taking setting");
         }
 
+    }
+
+    public SignalScale getSignalScale() {
+        return mSignalScale;
+    }
+
+    enum SignalScale {
+        logarithmic,
+        linear
     }
 }

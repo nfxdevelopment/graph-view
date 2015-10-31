@@ -35,7 +35,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     /**
      * Handles the drawing of a unlimited amount of Signals
      **/
-    private Collection<Signal> mSignals = new ArrayList<>();
+    private SignalManager mSignalManager;
     /**
      * These object will be passed into drawable objects that need to be resized based on zoom level
      */
@@ -87,7 +87,18 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mBackgroundManager = new BackgroundManager(mContext, mZoomDisplayX, mZoomDisplayY,
                 0, 3, 0, 3);
 
-        mSignals.add(new Signal());
+        mSignalManager = new SignalManager();
+
+        //TEST CODE
+        SignalBuffers signalBuffers = new SignalBuffers(SignalBuffers.SignalScale.logarithmic);
+        signalBuffers.addSignalBuffer(0, new SignalBuffer(0, 100));
+        float[] buffer = new float[100];
+        for (int i = 0; i < 100; i++) {
+            buffer[i] = 0.01f * (float) i;
+        }
+        signalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
+
+        mSignalManager.setSignalBuffers(signalBuffers);
 
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
@@ -105,10 +116,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         DrawableArea drawableArea = new DrawableArea(0, 0, width, height);
         mBackgroundManager.surfaceChanged(drawableArea);
-
-        for (Signal signal : mSignals) {
-            signal.surfaceChanged(drawableArea);
-        }
+        mSignalManager.surfaceChanged(drawableArea);
     }
 
     /**
@@ -131,14 +139,15 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     protected void doDraw(Canvas canvas) {
         mBackgroundManager.doDraw(canvas);
-
-        for (Signal signal : mSignals) {
-            signal.doDraw(canvas);
-        }
+        mSignalManager.doDraw(canvas);
     }
 
     public BackgroundManager getBackgroundManager() {
         return mBackgroundManager;
+    }
+
+    public SignalManager getSignalManager() {
+        return mSignalManager;
     }
 
     class GraphManagerThread extends Thread {
