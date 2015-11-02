@@ -12,22 +12,13 @@ import android.util.Log;
 public class SignalBuffer {
     private static final String TAG = "SignalBuffer";
     /**
-     * Scaled for the y axis ranging from 0 - 1 where 1 is unscaled
+     * Information about the scaling of signal in the y axis
      */
-    private float mYScale = 1f;
-
+    private ZoomDisplay mYZoomDisplay;
     /**
-     * Offset based in the y axis no offset = 0
+     * Information about the scaling of signal in the y axis
      */
-    private float mYOffset = 0f;
-    /**
-     * Offset based in the x axis no offset = 0
-     */
-    private float mXOffset = 0f;
-    /**
-     * A scale that is applied to all buffers encompassed in this object
-     */
-    private float mXScale = 1f;
+    private ZoomDisplay mXZoomDisplay;
     /**
      * So we now if the data is logarithmic or linear
      */
@@ -47,12 +38,9 @@ public class SignalBuffer {
         mId = id;
         mBuffer = new float[sizeOfBuffer];
         mSignalScale = signalScale;
-    }
 
-    private float[] getBuffer() {
-        synchronized (this) {
-            return mBuffer;
-        }
+        mXZoomDisplay = new ZoomDisplay(1f, 0f);
+        mYZoomDisplay = new ZoomDisplay(1f, 0f);
     }
 
     /**
@@ -87,10 +75,11 @@ public class SignalBuffer {
 
         synchronized (this) {
             // -1 to get the spacing between the samples.
-            float spacing = mXScale / (numberOfPoints - 1);
+            float spacing = mXZoomDisplay.getZoomLevelPercentage() / (numberOfPoints - 1);
 
             for (int i = 0; i < numberOfPoints; i++) {
-                float pointOffsetPercentage = (spacing * (float) i) + mXOffset;
+                float pointOffsetPercentage = (spacing * (float) i)
+                        + mXZoomDisplay.getDisplayOffsetPercentage();
                 float pointOffset = pointOffsetPercentage * (float) (getSizeOfBuffer() - 1);
                 float arrayPosRemainder = pointOffset % 1;
 
@@ -120,48 +109,12 @@ public class SignalBuffer {
         return mBuffer.length;
     }
 
-    public float getYOffset() {
-        return mYOffset;
+    public ZoomDisplay getXZoomDisplay() {
+        return mXZoomDisplay;
     }
 
-    public float getXOffset() {
-        return mXOffset;
-    }
-
-    public void setXOffset(float xOffset) {
-        if (xOffset < 0f || xOffset > 1f) {
-            Log.w(TAG, "display offset out of bounds 0-1");
-        }
-
-        // Ensure that the zoom level will be within the bounds of the screen
-        if ((xOffset + mXScale) > 1f) {
-            mXOffset = 1f - mXScale;
-        } else {
-            mXOffset = xOffset;
-        }
-
-    }
-
-    public float getYScale() {
-        return mYScale;
-    }
-
-    public float getXScale() {
-        return mXScale;
-    }
-
-    public void setXScale(float xScale) {
-        if (xScale < 0f || xScale > 1f) {
-            Log.w(TAG, "zoom level out of bounds 0-1");
-            return;
-        }
-
-        // Ensure that the zoom level will be within the bounds of the screen
-        if ((xScale + mXOffset) > 1f) {
-            mXOffset = 1f - xScale;
-        }
-
-        mXScale = xScale;
+    public ZoomDisplay getYZoomDisplay() {
+        return mYZoomDisplay;
     }
 
     public SignalScale getSignalScale() {

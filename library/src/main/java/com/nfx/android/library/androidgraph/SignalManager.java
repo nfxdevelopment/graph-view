@@ -10,15 +10,47 @@ import java.util.Collection;
  * Created by nick on 31/10/15.
  */
 public class SignalManager {
-    private Collection<Signal> mSignalDrawers = new ArrayList<>();
+    /**
+     * parent object
+     */
+    private GraphManager mGraphManager;
 
+    /**
+     * Array of drawers to display signals
+     */
+    private Collection<Signal> mSignalDrawers = new ArrayList<>();
+    /**
+     * An object holding the signals to display
+     */
     private SignalBuffers mSignalBuffers;
 
+    /**
+     * Constructor
+     *
+     * @param graphManager needed to set the axis zoom levels
+     */
+    SignalManager(GraphManager graphManager) {
+        mGraphManager = graphManager;
+    }
+
+    /**
+     * This tells the graph that there are signals to display, each signal gets its own drawer,
+     * At the current time the last signal in the list will control the zoom levels. This is because
+     * we are trying to control a single axis zoom from multiple signals. TODO
+     *
+     * @param signalBuffers pass the object of signals to display on the graph
+     */
     public void setSignalBuffers(SignalBuffers signalBuffers) {
         mSignalBuffers = signalBuffers;
         for (SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
             mSignalDrawers.add(new Signal(signalBuffer));
+
+            mGraphManager.getBackgroundManager().getXMajorGridLines().setZoomDisplay(
+                    signalBuffer.getXZoomDisplay());
+            mGraphManager.getBackgroundManager().getYMajorGridLines().setZoomDisplay(
+                    signalBuffer.getYZoomDisplay());
         }
+
     }
 
     /**

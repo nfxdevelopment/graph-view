@@ -25,7 +25,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * Describes the viewable part of the grid
      */
-    ZoomDisplay mZoomDisplay;
+    protected ZoomDisplay mZoomDisplay;
     /**
      * This allows us to know the axis at runtime
      */
@@ -34,12 +34,12 @@ public abstract class GridLines extends DrawableObject {
     /**
      * Constructor of GridLines
      *
-     * @param zoomDisplay     zoom information for the orientation
      * @param axisOrientation either the x or y axis
      */
-    public GridLines(ZoomDisplay zoomDisplay, AxisOrientation axisOrientation) {
-        mZoomDisplay = zoomDisplay;
+    public GridLines(AxisOrientation axisOrientation) {
         mAxisOrientation = axisOrientation;
+        // Set a default zoom Display
+        mZoomDisplay = new ZoomDisplay(1f, 0f);
     }
 
     /**
@@ -103,6 +103,10 @@ public abstract class GridLines extends DrawableObject {
      */
     @Override
     public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+    }
+
+    public void setZoomDisplay(ZoomDisplay zoomDisplay) {
+        mZoomDisplay = zoomDisplay;
     }
 
     enum AxisOrientation {

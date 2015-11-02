@@ -12,11 +12,9 @@ import android.graphics.Paint;
 public class LinXGridLines extends LinGridLines {
     /**
      * Constructor
-     *
-     * @param zoomDisplay zoom information for the orientation
      */
-    public LinXGridLines(ZoomDisplay zoomDisplay) {
-        super(zoomDisplay, AxisOrientation.xAxis);
+    public LinXGridLines() {
+        super(AxisOrientation.xAxis);
     }
 
     /**

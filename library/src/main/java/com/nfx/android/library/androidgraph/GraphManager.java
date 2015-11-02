@@ -36,11 +36,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * Handles the drawing of a unlimited amount of Signals
      **/
     private SignalManager mSignalManager;
-    /**
-     * These object will be passed into drawable objects that need to be resized based on zoom level
-     */
-    private ZoomDisplay mZoomDisplayX;
-    private ZoomDisplay mZoomDisplayY;
+
     /**
      * The thread that updates the surface
      **/
@@ -82,12 +78,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mZoomDisplayX = new ZoomDisplay(1f, 0f);
-        mZoomDisplayY = new ZoomDisplay(1f, 0f);
-        mBackgroundManager = new BackgroundManager(mContext, mZoomDisplayX, mZoomDisplayY,
-                0, 3, 0, 3);
+        mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
 
-        mSignalManager = new SignalManager();
+        mSignalManager = new SignalManager(this);
         setupTestSignal();
 
         mGraphManagerThread.setRun(true);
@@ -148,11 +141,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
                 SignalBuffer.SignalScale.linear));
         float[] buffer = new float[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
-            buffer[i] = (float) Math.random() % 1;
+            //buffer[i] = (float) Math.random() % 1;
+            buffer[i] = 0.01f * (float) i;
         }
         signalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
-        signalBuffers.getSignalBuffer().get(0).setXScale(0.5f);
-        signalBuffers.getSignalBuffer().get(0).setXOffset(0.25f);
+        signalBuffers.getSignalBuffer().get(0).getXZoomDisplay().setZoomLevelPercentage(0.5f);
+        signalBuffers.getSignalBuffer().get(0).getXZoomDisplay().setDisplayOffsetPercentage(0.5f);
 
         mSignalManager.setSignalBuffers(signalBuffers);
     }

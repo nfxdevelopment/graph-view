@@ -10,12 +10,11 @@ public abstract class LinGridLines extends GridLines {
     /**
      * Contructor which passes straight through
      *
-     * @param zoomDisplay     zoom information for the orientation
      * @param axisOrientation either the x or y axis
      */
-    public LinGridLines(ZoomDisplay zoomDisplay, AxisOrientation
+    public LinGridLines(AxisOrientation
             axisOrientation) {
-        super(zoomDisplay, axisOrientation);
+        super(axisOrientation);
     }
 
     /**

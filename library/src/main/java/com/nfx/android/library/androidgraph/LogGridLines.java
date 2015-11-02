@@ -16,13 +16,12 @@ public abstract class LogGridLines extends GridLines {
 
     /**
      * Contructor which passes straight through
-     *
-     * @param zoomDisplay     zoom information for the orientation
+     *]
      * @param axisOrientation either the x or y axis
      */
-    public LogGridLines(ZoomDisplay zoomDisplay, AxisOrientation
+    public LogGridLines(AxisOrientation
             axisOrientation) {
-        super(zoomDisplay, axisOrientation);
+        super(axisOrientation);
     }
 
     /**

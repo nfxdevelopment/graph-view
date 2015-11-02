@@ -14,11 +14,9 @@ public class LogYGridLines extends LogGridLines {
 
     /**
      * Constructor
-     *
-     * @param zoomDisplay zoom information for the orientation
      */
-    public LogYGridLines(ZoomDisplay zoomDisplay) {
-        super(zoomDisplay, AxisOrientation.yAxis);
+    public LogYGridLines() {
+        super(AxisOrientation.yAxis);
     }
 
     /**
