@@ -150,6 +150,8 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
             buffer[i] = (float) Math.random() % 1;
         }
         signalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
+        signalBuffers.getSignalBuffer().get(0).setXScale(0.5f);
+        signalBuffers.getSignalBuffer().get(0).setXOffset(0.25f);
 
         mSignalManager.setSignalBuffers(signalBuffers);
     }
