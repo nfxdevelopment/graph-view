@@ -9,10 +9,12 @@ import android.graphics.Paint;
  * Created by nick on 25/10/15.
  *
  * This object will draw a signal on screen. The object has the ability to draw either in a
- * logarithmic or linear fasion at runtime
+ * logarithmic or linear fashion at runtime
  */
 public class Signal extends DrawableObject {
     private static final String TAG = "Signal";
+
+    private SignalBuffer mSignalBuffer;
 
     private Paint mSignalPaint;
 
@@ -21,7 +23,9 @@ public class Signal extends DrawableObject {
 
     private int mLineResolution = 16;
 
-    Signal() {
+    Signal(SignalBuffer signalBuffer) {
+        mSignalBuffer = signalBuffer;
+
         mSignalPaint = new Paint();
         mSignalPaint.setColor(mColor);
         mSignalPaint.setStrokeWidth(mStrokeWidth);
@@ -30,21 +34,16 @@ public class Signal extends DrawableObject {
 
     @Override
     public void doDraw(Canvas canvas) {
-        canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getHeight() / 2,
-                getDrawableArea().getRight(), getDrawableArea().getHeight() / 2, mSignalPaint);
-    }
-
-    public void doDraw(Canvas canvas, SignalBuffer signalBuffer,
-                       SignalBuffers.SignalScale signalScale) {
-        if (signalScale == SignalBuffers.SignalScale.linear) {
-            doDrawLinear(canvas, signalBuffer);
+        if (mSignalBuffer.getSignalScale() == SignalBuffer.SignalScale.linear) {
+            doDrawLinear(canvas);
         } else {
-            doDrawLogarithmic(canvas, signalBuffer);
+            doDrawLogarithmic(canvas);
         }
     }
 
-    private void doDrawLinear(Canvas canvas, SignalBuffer signalBuffer) {
-        float[] buffer = signalBuffer.getScaledBuffer(getDrawableArea().getWidth() / mLineResolution);
+    private void doDrawLinear(Canvas canvas) {
+        float[] buffer = mSignalBuffer.getScaledBuffer(getDrawableArea().getWidth() /
+                mLineResolution);
 
         float spacing = (float) getDrawableArea().getWidth() / (float) (buffer.length - 1);
 
@@ -60,8 +59,8 @@ public class Signal extends DrawableObject {
         }
     }
 
-    private void doDrawLogarithmic(Canvas canvas, SignalBuffer signalBuffer) {
-        float[] buffer = signalBuffer.getScaledBuffer(getDrawableArea().getWidth() / mLineResolution);
+    private void doDrawLogarithmic(Canvas canvas) {
+        float[] buffer = mSignalBuffer.getScaledBuffer(getDrawableArea().getWidth() / mLineResolution);
 
         float screenWidth = (float) getDrawableArea().getWidth();
 

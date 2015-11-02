@@ -28,6 +28,10 @@ public class SignalBuffer {
      * A scale that is applied to all buffers encompassed in this object
      */
     private float mXScale = 1f;
+    /**
+     * So we now if the data is logarithmic or linear
+     */
+    private SignalScale mSignalScale;
 
     /**
      * Unique Id for signal
@@ -39,9 +43,10 @@ public class SignalBuffer {
      */
     private float[] mBuffer;
 
-    SignalBuffer(int id, int sizeOfBuffer) {
+    SignalBuffer(int id, int sizeOfBuffer, SignalScale signalScale) {
         mId = id;
         mBuffer = new float[sizeOfBuffer];
+        mSignalScale = signalScale;
     }
 
     private float[] getBuffer() {
@@ -123,6 +128,20 @@ public class SignalBuffer {
         return mXOffset;
     }
 
+    public void setXOffset(float xOffset) {
+        if (xOffset < 0f || xOffset > 1f) {
+            Log.w(TAG, "display offset out of bounds 0-1");
+        }
+
+        // Ensure that the zoom level will be within the bounds of the screen
+        if ((xOffset + mXScale) > 1f) {
+            mXOffset = 1f - mXScale;
+        } else {
+            mXOffset = xOffset;
+        }
+
+    }
+
     public float getYScale() {
         return mYScale;
     }
@@ -132,10 +151,25 @@ public class SignalBuffer {
     }
 
     public void setXScale(float xScale) {
-        if (xScale > 0 && xScale <= 1) {
-            mXScale = xScale;
-        } else {
-            Log.w(TAG, "xScale is out of range not taking setting");
+        if (xScale < 0f || xScale > 1f) {
+            Log.w(TAG, "zoom level out of bounds 0-1");
+            return;
         }
+
+        // Ensure that the zoom level will be within the bounds of the screen
+        if ((xScale + mXOffset) > 1f) {
+            mXOffset = 1f - xScale;
+        }
+
+        mXScale = xScale;
+    }
+
+    public SignalScale getSignalScale() {
+        return mSignalScale;
+    }
+
+    enum SignalScale {
+        logarithmic,
+        linear
     }
 }

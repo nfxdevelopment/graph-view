@@ -143,8 +143,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     private void setupTestSignal() {
         int sampleSize = 100;
         //TEST CODE
-        SignalBuffers signalBuffers = new SignalBuffers(SignalBuffers.SignalScale.linear);
-        signalBuffers.addSignalBuffer(0, new SignalBuffer(0, sampleSize));
+        SignalBuffers signalBuffers = new SignalBuffers();
+        signalBuffers.addSignalBuffer(0, new SignalBuffer(0, sampleSize,
+                SignalBuffer.SignalScale.linear));
         float[] buffer = new float[sampleSize];
         for (int i = 0; i < sampleSize; i++) {
             buffer[i] = (float) Math.random() % 1;

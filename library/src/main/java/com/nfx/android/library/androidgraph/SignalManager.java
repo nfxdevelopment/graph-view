@@ -2,21 +2,23 @@ package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * NFX Development
  * Created by nick on 31/10/15.
  */
 public class SignalManager {
-    private Signal mSignalDrawer;
+    private Collection<Signal> mSignalDrawers = new ArrayList<>();
 
     private SignalBuffers mSignalBuffers;
 
-    SignalManager() {
-        mSignalDrawer = new Signal();
-    }
-
     public void setSignalBuffers(SignalBuffers signalBuffers) {
         mSignalBuffers = signalBuffers;
+        for (SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
+            mSignalDrawers.add(new Signal(signalBuffer));
+        }
     }
 
     /**
@@ -26,7 +28,9 @@ public class SignalManager {
      * @param drawableArea the available area to draw
      */
     public void surfaceChanged(DrawableArea drawableArea) {
-        mSignalDrawer.surfaceChanged(drawableArea);
+        for (Signal signal : mSignalDrawers) {
+            signal.surfaceChanged(drawableArea);
+        }
     }
 
     /**
@@ -36,8 +40,8 @@ public class SignalManager {
      */
     public void doDraw(Canvas canvas) {
         if (mSignalBuffers != null) {
-            for (SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
-                mSignalDrawer.doDraw(canvas, signalBuffer, mSignalBuffers.getSignalScale());
+            for (Signal signal : mSignalDrawers) {
+                signal.doDraw(canvas);
             }
         }
     }

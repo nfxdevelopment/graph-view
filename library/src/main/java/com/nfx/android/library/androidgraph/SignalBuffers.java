@@ -16,17 +16,9 @@ public class SignalBuffers {
     private static final String TAG = "SignalBuffers";
 
     /**
-     * So we now if the data is logarithmic or linear
-     */
-    private SignalScale mSignalScale;
-    /**
      * A collection of signal buffers which is synchronized
      */
     private Map<Integer, SignalBuffer> mSignalBuffers = new ConcurrentHashMap<>();
-
-    SignalBuffers(SignalScale signalScale) {
-        mSignalScale = signalScale;
-    }
 
     public void addSignalBuffer(int id, SignalBuffer signalBuffer) {
         if (mSignalBuffers.put(id, signalBuffer) != null) {
@@ -40,14 +32,5 @@ public class SignalBuffers {
 
     public Map<Integer, SignalBuffer> getSignalBuffer() {
         return mSignalBuffers;
-    }
-
-    public SignalScale getSignalScale() {
-        return mSignalScale;
-    }
-
-    enum SignalScale {
-        logarithmic,
-        linear
     }
 }
