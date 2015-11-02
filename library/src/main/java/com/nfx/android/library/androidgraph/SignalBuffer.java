@@ -20,6 +20,14 @@ public class SignalBuffer {
      * Offset based in the y axis no offset = 0
      */
     private float mYOffset = 0f;
+    /**
+     * Offset based in the x axis no offset = 0
+     */
+    private float mXOffset = 0f;
+    /**
+     * A scale that is applied to all buffers encompassed in this object
+     */
+    private float mXScale = 1f;
 
     /**
      * Unique Id for signal
@@ -36,7 +44,7 @@ public class SignalBuffer {
         mBuffer = new float[sizeOfBuffer];
     }
 
-    public float[] getBuffer() {
+    private float[] getBuffer() {
         synchronized (this) {
             return mBuffer;
         }
@@ -59,6 +67,46 @@ public class SignalBuffer {
         }
     }
 
+    /**
+     * This will return a buffer with the desired {@code numberOfPoints} size. Essentially scaling
+     * scaling the read buffer
+     * The algorithm works out each new point separately. More often than not the new sample will
+     * fall between to of buffer points therefore we have to do some aliasing
+     *
+     * @param numberOfPoints desired number of points for new buffer
+     * @return new buffer
+     */
+    public float[] getScaledBuffer(int numberOfPoints) {
+
+        float[] scaledBuffer = new float[numberOfPoints];
+
+        synchronized (this) {
+            // -1 to get the spacing between the samples.
+            float spacing = mXScale / (numberOfPoints - 1);
+
+            for (int i = 0; i < numberOfPoints; i++) {
+                float pointOffsetPercentage = (spacing * (float) i) + mXOffset;
+                float pointOffset = pointOffsetPercentage * (float) (getSizeOfBuffer() - 1);
+                float arrayPosRemainder = pointOffset % 1;
+
+                if (arrayPosRemainder == 0) {
+                    scaledBuffer[i] = mBuffer[(int) pointOffset];
+                } else {
+                    int lowerPosition = (int) Math.floor(pointOffset);
+                    int upperPosition = (int) Math.ceil(pointOffset);
+
+                    float lowerValue = mBuffer[lowerPosition];
+                    float upperValue = mBuffer[upperPosition];
+
+                    scaledBuffer[i] = lowerValue + ((upperValue - lowerValue) * arrayPosRemainder);
+                }
+
+            }
+        }
+
+        return scaledBuffer;
+    }
+
     public int getId() {
         return mId;
     }
@@ -71,7 +119,23 @@ public class SignalBuffer {
         return mYOffset;
     }
 
+    public float getXOffset() {
+        return mXOffset;
+    }
+
     public float getYScale() {
         return mYScale;
+    }
+
+    public float getXScale() {
+        return mXScale;
+    }
+
+    public void setXScale(float xScale) {
+        if (xScale > 0 && xScale <= 1) {
+            mXScale = xScale;
+        } else {
+            Log.w(TAG, "xScale is out of range not taking setting");
+        }
     }
 }

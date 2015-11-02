@@ -14,10 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SignalBuffers {
     private static final String TAG = "SignalBuffers";
-    /**
-     * A scale that is applied to all buffers encompassed in this object
-     */
-    private float mXScale = 1f;
 
     /**
      * So we now if the data is logarithmic or linear
@@ -44,19 +40,6 @@ public class SignalBuffers {
 
     public Map<Integer, SignalBuffer> getSignalBuffer() {
         return mSignalBuffers;
-    }
-
-    public float getXScale() {
-        return mXScale;
-    }
-
-    public void setXScale(float xScale) {
-        if (xScale > 0 && xScale <= 1) {
-            mXScale = xScale;
-        } else {
-            Log.w(TAG, "xScale is out of range not taking setting");
-        }
-
     }
 
     public SignalScale getSignalScale() {

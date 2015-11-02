@@ -37,8 +37,7 @@ public class SignalManager {
     public void doDraw(Canvas canvas) {
         if (mSignalBuffers != null) {
             for (SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
-                mSignalDrawer.doDraw(canvas, signalBuffer, mSignalBuffers.getSignalScale(),
-                        mSignalBuffers.getXScale());
+                mSignalDrawer.doDraw(canvas, signalBuffer, mSignalBuffers.getSignalScale());
             }
         }
     }

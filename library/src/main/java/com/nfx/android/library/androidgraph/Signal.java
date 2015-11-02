@@ -7,13 +7,19 @@ import android.graphics.Paint;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
+ *
+ * This object will draw a signal on screen. The object has the ability to draw either in a
+ * logarithmic or linear fasion at runtime
  */
 public class Signal extends DrawableObject {
+    private static final String TAG = "Signal";
 
     private Paint mSignalPaint;
 
     private int mColor = Color.YELLOW;
     private float mStrokeWidth = 2f;
+
+    private int mLineResolution = 16;
 
     Signal() {
         mSignalPaint = new Paint();
@@ -29,21 +35,20 @@ public class Signal extends DrawableObject {
     }
 
     public void doDraw(Canvas canvas, SignalBuffer signalBuffer,
-                       SignalBuffers.SignalScale signalScale, float xScale) {
+                       SignalBuffers.SignalScale signalScale) {
         if (signalScale == SignalBuffers.SignalScale.linear) {
-            doDrawLinear(canvas, signalBuffer, xScale);
+            doDrawLinear(canvas, signalBuffer);
         } else {
-            doDrawLogarithmic(canvas, signalBuffer, xScale);
+            doDrawLogarithmic(canvas, signalBuffer);
         }
     }
 
-    private void doDrawLinear(Canvas canvas, SignalBuffer signalBuffer, float xScale) {
-        float[] buffer = new float[signalBuffer.getSizeOfBuffer()];
-        System.arraycopy(signalBuffer.getBuffer(), 0, buffer, 0, signalBuffer.getSizeOfBuffer());
+    private void doDrawLinear(Canvas canvas, SignalBuffer signalBuffer) {
+        float[] buffer = signalBuffer.getScaledBuffer(getDrawableArea().getWidth() / mLineResolution);
 
         float spacing = (float) getDrawableArea().getWidth() / (float) (buffer.length - 1);
 
-        for (int i = 0; i < signalBuffer.getSizeOfBuffer() - 1; i++) {
+        for (int i = 0; i < (getDrawableArea().getWidth() / mLineResolution) - 1; i++) {
             float startPosY = (float) getDrawableArea().getTop() +
                     ((float) getDrawableArea().getHeight() * buffer[i]);
             float startPosX = (float) getDrawableArea().getLeft() + (spacing * (float) i);
@@ -55,16 +60,15 @@ public class Signal extends DrawableObject {
         }
     }
 
-    private void doDrawLogarithmic(Canvas canvas, SignalBuffer signalBuffer, float xScale) {
-        float[] buffer = new float[signalBuffer.getSizeOfBuffer()];
-        System.arraycopy(signalBuffer.getBuffer(), 0, buffer, 0, signalBuffer.getSizeOfBuffer());
+    private void doDrawLogarithmic(Canvas canvas, SignalBuffer signalBuffer) {
+        float[] buffer = signalBuffer.getScaledBuffer(getDrawableArea().getWidth() / mLineResolution);
 
         float screenWidth = (float) getDrawableArea().getWidth();
 
         float spacing = screenWidth / (float) (buffer.length - 1);
         double maxLogValue = Math.log(screenWidth);
 
-        for (int i = 0; i < signalBuffer.getSizeOfBuffer() - 1; i++) {
+        for (int i = 0; i < (getDrawableArea().getWidth() / mLineResolution) - 1; i++) {
             float startPosY = (float) getDrawableArea().getTop() +
                     ((float) getDrawableArea().getHeight() * buffer[i]);
 

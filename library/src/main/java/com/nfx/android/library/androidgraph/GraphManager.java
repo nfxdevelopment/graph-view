@@ -88,17 +88,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
                 0, 3, 0, 3);
 
         mSignalManager = new SignalManager();
-
-        //TEST CODE
-        SignalBuffers signalBuffers = new SignalBuffers(SignalBuffers.SignalScale.logarithmic);
-        signalBuffers.addSignalBuffer(0, new SignalBuffer(0, 100));
-        float[] buffer = new float[100];
-        for (int i = 0; i < 100; i++) {
-            buffer[i] = 0.01f * (float) i;
-        }
-        signalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
-
-        mSignalManager.setSignalBuffers(signalBuffers);
+        setupTestSignal();
 
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
@@ -148,6 +138,20 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     public SignalManager getSignalManager() {
         return mSignalManager;
+    }
+
+    private void setupTestSignal() {
+        int sampleSize = 100;
+        //TEST CODE
+        SignalBuffers signalBuffers = new SignalBuffers(SignalBuffers.SignalScale.linear);
+        signalBuffers.addSignalBuffer(0, new SignalBuffer(0, sampleSize));
+        float[] buffer = new float[sampleSize];
+        for (int i = 0; i < sampleSize; i++) {
+            buffer[i] = (float) Math.random() % 1;
+        }
+        signalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
+
+        mSignalManager.setSignalBuffers(signalBuffers);
     }
 
     class GraphManagerThread extends Thread {
