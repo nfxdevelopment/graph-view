@@ -72,18 +72,20 @@ public class Signal extends DrawableObject {
      * @param canvas a canvas to draw onto
      */
     private void doDrawLinear(Canvas canvas) {
-        float[] buffer = mSignalBuffer.getScaledBuffer(getDrawableArea().getWidth() /
-                mLineResolution);
+        float screenLeft = (float) getDrawableArea().getLeft();
+        float screenTop = (float) getDrawableArea().getTop();
+        float screenHeight = (float) getDrawableArea().getHeight();
+        float screenWidth = (float) getDrawableArea().getWidth();
 
-        float spacing = (float) getDrawableArea().getWidth() / (float) (buffer.length - 1);
+        float[] buffer = mSignalBuffer.getScaledBuffer((int) screenWidth / mLineResolution);
 
-        for (int i = 0; i < (getDrawableArea().getWidth() / mLineResolution) - 1; i++) {
-            float startPosY = (float) getDrawableArea().getTop() +
-                    ((float) getDrawableArea().getHeight() * buffer[i]);
-            float startPosX = (float) getDrawableArea().getLeft() + (spacing * (float) i);
-            float endPosY = (float) getDrawableArea().getTop() +
-                    ((float) getDrawableArea().getHeight() * buffer[i + 1]);
-            float endPosX = (float) getDrawableArea().getLeft() + (spacing * (float) (i + 1));
+        float spacing = screenWidth / (float) (buffer.length - 1);
+
+        for (int i = 0; i < (((int) screenWidth / mLineResolution) - 1); i++) {
+            float startPosY = screenTop + (screenHeight * buffer[i]);
+            float startPosX = screenLeft + (spacing * (float) i);
+            float endPosY = screenTop + (screenHeight * buffer[i + 1]);
+            float endPosX = screenLeft + (spacing * (float) (i + 1));
 
             canvas.drawLine(startPosX, startPosY, endPosX, endPosY, mSignalPaint);
         }
@@ -95,28 +97,29 @@ public class Signal extends DrawableObject {
      * @param canvas a canvas to draw onto
      */
     private void doDrawLogarithmic(Canvas canvas) {
-        float[] buffer = mSignalBuffer.getScaledBuffer(getDrawableArea().getWidth() / mLineResolution);
-
+        float screenLeft = (float) getDrawableArea().getLeft();
+        float screenTop = (float) getDrawableArea().getTop();
+        float screenHeight = (float) getDrawableArea().getHeight();
         float screenWidth = (float) getDrawableArea().getWidth();
+
+        float[] buffer = mSignalBuffer.getScaledBuffer((int) screenWidth / mLineResolution);
 
         float spacing = screenWidth / (float) (buffer.length - 1);
         double maxLogValue = Math.log(screenWidth);
 
-        for (int i = 0; i < (getDrawableArea().getWidth() / mLineResolution) - 1; i++) {
-            float startPosY = (float) getDrawableArea().getTop() +
-                    ((float) getDrawableArea().getHeight() * buffer[i]);
+        for (int i = 0; i < (screenWidth / mLineResolution) - 1; i++) {
+            float startPosY = screenTop + (screenHeight * buffer[i]);
 
             float startPosXLinear = (spacing * (float) i);
             // This i because the first value will always be 0, as we do not want to lMath.log 0
             if (startPosXLinear == 0) startPosXLinear = 1;
-            float startPosX = getDrawableArea().getLeft() +
+            float startPosX = screenLeft +
                     ((float) Math.log(startPosXLinear) / (float) maxLogValue) * screenWidth;
 
-            float endPosY = (float) getDrawableArea().getTop() +
-                    ((float) getDrawableArea().getHeight() * buffer[i + 1]);
+            float endPosY = screenTop + (screenHeight * buffer[i + 1]);
 
             float endPosXLinear = spacing * (float) (i + 1);
-            float endPosX = getDrawableArea().getLeft() +
+            float endPosX = screenLeft +
                     ((float) Math.log(endPosXLinear) / (float) maxLogValue) * screenWidth;
 
             canvas.drawLine(startPosX, startPosY, endPosX, endPosY, mSignalPaint);
