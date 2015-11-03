@@ -20,16 +20,33 @@ public class SignalBuffers {
      */
     private Map<Integer, SignalBuffer> mSignalBuffers = new ConcurrentHashMap<>();
 
+    /**
+     * Use to add anothe signal into the collection. If the Id is not unique it will remove the
+     * signal with the given id and display a warning
+     *
+     * @param id           a unique id for th signal
+     * @param signalBuffer signal adding to collection
+     */
     public void addSignalBuffer(int id, SignalBuffer signalBuffer) {
         if (mSignalBuffers.put(id, signalBuffer) != null) {
             Log.w(TAG, "signal id exists, overwriting");
         }
     }
 
+    /**
+     * Remove signal with given id from collection
+     *
+     * @param id unique id of the signal
+     */
     public void removedSignalBuffer(int id) {
         mSignalBuffers.remove(id);
     }
 
+    /**
+     * Get a reference to the collection
+     *
+     * @return a Map of signals which are in the collection
+     */
     public Map<Integer, SignalBuffer> getSignalBuffer() {
         return mSignalBuffers;
     }

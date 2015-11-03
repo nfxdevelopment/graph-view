@@ -14,15 +14,35 @@ import android.graphics.Paint;
 public class Signal extends DrawableObject {
     private static final String TAG = "Signal";
 
+    /**
+     * The buffer which will be drawn by this object
+     */
     private SignalBuffer mSignalBuffer;
 
+    /**
+     * Style of the signal
+     */
     private Paint mSignalPaint;
 
+    /**
+     * Default color
+     */
     private int mColor = Color.YELLOW;
+    /**
+     * Default stroke width
+     */
     private float mStrokeWidth = 2f;
 
+    /**
+     * How many points per on screen buffer. This is a screen width divisor
+     */
     private int mLineResolution = 16;
 
+    /**
+     * Constructor
+     *
+     * @param signalBuffer the buffer to be drawn
+     */
     Signal(SignalBuffer signalBuffer) {
         mSignalBuffer = signalBuffer;
 
@@ -32,6 +52,11 @@ public class Signal extends DrawableObject {
         mSignalPaint.setAntiAlias(true);
     }
 
+    /**
+     * Call to draw the signal on screen
+     *
+     * @param canvas a canvas to draw onto
+     */
     @Override
     public void doDraw(Canvas canvas) {
         if (mSignalBuffer.getSignalScale() == SignalBuffer.SignalScale.linear) {
@@ -41,6 +66,11 @@ public class Signal extends DrawableObject {
         }
     }
 
+    /**
+     * Called when the signal is to be drawn linearly
+     *
+     * @param canvas a canvas to draw onto
+     */
     private void doDrawLinear(Canvas canvas) {
         float[] buffer = mSignalBuffer.getScaledBuffer(getDrawableArea().getWidth() /
                 mLineResolution);
@@ -59,6 +89,11 @@ public class Signal extends DrawableObject {
         }
     }
 
+    /**
+     * Called when the signal is to be drawn logarithmically
+     *
+     * @param canvas a canvas to draw onto
+     */
     private void doDrawLogarithmic(Canvas canvas) {
         float[] buffer = mSignalBuffer.getScaledBuffer(getDrawableArea().getWidth() / mLineResolution);
 
@@ -88,6 +123,11 @@ public class Signal extends DrawableObject {
         }
     }
 
+    /**
+     * The signal can be drawn over, therefore theoretically it takes up no screen space
+     *
+     * @param currentDrawableArea the drawable area canvas to calculate the area taken
+     */
     @Override
     public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
 

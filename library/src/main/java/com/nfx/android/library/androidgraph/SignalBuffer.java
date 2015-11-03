@@ -34,7 +34,14 @@ public class SignalBuffer {
      */
     private float[] mBuffer;
 
-    SignalBuffer(int id, int sizeOfBuffer, SignalScale signalScale) {
+    /**
+     * Constructor
+     *
+     * @param id           unique id for signal
+     * @param sizeOfBuffer size expecting to receive
+     * @param signalScale  linear or logarithmic
+     */
+    public SignalBuffer(int id, int sizeOfBuffer, SignalScale signalScale) {
         mId = id;
         mBuffer = new float[sizeOfBuffer];
         mSignalScale = signalScale;
