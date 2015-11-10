@@ -128,7 +128,7 @@ public class SignalBuffer {
         return mSignalScale;
     }
 
-    enum SignalScale {
+    public enum SignalScale {
         logarithmic,
         linear
     }

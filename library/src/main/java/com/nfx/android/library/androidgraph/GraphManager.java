@@ -12,7 +12,7 @@ import java.util.Collection;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
- *
+ * <p/>
  * The GraphManager handles or instructs the drawing of the graph. It will start displaying when
  * the surface is created and will only stop when the surface is destroyed. It has the ability to
  * handle a resize at runtime.
@@ -41,6 +41,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * The thread that updates the surface
      **/
     private GraphManagerThread mGraphManagerThread;
+    /**
+     * An interface to update the signal data
+     */
+    private GraphSignalInputInterface mGraphSignalInputInterface = new GraphSignalInputInterface();
 
     /**
      * Constructor for graph manager
@@ -55,6 +59,8 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         holder.addCallback(this);
 
         mGraphManagerThread = new GraphManagerThread(context, holder);
+        mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
+        mSignalManager = new SignalManager(this);
     }
 
     /**
@@ -69,6 +75,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         holder.addCallback(this);
 
         mGraphManagerThread = new GraphManagerThread(context, holder);
+        mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
+        mSignalManager = new SignalManager(this);
+    }
+
+    public GraphSignalInputInterface getGraphSignalInputInterface() {
+        return mGraphSignalInputInterface;
     }
 
     /**
@@ -78,13 +90,6 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
-
-        mSignalManager = new SignalManager(this);
-        setupTestSignal();
-
-        mGraphManagerThread.setRun(true);
-        mGraphManagerThread.start();
     }
 
     /**
@@ -108,6 +113,18 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      */
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        stop();
+    }
+
+    /**
+     * Start the thread to start displaying the graph
+     */
+    public void start() {
+        mGraphManagerThread.setRun(true);
+        mGraphManagerThread.start();
+    }
+
+    public void stop() {
         boolean retry = true;
         mGraphManagerThread.setRun(false);
         while (retry) {
@@ -131,24 +148,6 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     public SignalManager getSignalManager() {
         return mSignalManager;
-    }
-
-    private void setupTestSignal() {
-        int sampleSize = 100;
-        //TEST CODE
-        SignalBuffers signalBuffers = new SignalBuffers();
-        signalBuffers.addSignalBuffer(0, new SignalBuffer(0, sampleSize,
-                SignalBuffer.SignalScale.linear));
-        float[] buffer = new float[sampleSize];
-        for (int i = 0; i < sampleSize; i++) {
-            //buffer[i] = (float) Math.random() % 1;
-            buffer[i] = 0.01f * (float) i;
-        }
-        signalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
-        signalBuffers.getSignalBuffer().get(0).getXZoomDisplay().setZoomLevelPercentage(0.5f);
-        signalBuffers.getSignalBuffer().get(0).getXZoomDisplay().setDisplayOffsetPercentage(0.5f);
-
-        mSignalManager.setSignalBuffers(signalBuffers);
     }
 
     class GraphManagerThread extends Thread {
@@ -207,5 +206,15 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
             mRun = run;
         }
 
+    }
+
+    /**
+     * An interface to update the signals on the graph from an external object without exposing
+     * graph manager
+     */
+    public class GraphSignalInputInterface {
+        public void setSignalBuffers(SignalBuffers signal) {
+            mSignalManager.setSignalBuffers(signal);
+        }
     }
 }
