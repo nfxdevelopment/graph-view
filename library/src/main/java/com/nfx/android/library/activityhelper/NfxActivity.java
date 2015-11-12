@@ -68,22 +68,6 @@ public abstract class NfxActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mSharedPreferences = getSharedPreferences(PREFS_NAME, 0);
-
-        ArrayList<String> permissionsToAskFor = new ArrayList<>();
-
-        // If we already have permission or we've already asked. Remove it from ask list
-        for (Permission permission : mPermissionsRequested.values()) {
-            mPermissionsGranted.put(permission.toString(), hasPermission(permission));
-            if (!hasPermission(permission) && shouldWeAsk(permission)) {
-                permissionsToAskFor.add(permission.toString());
-            }
-        }
-
-        if (permissionsToAskFor.size() > 0) {
-            askForPermission(permissionsToAskFor.toArray(new String[permissionsToAskFor.size()]));
-        } else {
-            permissionRequestComplete(mPermissionsGranted);
-        }
     }
 
     @Override
@@ -99,6 +83,21 @@ public abstract class NfxActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        ArrayList<String> permissionsToAskFor = new ArrayList<>();
+
+        // If we already have permission or we've already asked. Remove it from ask list
+        for (Permission permission : mPermissionsRequested.values()) {
+            mPermissionsGranted.put(permission.toString(), hasPermission(permission));
+            if (!hasPermission(permission) && shouldWeAsk(permission)) {
+                permissionsToAskFor.add(permission.toString());
+            }
+        }
+
+        if (permissionsToAskFor.size() > 0) {
+            askForPermission(permissionsToAskFor.toArray(new String[permissionsToAskFor.size()]));
+        } else {
+            permissionRequestComplete(mPermissionsGranted);
+        }
     }
 
 

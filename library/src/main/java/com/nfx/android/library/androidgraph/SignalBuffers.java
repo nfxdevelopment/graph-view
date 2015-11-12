@@ -25,9 +25,11 @@ public class SignalBuffers {
      * signal with the given id and display a warning
      *
      * @param id           a unique id for th signal
-     * @param signalBuffer signal adding to collection
+     * @param sizeOfBuffer size of the buffer to create
+     * @param signalScale  either linear or logarithmic for use when displaying
      */
-    public void addSignalBuffer(int id, SignalBuffer signalBuffer) {
+    public void addSignalBuffer(int id, int sizeOfBuffer, SignalBuffer.SignalScale signalScale) {
+        SignalBuffer signalBuffer = new SignalBuffer(id, sizeOfBuffer, signalScale);
         if (mSignalBuffers.put(id, signalBuffer) != null) {
             Log.w(TAG, "signal id exists, overwriting");
         }

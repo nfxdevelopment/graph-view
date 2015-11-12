@@ -23,6 +23,10 @@ public class SignalManager {
      * An object holding the signals to display
      */
     private SignalBuffers mSignalBuffers;
+    /**
+     * Current drawable area
+     */
+    private DrawableArea mDrawableArea = new DrawableArea(0, 0, 0, 0);
 
     /**
      * Constructor
@@ -43,7 +47,9 @@ public class SignalManager {
     public void setSignalBuffers(SignalBuffers signalBuffers) {
         mSignalBuffers = signalBuffers;
         for (SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
-            mSignalDrawers.add(new Signal(signalBuffer));
+            Signal signal = new Signal(signalBuffer);
+            signal.surfaceChanged(mDrawableArea);
+            mSignalDrawers.add(signal);
 
             mGraphManager.getBackgroundManager().getXMajorGridLines().setZoomDisplay(
                     signalBuffer.getXZoomDisplay());
@@ -60,6 +66,7 @@ public class SignalManager {
      * @param drawableArea the available area to draw
      */
     public void surfaceChanged(DrawableArea drawableArea) {
+        mDrawableArea = drawableArea;
         for (Signal signal : mSignalDrawers) {
             signal.surfaceChanged(drawableArea);
         }
@@ -76,5 +83,12 @@ public class SignalManager {
                 signal.doDraw(canvas);
             }
         }
+    }
+
+    /**
+     * Remove signal drawers when stopped
+     */
+    public void removeSignalDrawers() {
+        mSignalDrawers.clear();
     }
 }

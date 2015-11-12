@@ -62,7 +62,8 @@ public class SignalBuffer {
             if (mBuffer.length == buffer.length) {
                 System.arraycopy(buffer, 0, mBuffer, 0, mBuffer.length);
             } else {
-                Log.w(TAG, "Buffer passed in does not match size of signal buffer");
+                Log.w(TAG, "Buffer passed " + buffer.length +
+                        " in does not match size of signal buffer " + mBuffer.length);
             }
         }
     }

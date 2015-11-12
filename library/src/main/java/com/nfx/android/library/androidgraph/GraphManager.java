@@ -58,7 +58,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
 
-        mGraphManagerThread = new GraphManagerThread(context, holder);
+        mGraphManagerThread = new GraphManagerThread(context);
         mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
         mSignalManager = new SignalManager(this);
     }
@@ -70,11 +70,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      */
     public GraphManager(Context context) {
         super(context);
+        mContext = context;
 
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
 
-        mGraphManagerThread = new GraphManagerThread(context, holder);
         mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
         mSignalManager = new SignalManager(this);
     }
@@ -120,20 +120,28 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * Start the thread to start displaying the graph
      */
     public void start() {
+
+        mGraphManagerThread = new GraphManagerThread(mContext);
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
     }
 
     public void stop() {
+        mSignalManager.removeSignalDrawers();
+
         boolean retry = true;
-        mGraphManagerThread.setRun(false);
-        while (retry) {
-            try {
-                mGraphManagerThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if (mGraphManagerThread != null) {
+            mGraphManagerThread.setRun(false);
+            while (retry) {
+                try {
+                    mGraphManagerThread.join();
+                    retry = false;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+
+            mGraphManagerThread = null;
         }
     }
 
@@ -151,19 +159,13 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     }
 
     class GraphManagerThread extends Thread {
-
-        /**
-         * Handle to the surface manager object we interact with
-         */
-        private final SurfaceHolder mSurfaceHolder;
         /**
          * Indicate whether the surface has been created & is ready to draw
          */
         private boolean mRun = false;
 
-        public GraphManagerThread(Context context, SurfaceHolder surfaceHolder) {
+        public GraphManagerThread(Context context) {
             mContext = context;
-            mSurfaceHolder = surfaceHolder;
 
             setFocusable(true);
         }
@@ -172,19 +174,18 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         public void run() {
             while (mRun) {
                 Canvas canvas = null;
+                final SurfaceHolder surfaceHolder = getHolder();
                 try {
-                    canvas = mSurfaceHolder.lockCanvas(null);
+                    canvas = surfaceHolder.lockCanvas(null);
                     if (canvas != null) {
-                        synchronized (mSurfaceHolder) {
-                            doDraw(canvas);
-                        }
+                        doDraw(canvas);
                     }
                 } finally {
                     // do this in a finally so that if an exception is thrown
                     // during the above, we don't leave the Surface in an
                     // inconsistent state
                     if (canvas != null) {
-                        mSurfaceHolder.unlockCanvasAndPost(canvas);
+                        surfaceHolder.unlockCanvasAndPost(canvas);
                     }
                 }
 
