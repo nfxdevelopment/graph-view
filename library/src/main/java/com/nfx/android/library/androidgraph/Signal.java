@@ -31,7 +31,7 @@ public class Signal extends DrawableObject {
     /**
      * Default stroke width
      */
-    private float mStrokeWidth = 2f;
+    private float mStrokeWidth = 4f;
 
     /**
      * How many points per on screen buffer. This is a screen width divisor
@@ -87,7 +87,10 @@ public class Signal extends DrawableObject {
             float endPosY = screenTop + (screenHeight * buffer[i + 1]);
             float endPosX = screenLeft + (spacing * (float) (i + 1));
 
-            canvas.drawLine(startPosX, startPosY, endPosX, endPosY, mSignalPaint);
+            canvas.drawLine(getDrawableArea().checkLimitX(startPosX),
+                    getDrawableArea().checkLimitY(startPosY),
+                    getDrawableArea().checkLimitX(endPosX),
+                    getDrawableArea().checkLimitY(endPosY), mSignalPaint);
         }
     }
 
@@ -122,7 +125,10 @@ public class Signal extends DrawableObject {
             float endPosX = screenLeft +
                     ((float) Math.log(endPosXLinear) / (float) maxLogValue) * screenWidth;
 
-            canvas.drawLine(startPosX, startPosY, endPosX, endPosY, mSignalPaint);
+            canvas.drawLine(getDrawableArea().checkLimitX(startPosX),
+                    getDrawableArea().checkLimitY(startPosY),
+                    getDrawableArea().checkLimitX(endPosX),
+                    getDrawableArea().checkLimitY(endPosY), mSignalPaint);
         }
     }
 

@@ -84,8 +84,9 @@ public class BackgroundManager {
      * order to ensure they take up the correct space
      *
      * @param drawableArea the avaiable area to draw
+     * @return the area of which is stil drawable
      */
-    public void surfaceChanged(DrawableArea drawableArea) {
+    public DrawableArea surfaceChanged(DrawableArea drawableArea) {
         mBackground.surfaceChanged(drawableArea);
 
         if (mShowAxisText) {
@@ -127,6 +128,7 @@ public class BackgroundManager {
                         drawableArea.getTop(), minorGridLineWidth, drawableArea.getHeight());
             }
         }
+        return drawableArea;
     }
 
     /**

@@ -63,6 +63,32 @@ public class DrawableArea {
         rect.set(mXOffset, mYOffset, mXOffset + mWidth, mYOffset + mHeight);
     }
 
+    /**
+     * Check and modify position to ensure it is within Y limits
+     */
+    public float checkLimitY(float position) {
+        if (position < getTop()) {
+            return getTop();
+        } else if (position > getBottom()) {
+            return getBottom();
+        } else {
+            return position;
+        }
+    }
+
+    /**
+     * Check and modify position to ensure it is within Y limits
+     */
+    public float checkLimitX(float position) {
+        if (position < getLeft()) {
+            return getLeft();
+        } else if (position > getRight()) {
+            return getRight();
+        } else {
+            return position;
+        }
+    }
+
     public Rect getRect(){ return rect; }
 
     public int getLeft() { return mXOffset; }
