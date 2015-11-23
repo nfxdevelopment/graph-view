@@ -4,6 +4,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 import com.nfx.android.library.androidgraph.GraphManager;
 import com.nfx.android.library.androidgraph.SignalBuffer;
@@ -13,6 +15,7 @@ import com.nfx.android.library.androidgraph.SignalBuffer;
  * Created by nick on 10/11/15.
  * <p/>
  * Sets up the microphone for listening, the data taken and sent on to the interface
+ * The touch events are handled by this object to manipulate the microphone input
  */
 public class MicrophoneInput extends Input {
     private final static String TAG = "MicrophoneInput";
@@ -33,6 +36,8 @@ public class MicrophoneInput extends Input {
     private Thread readerThread = null;
     // Audio input block size, in samples.
     private int inputBlockSize = 256;
+
+    private boolean mPaused = false;
 
     /**
      * Constructor to initialise microphone for listening
@@ -117,7 +122,9 @@ public class MicrophoneInput extends Input {
                     break;
                 }
 
-                readDone(buffer);
+                if (!mPaused) {
+                    readDone(buffer);
+                }
             }
         } finally {
             if (audioInput.getState() == AudioRecord.RECORDSTATE_RECORDING)
@@ -136,4 +143,34 @@ public class MicrophoneInput extends Input {
         }
     }
 
+    @Override
+    public boolean onDown(MotionEvent e) {
+        mPaused = !mPaused;
+        return true;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+
+    @Override
+    public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+        return false;
+    }
+
+    @Override
+    public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+        return false;
+    }
 }

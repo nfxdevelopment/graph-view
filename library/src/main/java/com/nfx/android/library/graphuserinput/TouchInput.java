@@ -1,0 +1,118 @@
+package com.nfx.android.library.graphuserinput;
+
+import android.support.v4.view.GestureDetectorCompat;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.View;
+
+import com.nfx.android.library.graphbufferinput.Input;
+
+/**
+ * NFX Development
+ * Created by nick on 23/11/15.
+ * <p/>
+ * Implements touch listeners which are needed to scale and move signals on a graph. the Graphview
+ * is passed in to listen for touch events and the graph input is passed in to provide information
+ * when a touch event occurs
+ */
+public class TouchInput implements View.OnTouchListener {
+    /**
+     * Handles all scaling gestures
+     */
+    private ScaleGestureDetector mScaleGestureDetector;
+    /**
+     * Handles single tap, double tap, moves and flings
+     */
+    private GestureDetectorCompat mGestureDetector;
+    /**
+     * The listener that wants to be informed of the touch input
+     */
+    private TouchListener mTouchListener;
+    /**
+     * The scale listener, used for handling multi-finger scale gestures.
+     */
+    private final ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener
+            = new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            return mTouchListener.onScaleBegin(scaleGestureDetector);
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            return mTouchListener.onScale(scaleGestureDetector);
+        }
+    };
+    private final GestureDetector.SimpleOnGestureListener mGestureListener
+            = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return mTouchListener.onDown(e);
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            return mTouchListener.onDoubleTap(e);
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return mTouchListener.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return mTouchListener.onFling(e1, e2, velocityX, velocityY);
+        }
+    };
+
+    /**
+     * Pass in the view in which to listen for touch inputs from and the input that wants to be
+     * informed of the touch inputs
+     *
+     * @param view  listen to the touch inputs from view
+     * @param input pass the touch information onto input
+     */
+    public TouchInput(View view, Input input) {
+        view.setOnTouchListener(this);
+        mTouchListener = input;
+
+        // Sets up interactions
+        mScaleGestureDetector = new ScaleGestureDetector(view.getContext(), mScaleGestureListener);
+        mGestureDetector = new GestureDetectorCompat(view.getContext(), mGestureListener);
+
+    }
+
+    /**
+     * Called from view to update touch information
+     *
+     * @param v     the calling view
+     * @param event the event that triggered the call
+     * @return if the event was handled
+     */
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        boolean retVal = mScaleGestureDetector.onTouchEvent(event);
+        retVal = mGestureDetector.onTouchEvent(event) || retVal;
+        return retVal || v.onTouchEvent(event);
+    }
+
+    /**
+     * Implement this listener within com.nfx.android.library.graphbufferinput.Input
+     */
+    public interface TouchListener {
+        boolean onDown(MotionEvent e);
+
+        boolean onDoubleTap(MotionEvent e);
+
+        boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY);
+
+        boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY);
+
+        boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector);
+
+        boolean onScale(ScaleGestureDetector scaleGestureDetector);
+    }
+
+}
