@@ -1,10 +1,15 @@
 package com.nfx.android.library.graphuserinput;
 
+import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;
+import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.nfx.android.library.graphbufferinput.Input;
 
@@ -16,7 +21,11 @@ import com.nfx.android.library.graphbufferinput.Input;
  * is passed in to listen for touch events and the graph input is passed in to provide information
  * when a touch event occurs
  */
-public class TouchInput implements View.OnTouchListener {
+public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback {
+    /**
+     * Context
+     */
+    private Context mContext;
     /**
      * Handles all scaling gestures
      */
@@ -52,6 +61,11 @@ public class TouchInput implements View.OnTouchListener {
         }
 
         @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return mTouchListener.onSingleTap(e);
+        }
+
+        @Override
         public boolean onDoubleTap(MotionEvent e) {
             return mTouchListener.onDoubleTap(e);
         }
@@ -74,9 +88,13 @@ public class TouchInput implements View.OnTouchListener {
      * @param view  listen to the touch inputs from view
      * @param input pass the touch information onto input
      */
-    public TouchInput(View view, Input input) {
+    public TouchInput(SurfaceView view, Input input) {
         view.setOnTouchListener(this);
+        mContext = view.getContext();
         mTouchListener = input;
+
+        SurfaceHolder holder = view.getHolder();
+        holder.addCallback(this);
 
         // Sets up interactions
         mScaleGestureDetector = new ScaleGestureDetector(view.getContext(), mScaleGestureListener);
@@ -98,11 +116,35 @@ public class TouchInput implements View.OnTouchListener {
         return retVal || v.onTouchEvent(event);
     }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context
+                .WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+
+        mTouchListener.surfaceChanged(metrics);
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
+    }
+
     /**
      * Implement this listener within com.nfx.android.library.graphbufferinput.Input
      */
     public interface TouchListener {
+        void surfaceChanged(DisplayMetrics displayMetrics);
+
         boolean onDown(MotionEvent e);
+
+        boolean onSingleTap(MotionEvent e);
 
         boolean onDoubleTap(MotionEvent e);
 

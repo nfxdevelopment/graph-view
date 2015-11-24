@@ -1,7 +1,5 @@
 package com.nfx.android.library.androidgraph;
 
-import android.util.Log;
-
 /**
  * NFX Development
  * Created by nick on 27/10/15.
@@ -64,13 +62,13 @@ public class ZoomDisplay {
 
     /**
      * change the view offset
+     *
      * @param displayOffsetPercentage a float referenced as a percentage across the screen 0% = 0
      *                                100% = 1 if outside this value a warning is logged and
      *                                nothing happens
      */
     public void setDisplayOffsetPercentage(float displayOffsetPercentage) {
         if (displayOffsetPercentage < 0f || displayOffsetPercentage > 1f) {
-            Log.w(TAG, "zoom display offset out of bounds 0-1");
             return;
         }
 
@@ -87,6 +85,13 @@ public class ZoomDisplay {
     }
 
     /**
+     * @return the value of mDisplayOffsetPercentage + size currently being displayed
+     */
+    public float getFarSideOffsetPercentage() {
+        return mDisplayOffsetPercentage + mZoomLevelPercentage;
+    }
+
+    /**
      * @return the value of mZoomLevelPercentage
      */
     public float getZoomLevelPercentage() {
@@ -100,7 +105,6 @@ public class ZoomDisplay {
      */
     public void setZoomLevelPercentage(float zoomLevelPercentage) {
         if (zoomLevelPercentage < 0f || zoomLevelPercentage > 1f) {
-            Log.w(TAG, "zoom level out of bounds 0-1");
             return;
         }
 
