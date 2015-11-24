@@ -93,7 +93,7 @@ public class SignalBuffer {
 
                 if (arrayPosRemainder == 0) {
                     scaledBuffer[i] = ( mBuffer[(int) pointOffset]
-                                        + mYZoomDisplay.getDisplayOffsetPercentage() )
+                            - mYZoomDisplay.getDisplayOffsetPercentage())
                                         / mYZoomDisplay.getZoomLevelPercentage();
                 } else {
                     int lowerPosition = (int) Math.floor(pointOffset);
@@ -103,7 +103,7 @@ public class SignalBuffer {
                     float upperValue = mBuffer[upperPosition];
 
                     scaledBuffer[i] = (lowerValue + ((upperValue - lowerValue) * arrayPosRemainder)
-                                        + mYZoomDisplay.getDisplayOffsetPercentage())
+                            - mYZoomDisplay.getDisplayOffsetPercentage())
                                         / mYZoomDisplay.getZoomLevelPercentage();
                 }
             }
