@@ -50,13 +50,8 @@ public class SignalManager {
             Signal signal = new Signal(signalBuffer);
             signal.surfaceChanged(mDrawableArea);
             mSignalDrawers.add(signal);
-
-            mGraphManager.getBackgroundManager().getXMajorGridLines().setZoomDisplay(
-                    signalBuffer.getXZoomDisplay());
-            mGraphManager.getBackgroundManager().getYMajorGridLines().setZoomDisplay(
-                    signalBuffer.getYZoomDisplay());
         }
-
+        mGraphManager.getBackgroundManager().setSignalBuffers(mSignalBuffers);
     }
 
     /**

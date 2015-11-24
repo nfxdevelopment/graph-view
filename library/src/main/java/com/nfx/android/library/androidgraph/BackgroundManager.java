@@ -36,6 +36,7 @@ public class BackgroundManager {
      */
     private Collection<AxisText> mXAxisText = new ArrayList<>();
     private Collection<AxisText> mYAxisText = new ArrayList<>();
+    private BoarderText mBoarderText;
     /**
      * Set dependant which constuctor is called
      */
@@ -57,6 +58,8 @@ public class BackgroundManager {
 
         mXAxisText.add(new XAxisText(context, mXMajorGridLines, minimumXValue, maximumXValue));
         mYAxisText.add(new YAxisText(context, mYMajorGridLines, minimumYValue, maximumYValue));
+        mBoarderText = new BoarderText(context, minimumXValue, maximumXValue, minimumYValue,
+                maximumYValue);
         mShowAxisText = true;
     }
 
@@ -88,6 +91,7 @@ public class BackgroundManager {
      */
     public DrawableArea surfaceChanged(DrawableArea drawableArea) {
         mBackground.surfaceChanged(drawableArea);
+        mBoarderText.surfaceChanged(drawableArea);
 
         if (mShowAxisText) {
             for (AxisText axisText : mYAxisText) {
@@ -153,6 +157,7 @@ public class BackgroundManager {
             for (AxisText axisText : mYAxisText) {
                 axisText.doDraw(canvas);
             }
+            mBoarderText.doDraw(canvas);
         }
     }
 
@@ -162,5 +167,23 @@ public class BackgroundManager {
 
     public GridLines getYMajorGridLines() {
         return mYMajorGridLines;
+    }
+
+    /**
+     * This tells the graph that there are signals to display, each signal gets its own drawer,
+     * At the current time the last signal in the list will control the zoom levels. This is because
+     * we are trying to control a single axis zoom from multiple signals. TODO
+     *
+     * @param signalBuffers pass the object of signals to display on the graph
+     */
+    public void setSignalBuffers(SignalBuffers signalBuffers) {
+        for (SignalBuffer signalBuffer : signalBuffers.getSignalBuffer().values()) {
+
+            getXMajorGridLines().setZoomDisplay(signalBuffer.getXZoomDisplay());
+            getYMajorGridLines().setZoomDisplay(signalBuffer.getYZoomDisplay());
+
+            mBoarderText.setZoomDisplay(signalBuffer.getXZoomDisplay(),
+                    signalBuffer.getYZoomDisplay());
+        }
     }
 }
