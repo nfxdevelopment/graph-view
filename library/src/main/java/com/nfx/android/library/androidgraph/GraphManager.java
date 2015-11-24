@@ -53,14 +53,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * @param attrs   attributes
      */
     public GraphManager(Context context, AttributeSet attrs) {
-        super(context, attrs);
-
-        SurfaceHolder holder = getHolder();
-        holder.addCallback(this);
-
-        mGraphManagerThread = new GraphManagerThread(context);
-        mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
-        mSignalManager = new SignalManager(this);
+        this(context);
     }
 
     /**
@@ -75,7 +68,8 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
 
-        mBackgroundManager = new BackgroundManager(mContext, 0, 3, 0, 3);
+        mGraphManagerThread = new GraphManagerThread(context);
+        mBackgroundManager = new BackgroundManager(mContext, 0, 3, -1, 1);
         mSignalManager = new SignalManager(this);
     }
 

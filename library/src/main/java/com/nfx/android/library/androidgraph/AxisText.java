@@ -6,6 +6,9 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /**
  * NFX Development
  * Created by nick on 29/10/15.
@@ -24,6 +27,14 @@ public abstract class AxisText extends DrawableObject {
      */
     protected Paint mTextPaint = new Paint();
     /**
+     * the lowest number that the axis displays
+     */
+    protected float mMinimumAxisValue = 0;
+    /**
+     * the span of the values displayed on the axis
+     */
+    protected float mAxisValueSpan = 1;
+    /**
      * context of application
      */
     private Context mContext;
@@ -32,17 +43,13 @@ public abstract class AxisText extends DrawableObject {
      */
     private int mUnscaledTextSize = 16;
     /**
-     * the lowest number that the axis displays
-     */
-    private float mMinimumAxisValue = 0;
-    /**
      * the highest number the axis displays
      */
     private float mMaximumAxisValue = 0;
     /**
-     * the span of the values displayed on the axis
+     * Max width of string to display
      */
-    private float mAxisValueSpan = 1;
+    private String sMaximumString = "-0.00";
 
     /**
      * Constructor
@@ -80,14 +87,17 @@ public abstract class AxisText extends DrawableObject {
      * @param lineNumber line number to calculate for
      * @return a string which represents the value of the grid line
      */
-    protected String displayString(int lineNumber) {
-        // +1 as the first grid line is not 0 i.e not the minimum, this would be the boarder along
-        // with the maximum, which is on the boarder
-        float percentageAcrossScale =
-                (float) (lineNumber + 1) / (float) (mGridLines.getNumberOfGridLines() + 1);
-        float valueWithoutOffset = mAxisValueSpan * percentageAcrossScale;
-        float valueToDisplay = valueWithoutOffset + mMinimumAxisValue;
-        return String.valueOf(valueToDisplay);
+    protected String displayString(float lineNumber) {
+        // +1 as this is the spacing between all lines
+        float spacing = mAxisValueSpan / (mGridLines.getNumberOfGridLines() + 1);
+
+        // +1 as we are not labeling the limits here
+        float valueToDisplay = mMinimumAxisValue + ((lineNumber + 1) * spacing);
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+
+        return String.valueOf(df.format(valueToDisplay));
     }
 
     /**
@@ -98,8 +108,7 @@ public abstract class AxisText extends DrawableObject {
      */
     public float getMaximumTextWidth() {
         Rect bounds = new Rect();
-        mTextPaint.getTextBounds(String.valueOf(mMaximumAxisValue), 0,
-                String.valueOf(mMaximumAxisValue).length(), bounds);
+        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
         return bounds.width();
     }
 
