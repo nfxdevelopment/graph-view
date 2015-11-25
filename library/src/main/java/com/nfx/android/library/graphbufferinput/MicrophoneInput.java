@@ -182,7 +182,7 @@ public class MicrophoneInput extends Input {
         float displayOffset = zoomDisplay.getDisplayOffsetPercentage();
 
         float movementPercentage = (distanceMoved / displaySize) *
-                getZoomDisplayY().getZoomLevelPercentage();
+                zoomDisplay.getZoomLevelPercentage();
 
         zoomDisplay.setDisplayOffsetPercentage(displayOffset + movementPercentage);
     }
