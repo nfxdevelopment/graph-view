@@ -34,7 +34,9 @@ public class YAxisText extends AxisText {
     @Override
     public void doDraw(Canvas canvas) {
         for (int i = 0; i < mGridLines.getNumberOfGridLines(); ++i) {
-            String displayString = displayString(i);
+            // The drawing of text happens top to bottom but the scale goes bottom to top. Therefore
+            // we need to invert the calculation of the display string
+            String displayString = displayString((mGridLines.getNumberOfGridLines() - 1) - i);
 
             Rect bounds = new Rect();
             mTextPaint.getTextBounds(displayString, 0, displayString.length(), bounds);

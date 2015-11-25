@@ -80,17 +80,13 @@ public class BoarderText extends DrawableObject {
         Rect bounds = new Rect();
         mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
 
-        // Draw the top left
-        // First calculate the number to display
         String displayString = String.valueOf(df.format(mYMinimum +
-                (mYZoomDisplay.getDisplayOffsetPercentage() * mYSpan)));
-
-        // Remember the text is drawn on the baseline
+                (mYZoomDisplay.getFarSideOffsetPercentage() * mYSpan)));
         canvas.drawText(displayString, getDrawableArea().getLeft() + bounds.width(),
                 getDrawableArea().getTop() + bounds.height(), mTextPaint);
 
         displayString = String.valueOf(df.format(mYMinimum +
-                (mYZoomDisplay.getFarSideOffsetPercentage() * mYSpan)));
+                (mYZoomDisplay.getDisplayOffsetPercentage() * mYSpan)));
         canvas.drawText(displayString, getDrawableArea().getLeft() + bounds.width(),
                 getDrawableArea().getBottom() - getRealTextHeight(), mTextPaint);
 
