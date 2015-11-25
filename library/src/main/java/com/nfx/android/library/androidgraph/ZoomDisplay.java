@@ -104,8 +104,10 @@ public class ZoomDisplay {
      *                            warning is logged and nothing happens
      */
     public void setZoomLevelPercentage(float zoomLevelPercentage) {
-        if (zoomLevelPercentage < 0f || zoomLevelPercentage > 1f) {
+        if (zoomLevelPercentage < 0f) {
             return;
+        } else if (zoomLevelPercentage > 1f) {
+            zoomLevelPercentage = 1f;
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
