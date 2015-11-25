@@ -91,9 +91,10 @@ public class BackgroundManager {
      */
     public DrawableArea surfaceChanged(DrawableArea drawableArea) {
         mBackground.surfaceChanged(drawableArea);
-        mBoarderText.surfaceChanged(drawableArea);
 
         if (mShowAxisText) {
+            mBoarderText.surfaceChanged(drawableArea);
+
             for (AxisText axisText : mYAxisText) {
                 axisText.surfaceChanged(drawableArea);
             }
