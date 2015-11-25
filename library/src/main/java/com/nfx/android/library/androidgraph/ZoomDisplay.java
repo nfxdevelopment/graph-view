@@ -68,8 +68,10 @@ public class ZoomDisplay {
      *                                nothing happens
      */
     public void setDisplayOffsetPercentage(float displayOffsetPercentage) {
-        if (displayOffsetPercentage < 0f || displayOffsetPercentage > 1f) {
-            return;
+        if (displayOffsetPercentage < 0f) {
+            displayOffsetPercentage = 0f;
+        } else if (displayOffsetPercentage > 1f) {
+            displayOffsetPercentage = 1f;
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
