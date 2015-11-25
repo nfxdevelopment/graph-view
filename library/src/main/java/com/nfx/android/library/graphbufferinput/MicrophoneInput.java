@@ -28,6 +28,7 @@ public class MicrophoneInput extends Input {
      */
     private static final int sAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
+    private static final float sMinimumSpan = 200f;
     /**
      * Audio input device
      */
@@ -38,7 +39,6 @@ public class MicrophoneInput extends Input {
     private Thread readerThread = null;
     // Audio input block size, in samples.
     private int inputBlockSize = 256;
-
     private boolean mPaused = false;
     private DisplayMetrics mDisplayMetrics;
     private float lastSpanX;
@@ -205,26 +205,30 @@ public class MicrophoneInput extends Input {
 
         // Deal with the span changes for x and y. This is only based on the previous span
         float currentSpanX = scaleGestureDetector.getCurrentSpanX();
+        if (currentSpanX > sMinimumSpan) {
+            float scaleFactorX = lastSpanX / currentSpanX;
+            lastSpanX = currentSpanX;
+            scaleHandle(getZoomDisplayX(), scaleFactorX);
+
+            // We want to span from the focal point of the users fingers, use display offset to
+            // shift
+            // the signal over whilst scaling
+            float focusX = scaleGestureDetector.getFocusX();
+            offsetAccountedScaleHandle(getZoomDisplayX(), scaleFactorX, focusX,
+                    mDisplayMetrics.widthPixels);
+        }
+
         float currentSpanY = scaleGestureDetector.getCurrentSpanY();
+        if (currentSpanY > sMinimumSpan) {
+            float scaleFactorY = lastSpanY / currentSpanY;
+            lastSpanY = currentSpanY;
+            scaleHandle(getZoomDisplayY(), scaleFactorY);
 
-        float scaleFactorX = lastSpanX / currentSpanX;
-        float scaleFactorY = lastSpanY / currentSpanY;
+            float focusY = scaleGestureDetector.getFocusY();
 
-        lastSpanX = currentSpanX;
-        lastSpanY = currentSpanY;
-
-        scaleHandle(getZoomDisplayX(), scaleFactorX);
-        scaleHandle(getZoomDisplayY(), scaleFactorY);
-
-        // We want to span from the focal point of the users fingers, use display offset to shift
-        // the signal over whilst scaling
-        float focusX = scaleGestureDetector.getFocusX();
-        float focusY = scaleGestureDetector.getFocusY();
-
-        offsetAccountedScaleHandle(getZoomDisplayX(), scaleFactorX, focusX,
-                mDisplayMetrics.widthPixels);
-        offsetAccountedScaleHandle(getZoomDisplayY(), scaleFactorY, focusY,
-                mDisplayMetrics.heightPixels);
+            offsetAccountedScaleHandle(getZoomDisplayY(), scaleFactorY, focusY,
+                    mDisplayMetrics.heightPixels);
+        }
 
         return true;
     }
