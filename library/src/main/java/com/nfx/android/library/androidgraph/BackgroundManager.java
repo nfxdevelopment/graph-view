@@ -30,7 +30,8 @@ public class BackgroundManager {
      */
     private GridLines mYMajorGridLines;
     private GridLines mXMajorGridLines;
-    private Collection<GridLines> mGridLinesMinor = new ArrayList<>();
+    private Collection<GridLines> mXMinorGridLines = new ArrayList<>();
+    private Collection<GridLines> mYMinorGridLines = new ArrayList<>();
     /**
      * Handles the drawing of all text on axis
      */
@@ -74,9 +75,9 @@ public class BackgroundManager {
         mXMajorGridLines = new LinXGridLines();
         mYMajorGridLines = new LinYGridLines();
 
-        mGridLinesMinor.add(new LogXGridLines());
+        mXMinorGridLines.add(new LinXGridLines());
 
-        for (GridLines gridLines : mGridLinesMinor) {
+        for (GridLines gridLines : mXMinorGridLines) {
             gridLines.setGridStrokeWidth(2);
             gridLines.setColor(Color.DKGRAY);
         }
@@ -126,11 +127,12 @@ public class BackgroundManager {
         mXMajorGridLines.surfaceChanged(drawableArea);
         mYMajorGridLines.surfaceChanged(drawableArea);
 
-        for (GridLines gridLinesMinor : mGridLinesMinor) {
+        for (GridLines gridLinesMinor : mXMinorGridLines) {
             if (gridLinesMinor.getAxisOrientation() == GridLines.AxisOrientation.xAxis) {
                 int minorGridLineWidth = (int) mXMajorGridLines.intersect(0);
                 gridLinesMinor.getDrawableArea().setDrawableArea(drawableArea.getLeft(),
                         drawableArea.getTop(), minorGridLineWidth, drawableArea.getHeight());
+                gridLinesMinor.setGraphDimensionSize(drawableArea.getWidth());
             }
         }
         return drawableArea;
@@ -147,7 +149,10 @@ public class BackgroundManager {
         mXMajorGridLines.doDraw(canvas);
         mYMajorGridLines.doDraw(canvas);
 
-        for (GridLines gridLines : mGridLinesMinor) {
+        for (GridLines gridLines : mXMinorGridLines) {
+            gridLines.doDraw(canvas);
+        }
+        for (GridLines gridLines : mYMinorGridLines) {
             gridLines.doDraw(canvas);
         }
 
@@ -182,6 +187,12 @@ public class BackgroundManager {
 
             getXMajorGridLines().setZoomDisplay(signalBuffer.getXZoomDisplay());
             getYMajorGridLines().setZoomDisplay(signalBuffer.getYZoomDisplay());
+            for (GridLines gridLines : mXMinorGridLines) {
+                gridLines.setZoomDisplay(signalBuffer.getXZoomDisplay());
+            }
+            for (GridLines gridLines : mYMinorGridLines) {
+                gridLines.setZoomDisplay(signalBuffer.getYZoomDisplay());
+            }
 
             mBoarderText.setZoomDisplay(signalBuffer.getXZoomDisplay(),
                     signalBuffer.getYZoomDisplay());

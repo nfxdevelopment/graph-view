@@ -44,4 +44,14 @@ public class LinYGridLines extends LinGridLines {
     public float intersect(int gridLine) {
         return intersect(gridLine, getDrawableArea().getHeight());
     }
+
+    /**
+     * The surface size has changed update the current object to resize drawing
+     *
+     * @param drawableArea new surface size
+     */
+    public void surfaceChanged(DrawableArea drawableArea) {
+        super.surfaceChanged(drawableArea);
+        setGraphDimensionSize(drawableArea.getHeight());
+    }
 }

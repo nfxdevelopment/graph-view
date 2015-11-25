@@ -27,6 +27,11 @@ public abstract class GridLines extends DrawableObject {
      */
     protected ZoomDisplay mZoomDisplay;
     /**
+     * Graph dimension size, This is needed for minor grid lines to calculate where to display in
+     * cases of zoom
+     */
+    protected float mGraphDimensionSize;
+    /**
      * This allows us to know the axis at runtime
      */
     private AxisOrientation mAxisOrientation;
@@ -103,6 +108,16 @@ public abstract class GridLines extends DrawableObject {
      */
     @Override
     public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+    }
+
+    /**
+     * Used for minor grid lines to gain a reference to the graph size. Must call after surface
+     * changed if used
+     *
+     * @param graphDimensionSize size of the full graph viewable area
+     */
+    public void setGraphDimensionSize(float graphDimensionSize) {
+        mGraphDimensionSize = graphDimensionSize;
     }
 
     public void setZoomDisplay(ZoomDisplay zoomDisplay) {

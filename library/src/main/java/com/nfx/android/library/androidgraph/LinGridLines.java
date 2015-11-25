@@ -35,7 +35,7 @@ public abstract class LinGridLines extends GridLines {
         // The first line lies at on the area boundary of the first block hence +1
         // This is the value where it would intersect if zoom was at 100%
         float virtualIntersect = spacing * (float) (gridLine + 1);
-        float virtualIntersectPercentage = virtualIntersect / (float) dimensionLength;
+        float virtualIntersectPercentage = virtualIntersect / mGraphDimensionSize;
 
         if (virtualIntersectPercentage > mZoomDisplay.getDisplayOffsetPercentage() &&
                 virtualIntersectPercentage < mZoomDisplay.getZoomLevelPercentage() +
@@ -45,7 +45,7 @@ public abstract class LinGridLines extends GridLines {
                     (virtualIntersectPercentage - mZoomDisplay.getDisplayOffsetPercentage()) /
                             mZoomDisplay.getZoomLevelPercentage();
 
-            return dimensionLength * intersectPercentage;
+            return mGraphDimensionSize * intersectPercentage;
         } else {
             // It is outside our desired viewable area
             return -1f;
