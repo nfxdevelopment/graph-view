@@ -2,6 +2,7 @@ package com.nfx.android.library.androidgraph;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 /**
@@ -22,6 +23,7 @@ public class YAxisText extends AxisText {
     YAxisText(Context context, GridLines gridLines, float minimumAxisValue,
               float maximumAxisValue) {
         super(context, gridLines, minimumAxisValue, maximumAxisValue);
+        mTextPaint.setTextAlign(Paint.Align.RIGHT);
     }
 
     /**
@@ -38,10 +40,12 @@ public class YAxisText extends AxisText {
             mTextPaint.getTextBounds(displayString, 0, displayString.length(), bounds);
             float yIntersect = mGridLines.intersect(i);
             // Ensure the grid line is on screen
-            if (yIntersect > 0) {
+            if (yIntersect > (getDrawableArea().getTop() + Math.abs(mTextPaint.ascent())) &&
+                    yIntersect < (getDrawableArea().getBottom() -
+                            (getRealTextHeight() * 2) - bounds.height())) {
                 int y = getDrawableArea().getTop() + (int) yIntersect + (bounds.height() / 2);
 
-                canvas.drawText(displayString, getDrawableArea().getWidth() / 2, y, mTextPaint);
+                canvas.drawText(displayString, getDrawableArea().getWidth(), y, mTextPaint);
             }
         }
     }

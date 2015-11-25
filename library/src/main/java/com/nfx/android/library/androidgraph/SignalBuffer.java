@@ -73,6 +73,7 @@ public class SignalBuffer {
      * scaling the read buffer
      * The algorithm works out each new point separately. More often than not the new sample will
      * fall between to of buffer points therefore we have to do some aliasing
+     * TODO Seems to be a bugin this where lowerPosition is greater than buffer length
      *
      * @param numberOfPoints desired number of points for new buffer
      * @return new buffer
