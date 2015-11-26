@@ -38,7 +38,7 @@ public class XAxisText extends AxisText {
             Rect bounds = new Rect();
             mTextPaint.getTextBounds(displayString, 0, displayString.length(), bounds);
 
-            float xIntersect = mGridLines.intersect(i);
+            float xIntersect = mGridLines.intersectZoomCompensated(i);
             // Ensure the grid line is on screen and not overlapping the boarder text
             if (xIntersect > (getDrawableArea().getLeft() + bounds.width()) &&
                     xIntersect < getDrawableArea().getRight() - bounds.width()) {

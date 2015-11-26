@@ -32,20 +32,25 @@ public class LogXGridLines extends LogGridLines {
         paint.setStrokeWidth(mGridStrokeWidth);
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
-            float xIntersect = intersect(i);
-            canvas.drawLine(getDrawableArea().getLeft() + xIntersect, getDrawableArea().getTop(),
-                    getDrawableArea().getLeft() + xIntersect, getDrawableArea().getBottom(), paint);
+            float xIntersect = intersectZoomCompensated(i);
+            if (xIntersect >= 0) {
+                canvas.drawLine(getDrawableArea().getLeft() + xIntersect, getDrawableArea()
+                        .getTop(),
+                        getDrawableArea().getLeft() + xIntersect, getDrawableArea().getBottom(),
+                        paint);
+
+            }
         }
     }
 
     /**
-     * calls the dimension specific intersect workout
+     * calls the dimension specific intersectZoomCompensated workout
      * @param gridLine grid line to find out the intersecting value
      * @return value where line intersects
      */
     @Override
-    public float intersect(int gridLine) {
-        return intersect(gridLine, getDrawableArea().getWidth());
+    public float intersectZoomCompensated(int gridLine) {
+        return intersectZoomCompensated(gridLine, getDrawableArea().getWidth());
     }
 
     /**
@@ -55,7 +60,8 @@ public class LogXGridLines extends LogGridLines {
      */
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
-        setGraphDimensionSize(drawableArea.getWidth());
+        setGridLinesSize(drawableArea.getWidth());
+        setGridLinesOffset(0);
     }
 
 }

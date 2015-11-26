@@ -42,21 +42,16 @@ public abstract class LogGridLines extends GridLines {
      * @return the x Intersect or -1 if the grid line is out of range
      */
     @Override
-    public float intersect(int gridLine, int dimensionLength) {
-        if (gridLine >= mNumberOfGridLines || gridLine < 0) {
-            return -1f;
+    public float intersectZoomCompensated(int gridLine, int dimensionLength) {
+        float linearOffset = intersect(gridLine);
+        if (linearOffset == -1) {
+            return -1;
         }
-
-        // +1 as there would be mNumberOfGridLines intersecting the graph which splits
-        // mNumberOfGridLines + 1 areas
-        float spacing = (float) dimensionLength / (float) (mNumberOfGridLines + 1);
-        // The first line lies at on the area boundary of the first block hence +1
-        float linearOffset = spacing * (float) (gridLine + 1);
 
         float virtualIntersect =
                 (float) (Math.log(linearOffset) / maxLogValue) * (float) dimensionLength;
 
-        float virtualIntersectPercentage = virtualIntersect / (float) dimensionLength;
+        float virtualIntersectPercentage = virtualIntersect / dimensionLength;
 
         if (virtualIntersectPercentage > mZoomDisplay.getDisplayOffsetPercentage() &&
                 virtualIntersectPercentage < mZoomDisplay.getZoomLevelPercentage() +

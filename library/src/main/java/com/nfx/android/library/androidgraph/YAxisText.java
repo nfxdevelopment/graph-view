@@ -40,7 +40,7 @@ public class YAxisText extends AxisText {
 
             Rect bounds = new Rect();
             mTextPaint.getTextBounds(displayString, 0, displayString.length(), bounds);
-            float yIntersect = mGridLines.intersect(i);
+            float yIntersect = mGridLines.intersectZoomCompensated(i);
             // Ensure the grid line is on screen
             if (yIntersect > (getDrawableArea().getTop() + Math.abs(mTextPaint.ascent())) &&
                     yIntersect < (getDrawableArea().getBottom() -
