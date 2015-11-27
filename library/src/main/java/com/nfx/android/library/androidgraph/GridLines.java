@@ -1,9 +1,11 @@
 package com.nfx.android.library.androidgraph;
 
+import android.graphics.Canvas;
 import android.graphics.Color;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * NFX Development
@@ -40,6 +42,10 @@ public abstract class GridLines extends DrawableObject {
      */
     private AxisOrientation mAxisOrientation;
     /**
+     * Minor GridLines
+     */
+    private Map<Integer, GridLines> childGridLines = new ConcurrentHashMap<>();
+    /**
      * If the grid lines spacing is greater than this number minor gridlines are added
      */
     private float mPlaceMinorGridLinesSize = 500f;
@@ -53,6 +59,13 @@ public abstract class GridLines extends DrawableObject {
         mAxisOrientation = axisOrientation;
         // Set a default zoom Display
         mZoomDisplay = new ZoomDisplay(1f, 0f);
+    }
+
+    @Override
+    public void doDraw(Canvas canvas) {
+        for (GridLines gridLines : childGridLines.values()) {
+            gridLines.doDraw(canvas);
+        }
     }
 
     /**
@@ -97,7 +110,7 @@ public abstract class GridLines extends DrawableObject {
      * @param gridLine grid line to find out the intersecting value
      * @return intersecting point
      */
-    public float intersect(int gridLine) {
+    private float intersect(int gridLine) {
         if (gridLine >= mNumberOfGridLines || gridLine < 0) {
             return -1f;
         }
@@ -151,13 +164,57 @@ public abstract class GridLines extends DrawableObject {
         mGridLinesOffset = graphOffset;
     }
 
+
+    /**
+     * The surface size has changed update the current object to resize drawing
+     *
+     * @param drawableArea new surface size
+     */
+    @Override
+    public void surfaceChanged(DrawableArea drawableArea) {
+        super.surfaceChanged(drawableArea);
+        for (Map.Entry<Integer, GridLines> gridLines : childGridLines.entrySet()) {
+            gridLines.getValue().surfaceChanged(drawableArea);
+            minorGridLineSurfaceChanged(gridLines.getValue(), gridLines.getKey());
+        }
+    }
+
+    public ZoomDisplay getZoomDisplay() {
+        return mZoomDisplay;
+    }
+
+    /**
+     * Set the zoomDisplay for the grid lines should morph to
+     *
+     * @param zoomDisplay zoomDisplay to set
+     */
+    public void setZoomDisplay(ZoomDisplay zoomDisplay) {
+        mZoomDisplay = zoomDisplay;
+        zoomDisplay.setTheListener(new ZoomDisplay.ZoomChangedListener() {
+            @Override
+            public void zoomChanged() {
+                Map<Integer, Boolean> minorXGridLinesToDisplay =
+                        adequateSpaceForMinorGridLines();
+
+                for (Map.Entry<Integer, Boolean> majorGridLine : minorXGridLinesToDisplay
+                        .entrySet()) {
+                    if (majorGridLine.getValue()) {
+                        addMinorGridLine(majorGridLine.getKey());
+                    } else {
+                        childGridLines.remove(majorGridLine.getKey());
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * Reports if there is adequate space to fit minor grid lines between current grid lines
      *
      * @return a key pair that gives a boolean to show if there is enough space between the grid
      * lines
      */
-    public Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
+    private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
         Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
         float spacing = (mGridLinesSize) / (float) (mNumberOfGridLines + 1);
         float zoomSpacing = spacing / mZoomDisplay.getZoomLevelPercentage();
@@ -178,12 +235,50 @@ public abstract class GridLines extends DrawableObject {
         return adequateSpaceList;
     }
 
-    public ZoomDisplay getZoomDisplay() {
-        return mZoomDisplay;
+    /**
+     * Add a child minor Grid Line to this grid line
+     *
+     * @param majorGridLine the grid line number to insert the minor grid line after
+     */
+    private void addMinorGridLine(int majorGridLine) {
+        if (!childGridLines.containsKey(majorGridLine)) {
+            GridLines minorGridLine;
+            if (mAxisOrientation == AxisOrientation.xAxis) {
+                minorGridLine = new LinXGridLines();
+            } else {
+                minorGridLine = new LinYGridLines();
+            }
+            minorGridLine.setGridStrokeWidth(2);
+            minorGridLine.setColor(Color.DKGRAY);
+            childGridLines.put(majorGridLine, minorGridLine);
+
+            minorGridLineSurfaceChanged(minorGridLine, majorGridLine);
+            minorGridLine.setZoomDisplay(getZoomDisplay());
+        }
     }
 
-    public void setZoomDisplay(ZoomDisplay zoomDisplay) {
-        mZoomDisplay = zoomDisplay;
+    /**
+     * this tells the children grid lineswhere the major grid lines would sit at 100% zoom level in
+     * the new surface dimensions
+     *
+     * @param gridLine      The child grid line
+     * @param majorGridLine major grid line the child is sitting on
+     */
+    private void minorGridLineSurfaceChanged(GridLines gridLine, int majorGridLine) {
+        DrawableArea parentDrawableArea = getDrawableArea();
+        gridLine.surfaceChanged(parentDrawableArea);
+
+        int left = (int) intersect(majorGridLine - 1);
+        int right = (int) intersect(majorGridLine);
+        if (majorGridLine == 0) {
+            left = 0;
+        } else if (majorGridLine == getNumberOfGridLines()) {
+            right = parentDrawableArea.getWidth();
+        }
+        gridLine.surfaceChanged(parentDrawableArea);
+
+        gridLine.setGridLinesSize(right - left);
+        gridLine.setGridLinesOffset(left);
     }
 
     enum AxisOrientation {

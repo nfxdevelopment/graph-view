@@ -2,14 +2,9 @@ package com.nfx.android.library.androidgraph;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-
-import com.nfx.android.library.androidgraph.ZoomDisplay.ZoomChangedListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * NFX Development
@@ -34,8 +29,8 @@ public class BackgroundManager {
      */
     private GridLines mYMajorGridLines;
     private GridLines mXMajorGridLines;
-    private Map<Integer, GridLines> mXMinorGridLines = new ConcurrentHashMap<>();
-    private Map<Integer, GridLines> mYMinorGridLines = new ConcurrentHashMap<>();
+//    private Map<Integer, GridLines> mXMinorGridLines = new ConcurrentHashMap<>();
+//    private Map<Integer, GridLines> mYMinorGridLines = new ConcurrentHashMap<>();
     /**
      * Handles the drawing of all text on axis
      */
@@ -123,14 +118,6 @@ public class BackgroundManager {
 
         mXMajorGridLines.surfaceChanged(drawableArea);
         mYMajorGridLines.surfaceChanged(drawableArea);
-        for (Map.Entry<Integer, GridLines> minorGridLines : mXMinorGridLines.entrySet()) {
-            minorGridLineSurfaceChanged(mXMajorGridLines, minorGridLines.getValue(),
-                    minorGridLines.getKey());
-        }
-        for (Map.Entry<Integer, GridLines> minorGridLines : mYMinorGridLines.entrySet()) {
-            minorGridLineSurfaceChanged(mYMajorGridLines, minorGridLines.getValue(),
-                    minorGridLines.getKey());
-        }
 
         return drawableArea;
     }
@@ -145,13 +132,6 @@ public class BackgroundManager {
 
         mXMajorGridLines.doDraw(canvas);
         mYMajorGridLines.doDraw(canvas);
-
-        for (GridLines gridLines : mXMinorGridLines.values()) {
-            gridLines.doDraw(canvas);
-        }
-        for (GridLines gridLines : mYMinorGridLines.values()) {
-            gridLines.doDraw(canvas);
-        }
 
         if (mShowAxisText) {
             for (AxisText axisText : mXAxisText) {
@@ -187,84 +167,6 @@ public class BackgroundManager {
 
             mBoarderText.setZoomDisplay(signalBuffer.getXZoomDisplay(),
                     signalBuffer.getYZoomDisplay());
-
-            signalBuffer.getXZoomDisplay().setTheListener(new ZoomChangedListener() {
-
-                @Override
-                public void zoomChanged() {
-                    Map<Integer, Boolean> minorXGridLinesToDisplay =
-                            mXMajorGridLines.adequateSpaceForMinorGridLines();
-
-                    for (Map.Entry<Integer, Boolean> majorGridLine : minorXGridLinesToDisplay
-                            .entrySet()) {
-                        if (majorGridLine.getValue() == true) {
-                            addXMinorGridLines(mXMajorGridLines, mXMinorGridLines, majorGridLine
-                                    .getKey());
-                        } else {
-                            mXMinorGridLines.remove(majorGridLine.getKey());
-                        }
-                    }
-                }
-            });
-            signalBuffer.getYZoomDisplay().setTheListener(new ZoomChangedListener() {
-
-                @Override
-                public void zoomChanged() {
-                    Map<Integer, Boolean> minorYGridLinesToDisplay =
-                            mYMajorGridLines.adequateSpaceForMinorGridLines();
-
-                    for (Map.Entry<Integer, Boolean> majorGridLine : minorYGridLinesToDisplay
-                            .entrySet()) {
-                        if (majorGridLine.getValue() == true) {
-                            addYMinorGridLines(mYMajorGridLines, mYMinorGridLines, majorGridLine
-                                    .getKey());
-                        } else {
-                            mYMinorGridLines.remove(majorGridLine.getKey());
-                        }
-                    }
-                }
-            });
         }
-    }
-
-    void addXMinorGridLines(GridLines parentGridLines, Map<Integer, GridLines> childGridLines,
-                            int majorGridLine) {
-        if (!childGridLines.containsKey(majorGridLine)) {
-            GridLines minorGridLines = new LinXGridLines();
-            minorGridLines.setGridStrokeWidth(2);
-            minorGridLines.setColor(Color.DKGRAY);
-            childGridLines.put(majorGridLine, minorGridLines);
-            minorGridLines.setZoomDisplay(parentGridLines.getZoomDisplay());
-
-            minorGridLineSurfaceChanged(parentGridLines, minorGridLines, majorGridLine);
-        }
-    }
-
-    void addYMinorGridLines(GridLines parentGridLines, Map<Integer, GridLines> childGridLines,
-                            int majorGridLine) {
-        GridLines minorGridLines = new LinYGridLines();
-        minorGridLines.setGridStrokeWidth(2);
-        minorGridLines.setColor(Color.DKGRAY);
-        childGridLines.put(majorGridLine, minorGridLines);
-        minorGridLines.setZoomDisplay(parentGridLines.getZoomDisplay());
-
-        minorGridLineSurfaceChanged(parentGridLines, minorGridLines, majorGridLine);
-    }
-
-    void minorGridLineSurfaceChanged(GridLines parentGridLines, GridLines childGridLines,
-                                     int majorGridLine) {
-        DrawableArea parentDrawableArea = parentGridLines.getDrawableArea();
-
-        int left = (int) parentGridLines.intersect(majorGridLine - 1);
-        int right = (int) parentGridLines.intersect(majorGridLine);
-        if (majorGridLine == 0) {
-            left = 0;
-        } else if (majorGridLine == parentGridLines.getNumberOfGridLines()) {
-            right = parentDrawableArea.getWidth();
-        }
-        childGridLines.surfaceChanged(parentDrawableArea);
-
-        childGridLines.setGridLinesSize(right - left);
-        childGridLines.setGridLinesOffset(left);
     }
 }

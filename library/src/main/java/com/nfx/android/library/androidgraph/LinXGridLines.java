@@ -24,6 +24,7 @@ public class LinXGridLines extends LinGridLines {
      */
     @Override
     public void doDraw(Canvas canvas) {
+        super.doDraw(canvas);
         Paint paint = new Paint();
         paint.setColor(mGridColor);
         paint.setStrokeWidth(mGridStrokeWidth);

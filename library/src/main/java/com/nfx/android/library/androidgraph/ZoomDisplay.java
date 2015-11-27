@@ -1,5 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * NFX Development
  * Created by nick on 27/10/15.
@@ -22,7 +24,8 @@ public class ZoomDisplay {
     /**
      * Subscribe to this listener to get Zoom notification changes
      */
-    private ZoomChangedListener mZoomChangedListener;
+    private CopyOnWriteArrayList<ZoomChangedListener> mZoomChangedListener = new
+            CopyOnWriteArrayList<>();
 
     /**
      * Initial values of the zoom level
@@ -50,7 +53,7 @@ public class ZoomDisplay {
      * @param listener register listener
      */
     public void setTheListener(ZoomChangedListener listener) {
-        mZoomChangedListener = listener;
+        mZoomChangedListener.add(listener);
     }
 
     /**
@@ -81,8 +84,10 @@ public class ZoomDisplay {
             mDisplayOffsetPercentage = displayOffsetPercentage;
         }
 
-        if (mZoomChangedListener != null) {
-            mZoomChangedListener.zoomChanged();
+        if (!mZoomChangedListener.isEmpty()) {
+            for (ZoomChangedListener listener : mZoomChangedListener) {
+                listener.zoomChanged();
+            }
         }
     }
 
@@ -119,8 +124,10 @@ public class ZoomDisplay {
 
         mZoomLevelPercentage = zoomLevelPercentage;
 
-        if (mZoomChangedListener != null) {
-            mZoomChangedListener.zoomChanged();
+        if (!mZoomChangedListener.isEmpty()) {
+            for (ZoomChangedListener listener : mZoomChangedListener) {
+                listener.zoomChanged();
+            }
         }
     }
 
