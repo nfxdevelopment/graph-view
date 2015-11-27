@@ -18,7 +18,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * Number of grid lines to display in the area
      */
-    protected int mNumberOfGridLines = 8;
+    protected int mNumberOfGridLines = 6;
     /**
      * Color of the grid lines
      */
@@ -104,23 +104,23 @@ public abstract class GridLines extends DrawableObject {
         mGridColor = color;
     }
 
+    private float getGridLineSpacingInPixels() {
+        // -1 as we want the first grid line to be at 0 and the last at the width of the graph
+        return mGridLinesSize / (float) (mNumberOfGridLines - 1);
+    }
+
     /**
      * Gives the intersect point of a grid line a when the zoom level is 100 percent
      *
      * @param gridLine grid line to find out the intersecting value
      * @return intersecting point
      */
-    private float intersect(int gridLine) {
+    protected float intersect(int gridLine) {
         if (gridLine >= mNumberOfGridLines || gridLine < 0) {
             return -1f;
         }
 
-        // +1 as there would be mNumberOfGridLines intersecting the graph which splits
-        // mNumberOfGridLines + 1 areas
-        float spacing = (mGridLinesSize) / (float) (mNumberOfGridLines + 1);
-        // The first line lies at on the area boundary of the first block hence +1
-        // This is the value where it would intersectZoomCompensated if zoom was at 100%
-        return mGridLinesOffset + spacing * (float) (gridLine + 1);
+        return mGridLinesOffset + getGridLineSpacingInPixels() * (float) (gridLine);
     }
 
     /**
@@ -216,13 +216,12 @@ public abstract class GridLines extends DrawableObject {
      */
     private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
         Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
-        float spacing = (mGridLinesSize) / (float) (mNumberOfGridLines + 1);
-        float zoomSpacing = spacing / mZoomDisplay.getZoomLevelPercentage();
+        float zoomSpacing = getGridLineSpacingInPixels() / mZoomDisplay.getZoomLevelPercentage();
 
-        for (int i = 0; i < getNumberOfGridLines() + 1; ++i) {
+        for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
             if (zoomSpacing > mPlaceMinorGridLinesSize) {
-                if ((intersectZoomCompensated(i - 1) > -1 || intersectZoomCompensated(i) > -1) &&
-                        intersectZoomCompensated(i - 1) < getDrawableArea().getWidth()) {
+                if ((intersectZoomCompensated(i) > -1 || intersectZoomCompensated(i + 1) > -1) &&
+                        intersectZoomCompensated(i) <= getDrawableArea().getWidth()) {
                     adequateSpaceList.put(i, true);
                 } else {
                     adequateSpaceList.put(i, false);
@@ -268,13 +267,9 @@ public abstract class GridLines extends DrawableObject {
         DrawableArea parentDrawableArea = getDrawableArea();
         gridLine.surfaceChanged(parentDrawableArea);
 
-        int left = (int) intersect(majorGridLine - 1);
-        int right = (int) intersect(majorGridLine);
-        if (majorGridLine == 0) {
-            left = 0;
-        } else if (majorGridLine == getNumberOfGridLines()) {
-            right = parentDrawableArea.getWidth();
-        }
+        int left = (int) intersect(majorGridLine);
+        int right = (int) intersect(majorGridLine + 1);
+
         gridLine.surfaceChanged(parentDrawableArea);
 
         gridLine.setGridLinesSize(right - left);
