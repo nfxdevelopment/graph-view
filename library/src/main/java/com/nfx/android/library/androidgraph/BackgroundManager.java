@@ -3,9 +3,6 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * NFX Development
  * Created by nick on 28/10/15.
@@ -29,18 +26,22 @@ public class BackgroundManager {
      */
     private GridLines mYMajorGridLines;
     private GridLines mXMajorGridLines;
-//    private Map<Integer, GridLines> mXMinorGridLines = new ConcurrentHashMap<>();
-//    private Map<Integer, GridLines> mYMinorGridLines = new ConcurrentHashMap<>();
     /**
      * Handles the drawing of all text on axis
      */
-    private Collection<AxisText> mXAxisText = new ArrayList<>();
-    private Collection<AxisText> mYAxisText = new ArrayList<>();
     private BoarderText mBoarderText;
     /**
      * Set dependant which constuctor is called
      */
     private boolean mShowAxisText = false;
+    /**
+     * Minimum and Maximum values of the axis
+     */
+    private float mMinimumXValue;
+    private float mMaximumXValue;
+    private float mMinimumYValue;
+    private float mMaximumYValue;
+
 
     /**
      * Constructor for Background Manager, all drawable objects are created here. Call this
@@ -54,13 +55,13 @@ public class BackgroundManager {
      */
     public BackgroundManager(Context context, float minimumXValue, float maximumXValue,
                              float minimumYValue, float maximumYValue) {
-        this(context);
 
-        mXAxisText.add(new XAxisText(context, mXMajorGridLines, minimumXValue, maximumXValue));
-        mYAxisText.add(new YAxisText(context, mYMajorGridLines, minimumYValue, maximumYValue));
+        this(context);
+        mShowAxisText = true;
         mBoarderText = new BoarderText(context, minimumXValue, maximumXValue, minimumYValue,
                 maximumYValue);
-        mShowAxisText = true;
+        mXMajorGridLines.showAxisText(context, minimumXValue, maximumXValue);
+        mYMajorGridLines.showAxisText(context, minimumYValue, maximumYValue);
     }
 
     /**
@@ -87,34 +88,14 @@ public class BackgroundManager {
 
         if (mShowAxisText) {
             mBoarderText.surfaceChanged(drawableArea);
-
-            for (AxisText axisText : mYAxisText) {
-                axisText.surfaceChanged(drawableArea);
-            }
-            for (AxisText axisText : mXAxisText) {
-                axisText.surfaceChanged(drawableArea);
-            }
+            // we have to call Y here first to shift the x text into the right location
+            mYMajorGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
+            mXMajorGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
+            mYMajorGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
+            mXMajorGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
         }
 
         mBoarder.surfaceChanged(drawableArea);
-
-        // When the boarder is used we have to shift the axis text as it would no longer be inline
-        // with the grid lines
-        if (mShowAxisText) {
-            for (AxisText axisText : mYAxisText) {
-                axisText.getDrawableArea().setDrawableArea(axisText.getDrawableArea().getLeft(),
-                        axisText.getDrawableArea().getTop() + mBoarder.getStrokeWidth(),
-                        axisText.getDrawableArea().getWidth(),
-                        axisText.getDrawableArea().getHeight() - mBoarder.getStrokeWidth());
-            }
-            for (AxisText axisText : mXAxisText) {
-                axisText.getDrawableArea().setDrawableArea(
-                        axisText.getDrawableArea().getLeft() + mBoarder.getStrokeWidth(),
-                        axisText.getDrawableArea().getTop(),
-                        axisText.getDrawableArea().getWidth() - mBoarder.getStrokeWidth(),
-                        axisText.getDrawableArea().getHeight());
-            }
-        }
 
         mXMajorGridLines.surfaceChanged(drawableArea);
         mYMajorGridLines.surfaceChanged(drawableArea);
@@ -134,12 +115,6 @@ public class BackgroundManager {
         mYMajorGridLines.doDraw(canvas);
 
         if (mShowAxisText) {
-            for (AxisText axisText : mXAxisText) {
-                axisText.doDraw(canvas);
-            }
-            for (AxisText axisText : mYAxisText) {
-                axisText.doDraw(canvas);
-            }
             mBoarderText.doDraw(canvas);
         }
     }

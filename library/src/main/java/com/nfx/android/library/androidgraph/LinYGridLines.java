@@ -1,5 +1,6 @@
 package com.nfx.android.library.androidgraph;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
@@ -39,6 +40,12 @@ public class LinYGridLines extends LinGridLines {
 
             }
         }
+    }
+
+    @Override
+    public void showAxisText(Context context, float minimumValue, float maximumValue) {
+        super.showAxisText(context, minimumValue, maximumValue);
+        mAxisText = new YAxisText(context, this, minimumValue, maximumValue);
     }
 
     /**

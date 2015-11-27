@@ -1,5 +1,6 @@
 package com.nfx.android.library.androidgraph;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
@@ -38,13 +39,21 @@ public abstract class GridLines extends DrawableObject {
     protected float mGridLinesSize;
     protected float mGridLinesOffset;
     /**
+     * The axis text to be displayed if needed
+     */
+    protected AxisText mAxisText;
+    /**
+     * Base Context
+     */
+    private Context mContext;
+    /**
      * This allows us to know the axis at runtime
      */
     private AxisOrientation mAxisOrientation;
     /**
      * Minor GridLines
      */
-    private Map<Integer, GridLines> childGridLines = new ConcurrentHashMap<>();
+    private Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
     /**
      * If the grid lines spacing is greater than this number minor gridlines are added
      */
@@ -63,9 +72,16 @@ public abstract class GridLines extends DrawableObject {
 
     @Override
     public void doDraw(Canvas canvas) {
-        for (GridLines gridLines : childGridLines.values()) {
+        if (mAxisText != null) {
+            mAxisText.doDraw(canvas);
+        }
+        for (GridLines gridLines : mChildGridLines.values()) {
             gridLines.doDraw(canvas);
         }
+    }
+
+    public void showAxisText(Context context, float minimumValue, float maximumValue) {
+        mContext = context;
     }
 
     /**
@@ -164,6 +180,21 @@ public abstract class GridLines extends DrawableObject {
         mGridLinesOffset = graphOffset;
     }
 
+    /**
+     * As axis text has to attain the drawable area before the grid lines to ensure grid lines do
+     * not over lap the text. We have to provide another function. this function has to be called
+     * for each grid lines before {@code surfaceChanged} of grid lines
+     *
+     * @param drawableArea the drawable area available
+     */
+    public void notifyAxisTextOfSurfaceChange(DrawableArea drawableArea) {
+        if (mAxisText != null) {
+            mAxisText.surfaceChanged(drawableArea);
+        }
+        for (GridLines gridLines : mChildGridLines.values()) {
+            gridLines.notifyAxisTextOfSurfaceChange(drawableArea);
+        }
+    }
 
     /**
      * The surface size has changed update the current object to resize drawing
@@ -173,7 +204,7 @@ public abstract class GridLines extends DrawableObject {
     @Override
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
-        for (Map.Entry<Integer, GridLines> gridLines : childGridLines.entrySet()) {
+        for (Map.Entry<Integer, GridLines> gridLines : mChildGridLines.entrySet()) {
             gridLines.getValue().surfaceChanged(drawableArea);
             minorGridLineSurfaceChanged(gridLines.getValue(), gridLines.getKey());
         }
@@ -201,7 +232,7 @@ public abstract class GridLines extends DrawableObject {
                     if (majorGridLine.getValue()) {
                         addMinorGridLine(majorGridLine.getKey());
                     } else {
-                        childGridLines.remove(majorGridLine.getKey());
+                        mChildGridLines.remove(majorGridLine.getKey());
                     }
                 }
             }
@@ -240,7 +271,7 @@ public abstract class GridLines extends DrawableObject {
      * @param majorGridLine the grid line number to insert the minor grid line after
      */
     private void addMinorGridLine(int majorGridLine) {
-        if (!childGridLines.containsKey(majorGridLine)) {
+        if (!mChildGridLines.containsKey(majorGridLine)) {
             GridLines minorGridLine;
             if (mAxisOrientation == AxisOrientation.xAxis) {
                 minorGridLine = new LinXGridLines();
@@ -249,10 +280,17 @@ public abstract class GridLines extends DrawableObject {
             }
             minorGridLine.setGridStrokeWidth(2);
             minorGridLine.setColor(Color.DKGRAY);
-            childGridLines.put(majorGridLine, minorGridLine);
+            mChildGridLines.put(majorGridLine, minorGridLine);
+
+            if (mAxisText != null) {
+                minorGridLine.showAxisText(mContext, mAxisText.getMinimumAxisValue(),
+                        mAxisText.getMaximumAxisValue());
+            }
 
             minorGridLineSurfaceChanged(minorGridLine, majorGridLine);
             minorGridLine.setZoomDisplay(getZoomDisplay());
+            // If we have axis text we want our children to have axis text
+
         }
     }
 
@@ -274,6 +312,15 @@ public abstract class GridLines extends DrawableObject {
 
         gridLine.setGridLinesSize(right - left);
         gridLine.setGridLinesOffset(left);
+
+        if (mAxisText != null) {
+            // We want out children Axis to have the same drawable area as our own.
+            gridLine.getAxisText().getDrawableArea().setDrawableArea(mAxisText.getDrawableArea());
+        }
+    }
+
+    public AxisText getAxisText() {
+        return mAxisText;
     }
 
     enum AxisOrientation {

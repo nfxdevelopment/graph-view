@@ -35,6 +35,10 @@ public abstract class AxisText extends DrawableObject {
      */
     protected float mAxisValueSpan = 1;
     /**
+     * boarder size
+     */
+    protected int mGraphBoarderSize = 0;
+    /**
      * context of application
      */
     private Context mContext;
@@ -87,12 +91,12 @@ public abstract class AxisText extends DrawableObject {
      * @param lineNumber line number to calculate for
      * @return a string which represents the value of the grid line
      */
-    protected String displayString(float lineNumber) {
-        // +1 as this is the spacing between all lines
-        float spacing = mAxisValueSpan / (mGridLines.getNumberOfGridLines() + 1);
+    protected String displayString(int lineNumber) {
+        float locationOnGraph = mGridLines.intersect(lineNumber) /
+                mGridLines.getDrawableArea().getWidth();
 
         // +1 as we are not labeling the limits here
-        float valueToDisplay = mMinimumAxisValue + ((lineNumber + 1) * spacing);
+        float valueToDisplay = mAxisValueSpan * locationOnGraph;
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
@@ -120,5 +124,17 @@ public abstract class AxisText extends DrawableObject {
      */
     public float getRealTextHeight() {
         return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
+    }
+
+    public void setGraphBoarderSize(int boarderSize) {
+        mGraphBoarderSize = boarderSize;
+    }
+
+    public float getMinimumAxisValue() {
+        return mMinimumAxisValue;
+    }
+
+    public float getMaximumAxisValue() {
+        return mMaximumAxisValue;
     }
 }

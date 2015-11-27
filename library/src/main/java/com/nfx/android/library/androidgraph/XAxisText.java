@@ -31,7 +31,8 @@ public class XAxisText extends AxisText {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        for (int i = 0; i < mGridLines.getNumberOfGridLines(); ++i) {
+        // Our limits are over laps with other grid lines, hence starting from 1 and -1
+        for (int i = 1; i < mGridLines.getNumberOfGridLines() - 1; ++i) {
             // First calculate the number to display
             String displayString = displayString(i);
 
@@ -45,7 +46,7 @@ public class XAxisText extends AxisText {
                 int x = getDrawableArea().getLeft() + (int) xIntersect;
 
                 // Remember the text is drawn on the baseline
-                canvas.drawText(displayString, x, getDrawableArea().getTop() +
+                canvas.drawText(displayString, x + mGraphBoarderSize, getDrawableArea().getTop() +
                         (int) Math.abs(mTextPaint.ascent()), mTextPaint);
             }
         }

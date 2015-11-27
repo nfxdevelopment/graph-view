@@ -33,7 +33,8 @@ public class YAxisText extends AxisText {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        for (int i = 0; i < mGridLines.getNumberOfGridLines(); ++i) {
+        // Our limits are over laps with other grid lines, hence starting from 1 and -1
+        for (int i = 1; i < mGridLines.getNumberOfGridLines() - 1; ++i) {
             // The drawing of text happens top to bottom but the scale goes bottom to top. Therefore
             // we need to invert the calculation of the display string
             String displayString = displayString((mGridLines.getNumberOfGridLines() - 1) - i);
@@ -47,7 +48,8 @@ public class YAxisText extends AxisText {
                             (getRealTextHeight() * 2) - bounds.height())) {
                 int y = getDrawableArea().getTop() + (int) yIntersect + (bounds.height() / 2);
 
-                canvas.drawText(displayString, getDrawableArea().getWidth(), y, mTextPaint);
+                canvas.drawText(displayString, getDrawableArea().getWidth(), y + mGraphBoarderSize,
+                        mTextPaint);
             }
         }
     }
