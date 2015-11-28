@@ -44,8 +44,8 @@ public abstract class LogGridLines extends GridLines {
     @Override
     public float intersectZoomCompensated(int gridLine, int dimensionLength) {
         float linearOffset = intersect(gridLine);
-        if (linearOffset == -1) {
-            return -1;
+        if (linearOffset == LESS_THAN_VIEWABLE_AREA) {
+            return LESS_THAN_VIEWABLE_AREA;
         }
 
         float virtualIntersect =
@@ -64,7 +64,7 @@ public abstract class LogGridLines extends GridLines {
             return dimensionLength * intersectPercentage;
         } else {
             // It is outside our desired viewable area
-            return -1f;
+            return GREATER_THAN_VIEWABLE_AREA;
         }
     }
 }

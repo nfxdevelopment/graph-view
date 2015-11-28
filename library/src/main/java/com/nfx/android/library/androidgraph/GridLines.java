@@ -17,6 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class GridLines extends DrawableObject {
 
     /**
+     * Indicates that the grid line is less than the viewable area
+     */
+    public static final float LESS_THAN_VIEWABLE_AREA = -1;
+    /**
+     * Indicates that the grid line is greater than the viewable area
+     */
+    public static final float GREATER_THAN_VIEWABLE_AREA = -2;
+    /**
      * Number of grid lines to display in the area
      */
     protected int mNumberOfGridLines = 6;
@@ -133,7 +141,7 @@ public abstract class GridLines extends DrawableObject {
      */
     protected float intersect(int gridLine) {
         if (gridLine >= mNumberOfGridLines || gridLine < 0) {
-            return -1f;
+            return LESS_THAN_VIEWABLE_AREA;
         }
 
         return mGridLinesOffset + getGridLineSpacingInPixels() * (float) (gridLine);
@@ -251,8 +259,9 @@ public abstract class GridLines extends DrawableObject {
 
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
             if (zoomSpacing > mPlaceMinorGridLinesSize) {
-                if ((intersectZoomCompensated(i) > -1 || intersectZoomCompensated(i + 1) > -1) &&
-                        intersectZoomCompensated(i) <= getDrawableArea().getWidth()) {
+                float lowerIntersect = intersectZoomCompensated(i);
+                float upperIntersect = intersectZoomCompensated(i + 1);
+                if (lowerIntersect != upperIntersect) {
                     adequateSpaceList.put(i, true);
                 } else {
                     adequateSpaceList.put(i, false);
