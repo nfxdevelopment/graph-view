@@ -16,22 +16,22 @@ public class BackgroundManager {
     /**
      * An object which draws onto the canvas
      **/
-    private Background mBackground;
+    private final Background mBackground;
     /**
      * An object to draw a board around the graph
      */
-    private Boarder mBoarder;
+    private final Boarder mBoarder;
     /**
      * Handles the drawing of all grid lines
      */
-    private GridLines mYMajorGridLines;
-    private GridLines mXMajorGridLines;
+    private final GridLines mYMajorGridLines;
+    private final GridLines mXMajorGridLines;
     /**
      * Handles the drawing of all text on axis
      */
     private BoarderText mBoarderText;
     /**
-     * Set dependant which constuctor is called
+     * Set dependant which constructor is called
      */
     private boolean mShowAxisText = false;
     /**
@@ -56,7 +56,7 @@ public class BackgroundManager {
     public BackgroundManager(Context context, float minimumXValue, float maximumXValue,
                              float minimumYValue, float maximumYValue) {
 
-        this(context);
+        this();
         mShowAxisText = true;
         mBoarderText = new BoarderText(context, minimumXValue, maximumXValue, minimumYValue,
                 maximumYValue);
@@ -66,9 +66,8 @@ public class BackgroundManager {
 
     /**
      * Constructor for Background Manager, all drawable objects are created here
-     * @param context application context
      */
-    public BackgroundManager(Context context) {
+    public BackgroundManager() {
         mBackground = new Background();
         mBoarder = new Boarder();
 
@@ -80,10 +79,9 @@ public class BackgroundManager {
      * Call when the surface view changes it's dimensions the objects have to called in the correct
      * order to ensure they take up the correct space
      *
-     * @param drawableArea the avaiable area to draw
-     * @return the area of which is stil drawable
+     * @param drawableArea the available area to draw
      */
-    public DrawableArea surfaceChanged(DrawableArea drawableArea) {
+    public void surfaceChanged(DrawableArea drawableArea) {
         mBackground.surfaceChanged(drawableArea);
 
         if (mShowAxisText) {
@@ -99,8 +97,6 @@ public class BackgroundManager {
 
         mXMajorGridLines.surfaceChanged(drawableArea);
         mYMajorGridLines.surfaceChanged(drawableArea);
-
-        return drawableArea;
     }
 
     /**

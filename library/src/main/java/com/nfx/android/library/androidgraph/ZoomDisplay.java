@@ -11,7 +11,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ZoomDisplay {
     private static final String TAG = "ZoomDisplay";
-
+    /**
+     * Subscribe to this listener to get Zoom notification changes
+     */
+    private final CopyOnWriteArrayList<ZoomChangedListener> mZoomChangedListener = new
+            CopyOnWriteArrayList<>();
     /**
      * percentage of view to display in given area
      */
@@ -20,12 +24,6 @@ public class ZoomDisplay {
      * offset in given plane where to display from
      */
     private float mDisplayOffsetPercentage = 0f;
-
-    /**
-     * Subscribe to this listener to get Zoom notification changes
-     */
-    private CopyOnWriteArrayList<ZoomChangedListener> mZoomChangedListener = new
-            CopyOnWriteArrayList<>();
 
     /**
      * Initial values of the zoom level

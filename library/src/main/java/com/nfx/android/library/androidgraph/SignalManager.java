@@ -13,12 +13,12 @@ public class SignalManager {
     /**
      * parent object
      */
-    private GraphManager mGraphManager;
+    private final GraphManager mGraphManager;
 
     /**
      * Array of drawers to display signals
      */
-    private Collection<Signal> mSignalDrawers = new ArrayList<>();
+    private final Collection<Signal> mSignalDrawers = new ArrayList<>();
     /**
      * An object holding the signals to display
      */

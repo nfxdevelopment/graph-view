@@ -9,11 +9,11 @@ import android.graphics.Rect;
  */
 public class DrawableArea {
 
+    private final Rect rect;
     private int mXOffset = 0;
     private int mYOffset = 0;
     private int mHeight = 0;
     private int mWidth = 0;
-    private Rect rect;
 
     /**
      * Initial values can be set in the constructor

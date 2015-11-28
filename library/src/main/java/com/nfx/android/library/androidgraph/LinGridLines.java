@@ -12,8 +12,8 @@ public abstract class LinGridLines extends GridLines {
      *
      * @param axisOrientation either the x or y axis
      */
-    public LinGridLines(AxisOrientation
-            axisOrientation) {
+    LinGridLines(AxisOrientation
+                         axisOrientation) {
         super(axisOrientation);
     }
 
@@ -25,10 +25,10 @@ public abstract class LinGridLines extends GridLines {
      * @return the x Intersect or -1 if the grid line is out of range or grid Line should not be
      *          shown
      */
-    public float intersectZoomCompensated(int gridLine, int dimensionLength) {
+    protected float intersectZoomCompensated(int gridLine, int dimensionLength) {
         float intersect = intersect(gridLine);
-        if (intersect == LESS_THAN_VIEWABLE_AREA) {
-            return LESS_THAN_VIEWABLE_AREA;
+        if (intersect == GRID_LINE_OUT_OF_RANGE) {
+            return GRID_LINE_OUT_OF_RANGE;
         }
 
         float virtualIntersectPercentage = intersect / dimensionLength;

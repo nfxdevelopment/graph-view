@@ -20,10 +20,19 @@ import java.util.Collection;
 public class GraphManager extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "GraphManager";
     /**
-     * An object to draw all of the background information, including gridlines, axis information
+     * An object to draw all of the background information, including grid lines, axis information
      * and a background color
      */
-    BackgroundManager mBackgroundManager;
+    private final BackgroundManager mBackgroundManager;
+    /**
+     * Handles the drawing of a unlimited amount of Signals
+     **/
+    private final SignalManager mSignalManager;
+    /**
+     * An interface to update the signal data
+     */
+    private final GraphSignalInputInterface mGraphSignalInputInterface = new
+            GraphSignalInputInterface();
     /**
      * Handle to the application context, used to e.g. fetch Drawables.
      */
@@ -33,18 +42,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      **/
     private Collection<Marker> mMarkers = new ArrayList<>();
     /**
-     * Handles the drawing of a unlimited amount of Signals
-     **/
-    private SignalManager mSignalManager;
-
-    /**
      * The thread that updates the surface
      **/
     private GraphManagerThread mGraphManagerThread;
-    /**
-     * An interface to update the signal data
-     */
-    private GraphSignalInputInterface mGraphSignalInputInterface = new GraphSignalInputInterface();
 
     /**
      * Constructor for graph manager
@@ -90,7 +90,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * Any time a change in size is seen this is called, this information is used to manipulate
      * any drawable areas graph manager knows of
      * @param holder the surface holder that has changed
-     * @param format the new pixelformat
+     * @param format the new pixel format
      * @param width the new width
      * @param height the new height
      */
@@ -139,7 +139,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         }
     }
 
-    protected void doDraw(Canvas canvas) {
+    private void doDraw(Canvas canvas) {
         mBackgroundManager.doDraw(canvas);
         mSignalManager.doDraw(canvas);
     }

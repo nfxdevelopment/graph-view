@@ -18,10 +18,10 @@ public class SignalBuffers {
     /**
      * A collection of signal buffers which is synchronized
      */
-    private Map<Integer, SignalBuffer> mSignalBuffers = new ConcurrentHashMap<>();
+    private final Map<Integer, SignalBuffer> mSignalBuffers = new ConcurrentHashMap<>();
 
     /**
-     * Use to add anothe signal into the collection. If the Id is not unique it will remove the
+     * Use to add another signal into the collection. If the Id is not unique it will remove the
      * signal with the given id and display a warning
      *
      * @param id           a unique id for th signal

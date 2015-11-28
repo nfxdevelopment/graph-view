@@ -19,60 +19,60 @@ public abstract class GridLines extends DrawableObject {
     /**
      * Indicates that the grid line is less than the viewable area
      */
-    public static final float LESS_THAN_VIEWABLE_AREA = -1;
+    static final float LESS_THAN_VIEWABLE_AREA = -1;
     /**
      * Indicates that the grid line is greater than the viewable area
      */
-    public static final float GREATER_THAN_VIEWABLE_AREA = -2;
+    static final float GREATER_THAN_VIEWABLE_AREA = -2;
+    /**
+     * When a using asks for a grid line which is not present in this object
+     */
+    static final float GRID_LINE_OUT_OF_RANGE = -3;
     /**
      * Number of grid lines to display in the area
      */
-    protected int mNumberOfGridLines = 6;
+    final int mNumberOfGridLines = 6;
+    /**
+     * This allows us to know the axis at runtime
+     */
+    private final AxisOrientation mAxisOrientation;
+    /**
+     * Minor GridLines
+     */
+    private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
     /**
      * Color of the grid lines
      */
-    protected int mGridColor = Color.GRAY;
+    int mGridColor = Color.GRAY;
     /**
      * Use an even number to ensure all grid line strokes look the same
      */
-    protected float mGridStrokeWidth = 4f;
+    float mGridStrokeWidth = 4f;
     /**
      * Describes the viewable part of the grid
      */
-    protected ZoomDisplay mZoomDisplay;
+    ZoomDisplay mZoomDisplay;
+    /**
+     * The axis text to be displayed if needed
+     */
+    AxisText mAxisText;
     /**
      * Graph dimension size, This is needed for minor grid lines to calculate where to display in
      * cases of zoom
      */
-    protected float mGridLinesSize;
-    protected float mGridLinesOffset;
-    /**
-     * The axis text to be displayed if needed
-     */
-    protected AxisText mAxisText;
+    private float mGridLinesSize;
+    private float mGridLinesOffset;
     /**
      * Base Context
      */
     private Context mContext;
-    /**
-     * This allows us to know the axis at runtime
-     */
-    private AxisOrientation mAxisOrientation;
-    /**
-     * Minor GridLines
-     */
-    private Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
-    /**
-     * If the grid lines spacing is greater than this number minor gridlines are added
-     */
-    private float mPlaceMinorGridLinesSize = 500f;
 
     /**
      * Constructor of GridLines
      *
      * @param axisOrientation either the x or y axis
      */
-    public GridLines(AxisOrientation axisOrientation) {
+    GridLines(AxisOrientation axisOrientation) {
         mAxisOrientation = axisOrientation;
         // Set a default zoom Display
         mZoomDisplay = new ZoomDisplay(1f, 0f);
@@ -115,7 +115,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param strokeWidth new stroke width value
      */
-    public void setGridStrokeWidth(int strokeWidth) {
+    private void setGridStrokeWidth(int strokeWidth) {
         mGridStrokeWidth = strokeWidth;
     }
 
@@ -124,7 +124,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param color new color value
      */
-    public void setColor(int color) {
+    private void setColor(int color) {
         mGridColor = color;
     }
 
@@ -139,9 +139,9 @@ public abstract class GridLines extends DrawableObject {
      * @param gridLine grid line to find out the intersecting value
      * @return intersecting point
      */
-    protected float intersect(int gridLine) {
+    float intersect(int gridLine) {
         if (gridLine >= mNumberOfGridLines || gridLine < 0) {
-            return LESS_THAN_VIEWABLE_AREA;
+            return GRID_LINE_OUT_OF_RANGE;
         }
 
         return mGridLinesOffset + getGridLineSpacingInPixels() * (float) (gridLine);
@@ -180,11 +180,11 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param gridLinesSize size of the full graph viewable area
      */
-    public void setGridLinesSize(float gridLinesSize) {
+    void setGridLinesSize(float gridLinesSize) {
         mGridLinesSize = gridLinesSize;
     }
 
-    public void setGridLinesOffset(float graphOffset) {
+    void setGridLinesOffset(float graphOffset) {
         mGridLinesOffset = graphOffset;
     }
 
@@ -218,7 +218,7 @@ public abstract class GridLines extends DrawableObject {
         }
     }
 
-    public ZoomDisplay getZoomDisplay() {
+    private ZoomDisplay getZoomDisplay() {
         return mZoomDisplay;
     }
 
@@ -258,6 +258,8 @@ public abstract class GridLines extends DrawableObject {
         float zoomSpacing = getGridLineSpacingInPixels() / mZoomDisplay.getZoomLevelPercentage();
 
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
+            // If the grid lines spacing is greater than this number minor grid lines are added
+            float mPlaceMinorGridLinesSize = 500f;
             if (zoomSpacing > mPlaceMinorGridLinesSize) {
                 float lowerIntersect = intersectZoomCompensated(i);
                 float upperIntersect = intersectZoomCompensated(i + 1);
@@ -304,7 +306,7 @@ public abstract class GridLines extends DrawableObject {
     }
 
     /**
-     * this tells the children grid lineswhere the major grid lines would sit at 100% zoom level in
+     * this tells the children grid lines where the major grid lines would sit at 100% zoom level in
      * the new surface dimensions
      *
      * @param gridLine      The child grid line

@@ -74,7 +74,7 @@ public class YAxisText extends AxisText {
      * @param currentDrawableArea will reflect the new drawable area pass in current drawableArea
      */
     @Override
-    public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
+    protected void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
         int xOffset = currentDrawableArea.getLeft();
         int yOffset = currentDrawableArea.getTop();
         int width = currentDrawableArea.getWidth();

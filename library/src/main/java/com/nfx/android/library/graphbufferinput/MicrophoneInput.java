@@ -29,6 +29,8 @@ public class MicrophoneInput extends Input {
     private static final int sAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
     private static final float sMinimumSpan = 200f;
+    // Audio input block size, in samples.
+    private final int inputBlockSize = 256;
     /**
      * Audio input device
      */
@@ -37,8 +39,6 @@ public class MicrophoneInput extends Input {
     private boolean running = false;
     // The thread, if any, which is currently reading.  Null if not running.
     private Thread readerThread = null;
-    // Audio input block size, in samples.
-    private int inputBlockSize = 256;
     private boolean mPaused = false;
     private DisplayMetrics mDisplayMetrics;
     private float lastSpanX;
@@ -49,7 +49,7 @@ public class MicrophoneInput extends Input {
      *
      * @param graphSignalInputInterface interface to send signal data to
      */
-    public MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
+    protected MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
         super(graphSignalInputInterface);
         mGraphSignalInputInterface = graphSignalInputInterface;
         mSignalBuffers.addSignalBuffer(0, inputBlockSize, SignalBuffer.SignalScale.linear);
@@ -119,10 +119,11 @@ public class MicrophoneInput extends Input {
             audioInput.startRecording();
             while (running) {
 
-                int nread = audioInput.read(buffer, 0, inputBlockSize, AudioRecord.READ_BLOCKING);
+                int bytesRead = audioInput.read(buffer, 0, inputBlockSize, AudioRecord
+                        .READ_BLOCKING);
 
-                if (nread < 0) {
-                    Log.e(TAG, "Audio read failed: error " + nread);
+                if (bytesRead < 0) {
+                    Log.e(TAG, "Audio read failed: error " + bytesRead);
                     running = false;
                     break;
                 }
@@ -142,7 +143,7 @@ public class MicrophoneInput extends Input {
      *
      * @param buffer Buffer containing the data.
      */
-    public void readDone(float[] buffer) {
+    protected void readDone(float[] buffer) {
         if (mGraphSignalInputInterface != null) {
             mSignalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
         }
@@ -178,7 +179,7 @@ public class MicrophoneInput extends Input {
         return true;
     }
 
-    void scrollHandle(ZoomDisplay zoomDisplay, float distanceMoved, float displaySize) {
+    private void scrollHandle(ZoomDisplay zoomDisplay, float distanceMoved, float displaySize) {
         float displayOffset = zoomDisplay.getDisplayOffsetPercentage();
 
         float movementPercentage = (distanceMoved / displaySize) *
@@ -233,7 +234,7 @@ public class MicrophoneInput extends Input {
         return true;
     }
 
-    void scaleHandle(ZoomDisplay zoomDisplay, float scaleFactor) {
+    private void scaleHandle(ZoomDisplay zoomDisplay, float scaleFactor) {
         float displayZoom = zoomDisplay.getZoomLevelPercentage();
 
         float zoomPercentage = displayZoom * scaleFactor;
@@ -241,8 +242,9 @@ public class MicrophoneInput extends Input {
         zoomDisplay.setZoomLevelPercentage(zoomPercentage);
     }
 
-    void offsetAccountedScaleHandle(ZoomDisplay zoomDisplay, float scaleFactor, float focusPoint,
-                                    float displaySize) {
+    private void offsetAccountedScaleHandle(ZoomDisplay zoomDisplay, float scaleFactor, float
+            focusPoint,
+                                            float displaySize) {
         float displayOffset = zoomDisplay.getDisplayOffsetPercentage();
         float displayFarSide = zoomDisplay.getFarSideOffsetPercentage();
         //Calculate the focal point of the users finger based on the whole signal

@@ -13,29 +13,21 @@ import java.text.DecimalFormat;
  * NFX Development
  * Created by nick on 24/11/15.
  * <p/>
- * As the boarder is draw separately to the axis is separated. This alows us to display a always
+ * As the boarder is draw separately to the axis is separated. This allows us to display a always
  * up to date value on the boarders
  */
 public class BoarderText extends DrawableObject {
     /**
      * paint for the text
      */
-    protected Paint mTextPaint = new Paint();
+    private final Paint mTextPaint = new Paint();
     /**
      * Minimum and the span of the x and y axis
      */
-    private float mXMinimum;
-    private float mYMinimum;
-    private float mXSpan;
-    private float mYSpan;
-    /**
-     * Max width of string to display
-     */
-    private String sMaximumString = "-0.00";
-    /**
-     * text size before scaling for screen has been applied
-     */
-    private int mUnscaledTextSize = 16;
+    private final float mXMinimum;
+    private final float mYMinimum;
+    private final float mXSpan;
+    private final float mYSpan;
 
     /**
      * The zoom levels from the x and y Axis
@@ -68,6 +60,10 @@ public class BoarderText extends DrawableObject {
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.RIGHT);
         mTextPaint.setColor(Color.GRAY);
+        /*
+      text size before scaling for screen has been applied
+     */
+        int mUnscaledTextSize = 16;
         mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
         mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
     }
@@ -78,6 +74,10 @@ public class BoarderText extends DrawableObject {
         df.setRoundingMode(RoundingMode.CEILING);
 
         Rect bounds = new Rect();
+        /*
+      Max width of string to display
+     */
+        String sMaximumString = "-0.00";
         mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
 
         String displayString = String.valueOf(df.format(mYMinimum +
@@ -129,7 +129,7 @@ public class BoarderText extends DrawableObject {
      *
      * @return text height
      */
-    public float getRealTextHeight() {
+    private float getRealTextHeight() {
         return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
     }
 }

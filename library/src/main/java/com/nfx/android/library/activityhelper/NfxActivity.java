@@ -32,15 +32,15 @@ public abstract class NfxActivity extends AppCompatActivity {
     /**
      * A Map describing whether the permission is allowed by the user
      */
-    public Map<String, Boolean> mPermissionsGranted = new HashMap<>();
+    private final Map<String, Boolean> mPermissionsGranted = new HashMap<>();
+    /**
+     * A Map of all permissions the developer wants
+     */
+    private final Map<String, Permission> mPermissionsRequested = new HashMap<>();
     /**
      * Shared preferences where information of which permissions have been asked for
      */
     private SharedPreferences mSharedPreferences;
-    /**
-     * A Map of all permissions the developer wants
-     */
-    private Map<String, Permission> mPermissionsRequested = new HashMap<>();
 
     /**
      * The Constructor that takes in the requested permissions and stores them for later use in
@@ -48,7 +48,7 @@ public abstract class NfxActivity extends AppCompatActivity {
      *
      * @param permissionsRequested static integer found in {@code Permission}
      */
-    public NfxActivity(int[] permissionsRequested) {
+    protected NfxActivity(int[] permissionsRequested) {
         super();
 
         for (int permissionRequested : permissionsRequested) {

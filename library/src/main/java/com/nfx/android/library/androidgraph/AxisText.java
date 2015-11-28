@@ -21,39 +21,27 @@ public abstract class AxisText extends DrawableObject {
     /**
      * grid lines that text is relating to
      */
-    protected GridLines mGridLines;
+    final GridLines mGridLines;
     /**
      * paint for the text
      */
-    protected Paint mTextPaint = new Paint();
-    /**
-     * the lowest number that the axis displays
-     */
-    protected float mMinimumAxisValue = 0;
-    /**
-     * the span of the values displayed on the axis
-     */
-    protected float mAxisValueSpan = 1;
+    final Paint mTextPaint = new Paint();
     /**
      * boarder size
      */
-    protected int mGraphBoarderSize = 0;
+    int mGraphBoarderSize = 0;
     /**
-     * context of application
+     * the lowest number that the axis displays
      */
-    private Context mContext;
+    private float mMinimumAxisValue = 0;
     /**
-     * text size before scaling for screen has been applied
+     * the span of the values displayed on the axis
      */
-    private int mUnscaledTextSize = 16;
+    private float mAxisValueSpan = 1;
     /**
      * the highest number the axis displays
      */
     private float mMaximumAxisValue = 0;
-    /**
-     * Max width of string to display
-     */
-    private String sMaximumString = "-0.00";
 
     /**
      * Constructor
@@ -64,7 +52,6 @@ public abstract class AxisText extends DrawableObject {
      * @param maximumAxisValue the highest number the axis displays
      */
     AxisText(Context context, GridLines gridLines, float minimumAxisValue, float maximumAxisValue) {
-        mContext = context;
         mGridLines = gridLines;
 
         // Check to ensure the minimum is less that the maximum
@@ -76,11 +63,15 @@ public abstract class AxisText extends DrawableObject {
             Log.w(TAG, "Given maximum value is less than minimum value");
         }
 
-        float textScale = mContext.getResources().getDisplayMetrics().density;
+        float textScale = context.getResources().getDisplayMetrics().density;
 
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setColor(Color.GRAY);
+        /*
+      text size before scaling for screen has been applied
+     */
+        int mUnscaledTextSize = 16;
         mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
         mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
     }
@@ -91,7 +82,7 @@ public abstract class AxisText extends DrawableObject {
      * @param lineNumber line number to calculate for
      * @return a string which represents the value of the grid line
      */
-    protected String displayString(int lineNumber) {
+    String displayString(int lineNumber) {
         float locationOnGraph = mGridLines.intersect(lineNumber) /
                 mGridLines.getDrawableArea().getWidth();
 
@@ -110,8 +101,12 @@ public abstract class AxisText extends DrawableObject {
      *
      * @return maximum width of text
      */
-    public float getMaximumTextWidth() {
+    float getMaximumTextWidth() {
         Rect bounds = new Rect();
+        /*
+      Max width of string to display
+     */
+        String sMaximumString = "-0.00";
         mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
         return bounds.width();
     }
@@ -122,7 +117,7 @@ public abstract class AxisText extends DrawableObject {
      *
      * @return text height
      */
-    public float getRealTextHeight() {
+    float getRealTextHeight() {
         return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
     }
 

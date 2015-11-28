@@ -25,61 +25,19 @@ public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback 
     /**
      * Context
      */
-    private Context mContext;
+    private final Context mContext;
     /**
      * Handles all scaling gestures
      */
-    private ScaleGestureDetector mScaleGestureDetector;
+    private final ScaleGestureDetector mScaleGestureDetector;
     /**
      * Handles single tap, double tap, moves and flings
      */
-    private GestureDetectorCompat mGestureDetector;
+    private final GestureDetectorCompat mGestureDetector;
     /**
      * The listener that wants to be informed of the touch input
      */
-    private TouchListener mTouchListener;
-    /**
-     * The scale listener, used for handling multi-finger scale gestures.
-     */
-    private final ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener
-            = new ScaleGestureDetector.SimpleOnScaleGestureListener() {
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
-            return mTouchListener.onScaleBegin(scaleGestureDetector);
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
-            return mTouchListener.onScale(scaleGestureDetector);
-        }
-    };
-    private final GestureDetector.SimpleOnGestureListener mGestureListener
-            = new GestureDetector.SimpleOnGestureListener() {
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return mTouchListener.onDown(e);
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            return mTouchListener.onSingleTap(e);
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            return mTouchListener.onDoubleTap(e);
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            return mTouchListener.onScroll(e1, e2, distanceX, distanceY);
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            return mTouchListener.onFling(e1, e2, velocityX, velocityY);
-        }
-    };
+    private final TouchListener mTouchListener;
 
     /**
      * Pass in the view in which to listen for touch inputs from and the input that wants to be
@@ -97,7 +55,51 @@ public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback 
         holder.addCallback(this);
 
         // Sets up interactions
+        /*
+      The scale listener, used for handling multi-finger scale gestures.
+     */
+        ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener = new
+                ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                    @Override
+                    public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+                        return mTouchListener.onScaleBegin(scaleGestureDetector);
+                    }
+
+                    @Override
+                    public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+                        return mTouchListener.onScale(scaleGestureDetector);
+                    }
+                };
         mScaleGestureDetector = new ScaleGestureDetector(view.getContext(), mScaleGestureListener);
+        GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector
+                .SimpleOnGestureListener() {
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return mTouchListener.onDown(e);
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                return mTouchListener.onSingleTap(e);
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                return mTouchListener.onDoubleTap(e);
+            }
+
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float
+                    distanceY) {
+                return mTouchListener.onScroll(e1, e2, distanceX, distanceY);
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float
+                    velocityY) {
+                return mTouchListener.onFling(e1, e2, velocityX, velocityY);
+            }
+        };
         mGestureDetector = new GestureDetectorCompat(view.getContext(), mGestureListener);
 
     }

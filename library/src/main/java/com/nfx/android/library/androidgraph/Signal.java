@@ -17,26 +17,17 @@ public class Signal extends DrawableObject {
     /**
      * The buffer which will be drawn by this object
      */
-    private SignalBuffer mSignalBuffer;
+    private final SignalBuffer mSignalBuffer;
 
     /**
      * Style of the signal
      */
-    private Paint mSignalPaint;
-
-    /**
-     * Default color
-     */
-    private int mColor = Color.YELLOW;
-    /**
-     * Default stroke width
-     */
-    private float mStrokeWidth = 4f;
+    private final Paint mSignalPaint;
 
     /**
      * How many points per on screen buffer. This is a screen width divisor
      */
-    private int mLineResolution = 16;
+    private final int mLineResolution = 16;
 
     /**
      * Constructor
@@ -47,7 +38,15 @@ public class Signal extends DrawableObject {
         mSignalBuffer = signalBuffer;
 
         mSignalPaint = new Paint();
+        /*
+      Default color
+     */
+        int mColor = Color.YELLOW;
         mSignalPaint.setColor(mColor);
+        /*
+      Default stroke width
+     */
+        float mStrokeWidth = 4f;
         mSignalPaint.setStrokeWidth(mStrokeWidth);
         mSignalPaint.setAntiAlias(true);
     }

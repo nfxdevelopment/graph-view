@@ -16,10 +16,6 @@ public class Boarder extends DrawableObject {
      * Stroke width of the board line
      */
     private static final int mStrokeWidth = 10;
-    /**
-     * Color of the boarder this can be updated at runtime
-     */
-    private int color = Color.GRAY;
 
     /**
      * Called from BackManager when a draw is needed
@@ -29,6 +25,10 @@ public class Boarder extends DrawableObject {
     @Override
     public void doDraw(Canvas canvas) {
         Paint paint = new Paint();
+        /*
+      Color of the boarder this can be updated at runtime
+     */
+        int color = Color.GRAY;
         paint.setColor(color);
         paint.setStrokeWidth(mStrokeWidth);
 
@@ -38,14 +38,14 @@ public class Boarder extends DrawableObject {
         canvas.drawLine(getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getTop(),
                 getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getBottom(),
                 paint);
-        // Draw the right boader
+        // Draw the right boarder
         canvas.drawLine(getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getTop(),
                 getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getBottom(),
                 paint);
         // Draw the top boarder
         canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() + halfStrokeWidth,
                 getDrawableArea().getRight(), getDrawableArea().getTop() + halfStrokeWidth, paint);
-        // draw the bottom boader
+        // draw the bottom boarder
         canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getBottom() -
                         halfStrokeWidth,
                 getDrawableArea().getRight(), getDrawableArea().getBottom() - halfStrokeWidth, paint);

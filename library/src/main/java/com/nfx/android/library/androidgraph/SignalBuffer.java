@@ -14,25 +14,25 @@ public class SignalBuffer {
     /**
      * Information about the scaling of signal in the y axis
      */
-    private ZoomDisplay mYZoomDisplay;
+    private final ZoomDisplay mYZoomDisplay;
     /**
      * Information about the scaling of signal in the y axis
      */
-    private ZoomDisplay mXZoomDisplay;
+    private final ZoomDisplay mXZoomDisplay;
     /**
      * So we now if the data is logarithmic or linear
      */
-    private SignalScale mSignalScale;
+    private final SignalScale mSignalScale;
 
     /**
      * Unique Id for signal
      */
-    private int mId;
+    private final int mId;
 
     /**
      * buffer of given size which is worked out at runtime. This data is normalized 0-1
      */
-    private float[] mBuffer;
+    private final float[] mBuffer;
 
     /**
      * Constructor
@@ -73,7 +73,7 @@ public class SignalBuffer {
      * scaling the read buffer
      * The algorithm works out each new point separately. More often than not the new sample will
      * fall between to of buffer points therefore we have to do some aliasing
-     * TODO Seems to be a bugin this where lowerPosition is greater than buffer length
+     * TODO Seems to be a bug in this where lowerPosition is greater than buffer length
      *
      * @param numberOfPoints desired number of points for new buffer
      * @return new buffer
@@ -117,7 +117,7 @@ public class SignalBuffer {
         return mId;
     }
 
-    public int getSizeOfBuffer() {
+    private int getSizeOfBuffer() {
         return mBuffer.length;
     }
 

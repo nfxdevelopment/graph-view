@@ -12,15 +12,15 @@ public abstract class LogGridLines extends GridLines {
     /**
      * Used to work out positions relative to this value
      */
-    protected double maxLogValue;
+    private double maxLogValue;
 
     /**
-     * Contructor which passes straight through
+     * Constructor which passes straight through
      *]
      * @param axisOrientation either the x or y axis
      */
-    public LogGridLines(AxisOrientation
-            axisOrientation) {
+    LogGridLines(AxisOrientation
+                         axisOrientation) {
         super(axisOrientation);
     }
 
@@ -42,7 +42,7 @@ public abstract class LogGridLines extends GridLines {
      * @return the x Intersect or -1 if the grid line is out of range
      */
     @Override
-    public float intersectZoomCompensated(int gridLine, int dimensionLength) {
+    protected float intersectZoomCompensated(int gridLine, int dimensionLength) {
         float linearOffset = intersect(gridLine);
         if (linearOffset == LESS_THAN_VIEWABLE_AREA) {
             return LESS_THAN_VIEWABLE_AREA;

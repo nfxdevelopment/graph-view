@@ -10,15 +10,15 @@ import com.nfx.android.library.graphuserinput.TouchInput;
  */
 public abstract class Input implements TouchInput.TouchListener {
     /**
+     * Signal object to send to the graph
+     */
+    protected final SignalBuffers mSignalBuffers = new SignalBuffers();
+    /**
      * The interface in which to send updates to
      */
     protected GraphManager.GraphSignalInputInterface mGraphSignalInputInterface;
-    /**
-     * Signal object to send to the graph
-     */
-    protected SignalBuffers mSignalBuffers = new SignalBuffers();
 
-    public Input(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
+    Input(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
         mGraphSignalInputInterface = graphSignalInputInterface;
     }
 
@@ -38,7 +38,7 @@ public abstract class Input implements TouchInput.TouchListener {
     public abstract void stop();
 
     /**
-     * destory the buffers and listeners getting ready to die
+     * destroy the buffers and listeners getting ready to die
      */
     public abstract void destroy();
 }
