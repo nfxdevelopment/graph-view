@@ -65,5 +65,9 @@ public class LogYGridLines extends LogGridLines {
         super.surfaceChanged(drawableArea);
         setGridLinesSize(drawableArea.getHeight());
         setGridLinesOffset(0);
+
+        if(mAxisText != null) {
+            mAxisText.calculateGridLineValues();
+        }
     }
 }

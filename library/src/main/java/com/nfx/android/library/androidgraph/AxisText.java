@@ -102,7 +102,7 @@ public abstract class AxisText extends DrawableObject {
         // +1 as we are not labeling the limits here
         float valueToDisplay = mMinimumAxisValue + (mAxisValueSpan * locationOnGraph);
 
-        return String.valueOf(mDecimalFormat.format(valueToDisplay));
+        return String.valueOf((float) Math.round(valueToDisplay * 100d) / 100d);
     }
 
     abstract float locationOnGraph(int gridLine);

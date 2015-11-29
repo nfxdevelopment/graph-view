@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -90,8 +91,9 @@ public abstract class GridLines extends DrawableObject {
         if (mAxisText != null) {
             mAxisText.doDraw(canvas);
         }
-        for (GridLines gridLines : mChildGridLines.values()) {
-            gridLines.doDraw(canvas);
+        Iterator<GridLines> iterator = mChildGridLines.values().iterator();
+        while(iterator.hasNext()) {
+            iterator.next().doDraw(canvas);
         }
     }
 
@@ -224,7 +226,6 @@ public abstract class GridLines extends DrawableObject {
             gridLines.getValue().surfaceChanged(drawableArea);
             minorGridLineSurfaceChanged(gridLines.getValue(), gridLines.getKey());
         }
-        mAxisText.calculateGridLineValues();
     }
 
     private ZoomDisplay getZoomDisplay() {
@@ -254,7 +255,9 @@ public abstract class GridLines extends DrawableObject {
                     }
                 }
 
-                mAxisText.calculateGridLineValues();
+                if(mAxisText != null) {
+                    mAxisText.calculateGridLineValues();
+                }
             }
         });
     }
