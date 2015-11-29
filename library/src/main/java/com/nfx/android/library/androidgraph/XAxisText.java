@@ -34,15 +34,12 @@ public class XAxisText extends AxisText {
         // Our limits are over laps with other grid lines, hence starting from 1 and -1
         for (int i = 1; i < mGridLines.getNumberOfGridLines() - 1; ++i) {
             // First calculate the number to display
-            String displayString = displayString(i);
-
-            Rect bounds = new Rect();
-            mTextPaint.getTextBounds(displayString, 0, displayString.length(), bounds);
+            String displayString = mGridLineValues[i];
 
             float xIntersect = mGridLines.intersectZoomCompensated(i);
             // Ensure the grid line is on screen and not overlapping the boarder text
-            if (xIntersect > (getDrawableArea().getLeft() + bounds.width()) &&
-                    xIntersect < getDrawableArea().getRight() - bounds.width()) {
+            if (xIntersect > (getDrawableArea().getLeft() + mBounds.width()) &&
+                    xIntersect < getDrawableArea().getRight() - mBounds.width()) {
                 int x = getDrawableArea().getLeft() + (int) xIntersect;
 
                 // Remember the text is drawn on the baseline
@@ -89,5 +86,10 @@ public class XAxisText extends AxisText {
         height -= getDrawableArea().getHeight();
 
         currentDrawableArea.setDrawableArea(xOffset, yOffset, width, height);
+    }
+
+    @Override
+    float locationOnGraph(int gridLine) {
+        return mGridLines.intersect(gridLine) / mGridLines.getDrawableArea().getWidth();
     }
 }

@@ -75,12 +75,11 @@ public class SignalBuffer {
      * fall between to of buffer points therefore we have to do some aliasing
      * TODO Seems to be a bug in this where lowerPosition is greater than buffer length
      *
-     * @param numberOfPoints desired number of points for new buffer
-     * @return new buffer
+     * @param scaledBuffer buffer to fill
      */
-    public float[] getScaledBuffer(int numberOfPoints) {
+    public void getScaledBuffer(float[] scaledBuffer) {
 
-        float[] scaledBuffer = new float[numberOfPoints];
+        int numberOfPoints = scaledBuffer.length;
 
         synchronized (this) {
             // -1 to get the spacing between the samples.
@@ -109,8 +108,6 @@ public class SignalBuffer {
                 }
             }
         }
-
-        return scaledBuffer;
     }
 
     public int getId() {

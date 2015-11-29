@@ -3,7 +3,6 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
 /**
  * NFX Development
@@ -37,16 +36,14 @@ public class YAxisText extends AxisText {
         for (int i = 1; i < mGridLines.getNumberOfGridLines() - 1; ++i) {
             // The drawing of text happens top to bottom but the scale goes bottom to top. Therefore
             // we need to invert the calculation of the display string
-            String displayString = displayString((mGridLines.getNumberOfGridLines() - 1) - i);
+            String displayString = mGridLineValues[(mGridLines.getNumberOfGridLines() - 1) - i];
 
-            Rect bounds = new Rect();
-            mTextPaint.getTextBounds(displayString, 0, displayString.length(), bounds);
             float yIntersect = mGridLines.intersectZoomCompensated(i);
             // Ensure the grid line is on screen
             if (yIntersect > (getDrawableArea().getTop() + Math.abs(mTextPaint.ascent())) &&
                     yIntersect < (getDrawableArea().getBottom() -
-                            (getRealTextHeight() * 2) - bounds.height())) {
-                int y = getDrawableArea().getTop() + (int) yIntersect + (bounds.height() / 2);
+                            (getRealTextHeight() * 2) - mBounds.height())) {
+                int y = getDrawableArea().getTop() + (int) yIntersect + (mBounds.height() / 2);
 
                 canvas.drawText(displayString, getDrawableArea().getWidth(), y + mGraphBoarderSize,
                         mTextPaint);
@@ -88,5 +85,16 @@ public class YAxisText extends AxisText {
         width -= getDrawableArea().getWidth();
 
         currentDrawableArea.setDrawableArea(xOffset, yOffset, width, height);
+    }
+
+    /**
+     * A value representing the location of a given grid line on the graph. That value is given as
+     * a percentage.
+     *
+     * @param gridLine grid line number
+     * @return location of grid line
+     */
+    float locationOnGraph(int gridLine) {
+        return mGridLines.intersect(gridLine) / mGridLines.getDrawableArea().getHeight();
     }
 }

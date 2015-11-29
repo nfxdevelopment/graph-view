@@ -7,7 +7,7 @@ import android.graphics.Rect;
  * <p/>
  * A helper class to advise drawable objects where to draw within the canvas
  */
-public class DrawableArea {
+class DrawableArea {
 
     private final Rect rect;
     private int mXOffset = 0;

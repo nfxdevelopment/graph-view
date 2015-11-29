@@ -27,6 +27,18 @@ public abstract class AxisText extends DrawableObject {
      */
     final Paint mTextPaint = new Paint();
     /**
+     * Store the values in a array as working the value every draw was memory intensive
+     */
+    final String[] mGridLineValues;
+    /**
+     * The Bounds of the display text
+     */
+    final Rect mBounds = new Rect();
+    /**
+     * The format to display in
+     */
+    private final DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
+    /**
      * boarder size
      */
     int mGraphBoarderSize = 0;
@@ -69,31 +81,31 @@ public abstract class AxisText extends DrawableObject {
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setColor(Color.GRAY);
         /*
-      text size before scaling for screen has been applied
-     */
+          text size before scaling for screen has been applied
+         */
         int mUnscaledTextSize = 16;
         mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
         mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+
+        mDecimalFormat.setRoundingMode(RoundingMode.CEILING);
+
+        mGridLineValues = new String[gridLines.getNumberOfGridLines()];
+        calculateGridLineValues();
+
+        String sMaximumString = "-0.00";
+        Rect bounds = new Rect();
+        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
     }
 
-    /**
-     * calculates the string to display for a given grid number
-     *
-     * @param lineNumber line number to calculate for
-     * @return a string which represents the value of the grid line
-     */
-    String displayString(int lineNumber) {
-        float locationOnGraph = mGridLines.intersect(lineNumber) /
-                mGridLines.getDrawableArea().getWidth();
-
+    private String displayString(int gridLine) {
+        float locationOnGraph = locationOnGraph(gridLine);
         // +1 as we are not labeling the limits here
-        float valueToDisplay = mAxisValueSpan * locationOnGraph;
+        float valueToDisplay = mMinimumAxisValue + (mAxisValueSpan * locationOnGraph);
 
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setRoundingMode(RoundingMode.CEILING);
-
-        return String.valueOf(df.format(valueToDisplay));
+        return String.valueOf(mDecimalFormat.format(valueToDisplay));
     }
+
+    abstract float locationOnGraph(int gridLine);
 
     /**
      * This uses the maximum number which will be displayed on the axis, it still may be wider than
@@ -131,5 +143,11 @@ public abstract class AxisText extends DrawableObject {
 
     public float getMaximumAxisValue() {
         return mMaximumAxisValue;
+    }
+
+    public void calculateGridLineValues() {
+        for (int i = 0; i < mGridLineValues.length; ++i) {
+            mGridLineValues[i] = displayString(i);
+        }
     }
 }

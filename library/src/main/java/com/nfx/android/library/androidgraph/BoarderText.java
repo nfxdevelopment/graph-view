@@ -28,12 +28,26 @@ public class BoarderText extends DrawableObject {
     private final float mYMinimum;
     private final float mXSpan;
     private final float mYSpan;
-
+    /**
+     * The format in which to display on screen
+     */
+    private final DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
+    /**
+     * Maximum Bounds of text
+     */
+    private final Rect mBounds = new Rect();
     /**
      * The zoom levels from the x and y Axis
      */
     private ZoomDisplay mXZoomDisplay;
     private ZoomDisplay mYZoomDisplay;
+    /**
+     * The values to display in each corner
+     */
+    private String mLeftX;
+    private String mRightX;
+    private String mTopY;
+    private String mBottomY;
 
     /**
      * @param context  needed to work out the text size
@@ -66,39 +80,42 @@ public class BoarderText extends DrawableObject {
         int mUnscaledTextSize = 16;
         mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
         mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+
+        mDecimalFormat.setRoundingMode(RoundingMode.CEILING);
+
+        String sMaximumString = "-0.00";
+        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
+
+        calculateValuesToDisplay();
     }
 
     @Override
     public void doDraw(Canvas canvas) {
-        DecimalFormat df = new DecimalFormat("0.00");
-        df.setRoundingMode(RoundingMode.CEILING);
+        canvas.drawText(mTopY, getDrawableArea().getLeft() + mBounds.width(),
+                getDrawableArea().getTop() + mBounds.height(), mTextPaint);
 
-        Rect bounds = new Rect();
-        /*
-      Max width of string to display
-     */
-        String sMaximumString = "-0.00";
-        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
-
-        String displayString = String.valueOf(df.format(mYMinimum +
-                (mYZoomDisplay.getFarSideOffsetPercentage() * mYSpan)));
-        canvas.drawText(displayString, getDrawableArea().getLeft() + bounds.width(),
-                getDrawableArea().getTop() + bounds.height(), mTextPaint);
-
-        displayString = String.valueOf(df.format(mYMinimum +
-                (mYZoomDisplay.getDisplayOffsetPercentage() * mYSpan)));
-        canvas.drawText(displayString, getDrawableArea().getLeft() + bounds.width(),
+        canvas.drawText(mBottomY, getDrawableArea().getLeft() + mBounds.width(),
                 getDrawableArea().getBottom() - getRealTextHeight(), mTextPaint);
 
-        displayString = String.valueOf(df.format(mXMinimum +
-                (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan)));
-        canvas.drawText(displayString, 2 * (getDrawableArea().getLeft() + bounds.width()),
+        canvas.drawText(mLeftX, 2 * (getDrawableArea().getLeft() + mBounds.width()),
                 getDrawableArea().getBottom() - Math.abs(mTextPaint.descent()), mTextPaint);
 
-        displayString = String.valueOf(df.format(mXMinimum +
-                (mXZoomDisplay.getFarSideOffsetPercentage() * mXSpan)));
-        canvas.drawText(displayString, getDrawableArea().getRight(),
+        canvas.drawText(mRightX, getDrawableArea().getRight(),
                 getDrawableArea().getBottom() - Math.abs(mTextPaint.descent()), mTextPaint);
+    }
+
+    /**
+     * We calculate the value ahead of time to stop any hold up in doDraw
+     */
+    private void calculateValuesToDisplay() {
+        mTopY = String.valueOf(mDecimalFormat.format(mYMinimum +
+                ((1 - mYZoomDisplay.getDisplayOffsetPercentage()) * mYSpan)));
+        mBottomY = String.valueOf(mDecimalFormat.format(mYMinimum +
+                ((1 - mYZoomDisplay.getFarSideOffsetPercentage()) * mYSpan)));
+        mLeftX = String.valueOf(mDecimalFormat.format(mXMinimum +
+                (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan)));
+        mRightX = String.valueOf(mDecimalFormat.format(mXMinimum +
+                (mXZoomDisplay.getFarSideOffsetPercentage() * mXSpan)));
     }
 
     /**
@@ -121,6 +138,22 @@ public class BoarderText extends DrawableObject {
     public void setZoomDisplay(ZoomDisplay xZoomDisplay, ZoomDisplay yZoomDisplay) {
         mXZoomDisplay = xZoomDisplay;
         mYZoomDisplay = yZoomDisplay;
+
+        /*
+            We have to list for changes to the zoom offset to update the shown values
+         */
+        mXZoomDisplay.setTheListener(new ZoomDisplay.ZoomChangedListener() {
+            @Override
+            public void zoomChanged() {
+                calculateValuesToDisplay();
+            }
+        });
+        mYZoomDisplay.setTheListener(new ZoomDisplay.ZoomChangedListener() {
+            @Override
+            public void zoomChanged() {
+                calculateValuesToDisplay();
+            }
+        });
     }
 
     /**

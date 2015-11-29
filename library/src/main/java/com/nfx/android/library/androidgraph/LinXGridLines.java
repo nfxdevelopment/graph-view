@@ -2,7 +2,6 @@ package com.nfx.android.library.androidgraph;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 
 /**
  * NFX Development
@@ -26,9 +25,6 @@ public class LinXGridLines extends LinGridLines {
     @Override
     public void doDraw(Canvas canvas) {
         super.doDraw(canvas);
-        Paint paint = new Paint();
-        paint.setColor(mGridColor);
-        paint.setStrokeWidth(mGridStrokeWidth);
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float xIntersect = intersectZoomCompensated(i);
@@ -36,7 +32,7 @@ public class LinXGridLines extends LinGridLines {
                 canvas.drawLine(getDrawableArea().getLeft() + xIntersect, getDrawableArea()
                         .getTop(),
                         getDrawableArea().getLeft() + xIntersect, getDrawableArea().getBottom(),
-                        paint);
+                        mPaint);
             }
         }
     }

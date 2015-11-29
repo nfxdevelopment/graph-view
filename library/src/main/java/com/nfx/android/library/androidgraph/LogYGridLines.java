@@ -2,7 +2,6 @@ package com.nfx.android.library.androidgraph;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 
 /**
  * NFX Development
@@ -28,9 +27,6 @@ public class LogYGridLines extends LogGridLines {
     @Override
     public void doDraw(Canvas canvas) {
         super.doDraw(canvas);
-        Paint paint = new Paint();
-        paint.setColor(mGridColor);
-        paint.setStrokeWidth(mGridStrokeWidth);
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float yIntersect = intersectZoomCompensated(i);
@@ -38,7 +34,7 @@ public class LogYGridLines extends LogGridLines {
                 canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() +
                         yIntersect,
                         getDrawableArea().getRight(), getDrawableArea().getTop() + yIntersect,
-                        paint);
+                        mPaint);
 
             }
         }

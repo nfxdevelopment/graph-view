@@ -13,9 +13,22 @@ import android.graphics.Paint;
  */
 public class Boarder extends DrawableObject {
     /**
-     * Stroke width of the board line
+     * Stroke width of the boarder
      */
-    private static final int mStrokeWidth = 10;
+    private static final int STROKE_WIDTH = 10;
+    /**
+     * Color of the boarder
+     */
+    private static final int COLOR = Color.GRAY;
+    /**
+     * Paint to Draw with
+     */
+    private final Paint mPaint = new Paint();
+
+    public Boarder() {
+        mPaint.setColor(COLOR);
+        mPaint.setStrokeWidth(STROKE_WIDTH);
+    }
 
     /**
      * Called from BackManager when a draw is needed
@@ -24,31 +37,24 @@ public class Boarder extends DrawableObject {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        Paint paint = new Paint();
-        /*
-      Color of the boarder this can be updated at runtime
-     */
-        int color = Color.GRAY;
-        paint.setColor(color);
-        paint.setStrokeWidth(mStrokeWidth);
-
-        int halfStrokeWidth = mStrokeWidth / 2;
+        int halfStrokeWidth = STROKE_WIDTH / 2;
 
         // Draw the left boarder
         canvas.drawLine(getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getTop(),
                 getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getBottom(),
-                paint);
+                mPaint);
         // Draw the right boarder
         canvas.drawLine(getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getTop(),
                 getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getBottom(),
-                paint);
+                mPaint);
         // Draw the top boarder
         canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() + halfStrokeWidth,
-                getDrawableArea().getRight(), getDrawableArea().getTop() + halfStrokeWidth, paint);
+                getDrawableArea().getRight(), getDrawableArea().getTop() + halfStrokeWidth, mPaint);
         // draw the bottom boarder
-        canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getBottom() -
-                        halfStrokeWidth,
-                getDrawableArea().getRight(), getDrawableArea().getBottom() - halfStrokeWidth, paint);
+        canvas.drawLine(getDrawableArea().getLeft(),
+                getDrawableArea().getBottom() - halfStrokeWidth,
+                getDrawableArea().getRight(),
+                getDrawableArea().getBottom() - halfStrokeWidth, mPaint);
     }
 
     /**
@@ -57,7 +63,7 @@ public class Boarder extends DrawableObject {
      * @return stroke width only
      */
     public int getStrokeWidth() {
-        return mStrokeWidth;
+        return STROKE_WIDTH;
     }
 
     /**
@@ -68,10 +74,10 @@ public class Boarder extends DrawableObject {
      */
     @Override
     public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
-        int xOffset = currentDrawableArea.getLeft() + mStrokeWidth;
-        int yOffset = currentDrawableArea.getTop() + mStrokeWidth;
-        int width = currentDrawableArea.getWidth() - (mStrokeWidth * 2);
-        int height = currentDrawableArea.getHeight() - (mStrokeWidth * 2);
+        int xOffset = currentDrawableArea.getLeft() + STROKE_WIDTH;
+        int yOffset = currentDrawableArea.getTop() + STROKE_WIDTH;
+        int width = currentDrawableArea.getWidth() - (STROKE_WIDTH * 2);
+        int height = currentDrawableArea.getHeight() - (STROKE_WIDTH * 2);
 
         currentDrawableArea.setDrawableArea(xOffset, yOffset, width, height);
     }

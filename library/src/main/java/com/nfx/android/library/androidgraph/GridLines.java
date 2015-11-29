@@ -3,6 +3,7 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +30,21 @@ public abstract class GridLines extends DrawableObject {
      */
     static final float GRID_LINE_OUT_OF_RANGE = -3;
     /**
+     * Color of the grid lines
+     */
+    private static final int INITIAL_LINE_COLOR = Color.GRAY;
+    /**
+     * Use an even number to ensure all grid line strokes look the same
+     */
+    private static final float INITIAL_LINE_STROKE_WIDTH = 4f;
+    /**
      * Number of grid lines to display in the area
      */
     final int mNumberOfGridLines = 6;
+    /**
+     * Paint for the grid lines
+     */
+    final Paint mPaint = new Paint();
     /**
      * This allows us to know the axis at runtime
      */
@@ -40,14 +53,6 @@ public abstract class GridLines extends DrawableObject {
      * Minor GridLines
      */
     private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
-    /**
-     * Color of the grid lines
-     */
-    int mGridColor = Color.GRAY;
-    /**
-     * Use an even number to ensure all grid line strokes look the same
-     */
-    float mGridStrokeWidth = 4f;
     /**
      * Describes the viewable part of the grid
      */
@@ -76,6 +81,8 @@ public abstract class GridLines extends DrawableObject {
         mAxisOrientation = axisOrientation;
         // Set a default zoom Display
         mZoomDisplay = new ZoomDisplay(1f, 0f);
+        mPaint.setColor(INITIAL_LINE_COLOR);
+        mPaint.setStrokeWidth(INITIAL_LINE_STROKE_WIDTH);
     }
 
     @Override
@@ -116,7 +123,8 @@ public abstract class GridLines extends DrawableObject {
      * @param strokeWidth new stroke width value
      */
     private void setGridStrokeWidth(int strokeWidth) {
-        mGridStrokeWidth = strokeWidth;
+        mPaint.setStrokeWidth(strokeWidth);
+
     }
 
     /**
@@ -125,7 +133,7 @@ public abstract class GridLines extends DrawableObject {
      * @param color new color value
      */
     private void setColor(int color) {
-        mGridColor = color;
+        mPaint.setColor(color);
     }
 
     private float getGridLineSpacingInPixels() {
@@ -216,6 +224,7 @@ public abstract class GridLines extends DrawableObject {
             gridLines.getValue().surfaceChanged(drawableArea);
             minorGridLineSurfaceChanged(gridLines.getValue(), gridLines.getKey());
         }
+        mAxisText.calculateGridLineValues();
     }
 
     private ZoomDisplay getZoomDisplay() {
@@ -229,6 +238,7 @@ public abstract class GridLines extends DrawableObject {
      */
     public void setZoomDisplay(ZoomDisplay zoomDisplay) {
         mZoomDisplay = zoomDisplay;
+
         zoomDisplay.setTheListener(new ZoomDisplay.ZoomChangedListener() {
             @Override
             public void zoomChanged() {
@@ -243,6 +253,8 @@ public abstract class GridLines extends DrawableObject {
                         mChildGridLines.remove(majorGridLine.getKey());
                     }
                 }
+
+                mAxisText.calculateGridLineValues();
             }
         });
     }

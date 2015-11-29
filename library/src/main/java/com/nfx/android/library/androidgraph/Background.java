@@ -15,13 +15,17 @@ public class Background extends DrawableObject {
     /**
      * the doDraw function will take this color and paint the canvas
      **/
-    private int mBackgroundColor = Color.BLACK;
+    private static final int INITIAL_COLOR = Color.BLACK;
+
+    private final Paint mPaint = new Paint();
+
+    public Background() {
+        mPaint.setColor(INITIAL_COLOR);
+    }
 
     @Override
     public void doDraw(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setColor(mBackgroundColor);
-        canvas.drawRect(getDrawableArea().getRect(), paint);
+        canvas.drawRect(getDrawableArea().getRect(), mPaint);
     }
 
     /**
@@ -38,6 +42,6 @@ public class Background extends DrawableObject {
      * Use this to change the color at any point, changes will be seen after doDraw is called
      **/
     public void setBackgroundColor(int color){
-        mBackgroundColor = color;
+        mPaint.setColor(color);
     }
 }
