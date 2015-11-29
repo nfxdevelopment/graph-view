@@ -217,6 +217,8 @@ public class MicrophoneInput extends Input {
             float focusX = scaleGestureDetector.getFocusX();
             offsetAccountedScaleHandle(getZoomDisplayX(), scaleFactorX, focusX,
                     mDisplayMetrics.widthPixels);
+        } else {
+            lastSpanX = currentSpanX;
         }
 
         float currentSpanY = scaleGestureDetector.getCurrentSpanY();
@@ -229,6 +231,8 @@ public class MicrophoneInput extends Input {
 
             offsetAccountedScaleHandle(getZoomDisplayY(), scaleFactorY, focusY,
                     mDisplayMetrics.heightPixels);
+        } else {
+            lastSpanY = currentSpanY;
         }
 
         return true;
@@ -242,9 +246,8 @@ public class MicrophoneInput extends Input {
         zoomDisplay.setZoomLevelPercentage(zoomPercentage);
     }
 
-    private void offsetAccountedScaleHandle(ZoomDisplay zoomDisplay, float scaleFactor, float
-            focusPoint,
-                                            float displaySize) {
+    private void offsetAccountedScaleHandle(ZoomDisplay zoomDisplay, float scaleFactor,
+                                            float focusPoint, float displaySize) {
         float displayOffset = zoomDisplay.getDisplayOffsetPercentage();
         float displayFarSide = zoomDisplay.getFarSideOffsetPercentage();
         //Calculate the focal point of the users finger based on the whole signal
