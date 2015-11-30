@@ -211,5 +211,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         public void setSignalBuffers(SignalBuffers signal) {
             mSignalManager.setSignalBuffers(signal);
         }
+
+        public void removeSignalBuffer(int id) {
+            mSignalManager.removeSignal(id);
+        }
     }
 }

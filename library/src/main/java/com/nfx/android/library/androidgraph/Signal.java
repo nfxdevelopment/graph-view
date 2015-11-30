@@ -113,7 +113,7 @@ public class Signal extends DrawableObject {
         float spacing = screenWidth / (float) (mDrawBuffer.length - 1);
         double maxLogValue = Math.log(screenWidth);
 
-        for (int i = 0; i < (screenWidth / mLineResolution) - 1; i++) {
+        for(int i = 0; i < (((int) screenWidth / mLineResolution) - 1); i++) {
             float startPosY = screenTop + (screenHeight * mDrawBuffer[i]);
 
             float startPosXLinear = (spacing * (float) i);

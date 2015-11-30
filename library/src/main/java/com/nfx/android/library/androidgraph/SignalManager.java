@@ -2,8 +2,8 @@ package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * NFX Development
@@ -18,7 +18,7 @@ public class SignalManager {
     /**
      * Array of drawers to display signals
      */
-    private final Collection<Signal> mSignalDrawers = new ArrayList<>();
+    private final Map<Integer, Signal> mSignalDrawers = new HashMap<>();
     /**
      * An object holding the signals to display
      */
@@ -49,9 +49,13 @@ public class SignalManager {
         for (SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
             Signal signal = new Signal(signalBuffer);
             signal.surfaceChanged(mDrawableArea);
-            mSignalDrawers.add(signal);
+            mSignalDrawers.put(signalBuffer.getId(), signal);
         }
         mGraphManager.getBackgroundManager().setSignalBuffers(mSignalBuffers);
+    }
+
+    public void removeSignal(int id) {
+        mSignalDrawers.remove(id);
     }
 
     /**
@@ -62,7 +66,7 @@ public class SignalManager {
      */
     public void surfaceChanged(DrawableArea drawableArea) {
         mDrawableArea = drawableArea;
-        for (Signal signal : mSignalDrawers) {
+        for(Signal signal : mSignalDrawers.values()) {
             signal.surfaceChanged(drawableArea);
         }
     }
@@ -74,7 +78,7 @@ public class SignalManager {
      */
     public void doDraw(Canvas canvas) {
         if (mSignalBuffers != null) {
-            for (Signal signal : mSignalDrawers) {
+            for(Signal signal : mSignalDrawers.values()) {
                 signal.doDraw(canvas);
             }
         }

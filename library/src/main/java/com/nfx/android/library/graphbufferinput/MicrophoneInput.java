@@ -30,7 +30,7 @@ public class MicrophoneInput extends Input {
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
     private static final float sMinimumSpan = 200f;
     // Audio input block size, in samples.
-    private final int inputBlockSize = 256;
+    protected final int inputBlockSize = 256;
     /**
      * Audio input device
      */
