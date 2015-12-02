@@ -11,8 +11,9 @@ import org.jtransforms.fft.FloatFFT_1D;
  */
 public class MicrophoneFFTInput extends MicrophoneInput {
 
+    // Maximum signal amplitude for 16-bit data.
+    private static final float MAX_16_BIT = 32768;
     FloatFFT_1D fftCalculations = new FloatFFT_1D(inputBlockSize);
-
     float[] fftBuffer;
     float[] magnitudeBuffer;
 
@@ -31,6 +32,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
         fftBuffer = new float[inputBlockSize * 2];
         magnitudeBuffer = new float[inputBlockSize / 2];
+
     }
 
     @Override
@@ -41,12 +43,17 @@ public class MicrophoneFFTInput extends MicrophoneInput {
             fftCalculations.realForwardFull(fftBuffer);
 
             float real, imaginary;
-            magnitudeBuffer[0] = 1f;
             for(int i = 1; i < magnitudeBuffer.length; ++i) {
                 real = fftBuffer[i * 2];
                 imaginary = fftBuffer[i * 2 - 1];
-                magnitudeBuffer[i] = (1f - (float) Math.sqrt(real * real + imaginary * imaginary));
+                magnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary);
+
+                magnitudeBuffer[i] = 10f * (float) Math.log10(magnitudeBuffer[i]);
+                magnitudeBuffer[i] *= -0.01;
+
             }
+
+            magnitudeBuffer[0] = magnitudeBuffer[1];
 
             mSignalBuffers.getSignalBuffer().get(0).setBuffer(magnitudeBuffer);
         }
