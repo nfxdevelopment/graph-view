@@ -8,13 +8,23 @@ import org.jtransforms.fft.FloatFFT_1D;
 /**
  * NFX Development
  * Created by nick on 30/11/15.
+ *
+ * This class takes the microphone input and computes the fft of signal. In addition to this the
+ * final buffer is logarithmic
  */
 public class MicrophoneFFTInput extends MicrophoneInput {
 
-    // Maximum signal amplitude for 16-bit data.
-    private static final float MAX_16_BIT = 32768;
+    /**
+     * Computes the FFT
+     */
     FloatFFT_1D fftCalculations = new FloatFFT_1D(inputBlockSize);
+    /**
+     * Buffer to pass to the fft class
+     */
     float[] fftBuffer;
+    /**
+     * Buffer with the finished data in
+     */
     float[] magnitudeBuffer;
 
     /**
@@ -35,6 +45,12 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
     }
 
+    /**
+     * This takes the last read buffer and does a FFT calculation on it. It then converts the values
+     * into dB. This may take a while so we have to optimise this as much as possible
+     *
+     * @param buffer Buffer containing the data.
+     */
     @Override
     protected void readDone(float[] buffer) {
         if(mGraphSignalInputInterface != null) {
@@ -50,7 +66,6 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
                 magnitudeBuffer[i] = 10f * (float) Math.log10(magnitudeBuffer[i]);
                 magnitudeBuffer[i] *= -0.01;
-
             }
 
             magnitudeBuffer[0] = magnitudeBuffer[1];
@@ -59,6 +74,11 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         }
     }
 
+    /**
+     * takes in a buffer and applies a hanning window to it.
+     *
+     * @param buffer buffer to apply the hanning window to
+     */
     public void applyHanningWindow(float[] buffer) {
         int bufferLength = buffer.length;
         double twoPi = 2.0 * Math.PI;
