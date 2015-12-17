@@ -10,6 +10,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * when the surface size has changed.
  */
 public class ZoomDisplay {
+    /**
+     * Maximum zoom level
+     */
+    static public final float MAXIMUM_ZOOM_LEVEL = 1f;
+    /**
+     * Minimum zoom level
+     */
+    static public final float MINIMUM_ZOOM_LEVEL = 0f;
     private static final String TAG = "ZoomDisplay";
     /**
      * Subscribe to this listener to get Zoom notification changes
@@ -25,6 +33,7 @@ public class ZoomDisplay {
      */
     private float mDisplayOffsetPercentage = 0f;
 
+
     /**
      * Initial values of the zoom level
      * @param zoomLevelPercentage     a float referenced as 0% = 0 100% = 1 if outside this value a
@@ -33,13 +42,14 @@ public class ZoomDisplay {
      *                                warning is logged and 0f will be assigned
      **/
     ZoomDisplay(float zoomLevelPercentage, float displayOffsetPercentage) {
-        if (zoomLevelPercentage < 1f && zoomLevelPercentage > 0f) {
+        if(zoomLevelPercentage < MAXIMUM_ZOOM_LEVEL && zoomLevelPercentage > MINIMUM_ZOOM_LEVEL) {
             mZoomLevelPercentage = zoomLevelPercentage;
         }
-        if (displayOffsetPercentage < 1f && displayOffsetPercentage > 0f) {
+        if(displayOffsetPercentage < MAXIMUM_ZOOM_LEVEL && displayOffsetPercentage >
+                MINIMUM_ZOOM_LEVEL) {
             // Ensure that the zoom level will be within the bounds of the screen
-            if ((displayOffsetPercentage + mZoomLevelPercentage) > 1f) {
-                mDisplayOffsetPercentage = 1f - mZoomLevelPercentage;
+            if((displayOffsetPercentage + mZoomLevelPercentage) > MAXIMUM_ZOOM_LEVEL) {
+                mDisplayOffsetPercentage = MAXIMUM_ZOOM_LEVEL - mZoomLevelPercentage;
             } else {
                 mDisplayOffsetPercentage = displayOffsetPercentage;
             }
@@ -69,15 +79,15 @@ public class ZoomDisplay {
      *                                nothing happens
      */
     public void setDisplayOffsetPercentage(float displayOffsetPercentage) {
-        if (displayOffsetPercentage < 0f) {
-            displayOffsetPercentage = 0f;
-        } else if (displayOffsetPercentage > 1f) {
-            displayOffsetPercentage = 1f;
+        if(displayOffsetPercentage < MINIMUM_ZOOM_LEVEL) {
+            displayOffsetPercentage = MINIMUM_ZOOM_LEVEL;
+        } else if(displayOffsetPercentage > MAXIMUM_ZOOM_LEVEL) {
+            displayOffsetPercentage = MAXIMUM_ZOOM_LEVEL;
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
-        if ((displayOffsetPercentage + mZoomLevelPercentage) > 1f) {
-            mDisplayOffsetPercentage = 1f - mZoomLevelPercentage;
+        if((displayOffsetPercentage + mZoomLevelPercentage) > MAXIMUM_ZOOM_LEVEL) {
+            mDisplayOffsetPercentage = MAXIMUM_ZOOM_LEVEL - mZoomLevelPercentage;
         } else {
             mDisplayOffsetPercentage = displayOffsetPercentage;
         }
@@ -109,15 +119,15 @@ public class ZoomDisplay {
      *                            warning is logged and nothing happens
      */
     public void setZoomLevelPercentage(float zoomLevelPercentage) {
-        if (zoomLevelPercentage < 0f) {
+        if(zoomLevelPercentage < MINIMUM_ZOOM_LEVEL) {
             return;
-        } else if (zoomLevelPercentage > 1f) {
-            zoomLevelPercentage = 1f;
+        } else if(zoomLevelPercentage > MAXIMUM_ZOOM_LEVEL) {
+            zoomLevelPercentage = MAXIMUM_ZOOM_LEVEL;
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
-        if ((zoomLevelPercentage + mDisplayOffsetPercentage) > 1f) {
-            mDisplayOffsetPercentage = 1f - zoomLevelPercentage;
+        if((zoomLevelPercentage + mDisplayOffsetPercentage) > MAXIMUM_ZOOM_LEVEL) {
+            mDisplayOffsetPercentage = MAXIMUM_ZOOM_LEVEL - zoomLevelPercentage;
         }
 
         mZoomLevelPercentage = zoomLevelPercentage;

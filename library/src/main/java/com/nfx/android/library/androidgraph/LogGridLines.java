@@ -48,10 +48,8 @@ public abstract class LogGridLines extends GridLines {
             return LESS_THAN_VIEWABLE_AREA;
         }
 
-        float virtualIntersect =
-                (float) (Math.log(linearOffset) / maxLogValue) * (float) dimensionLength;
-
-        float virtualIntersectPercentage = virtualIntersect / dimensionLength;
+        float virtualIntersectPercentage =
+                (float) (Math.log(linearOffset) / maxLogValue);
 
         if (virtualIntersectPercentage > mZoomDisplay.getDisplayOffsetPercentage() &&
                 virtualIntersectPercentage < mZoomDisplay.getZoomLevelPercentage() +

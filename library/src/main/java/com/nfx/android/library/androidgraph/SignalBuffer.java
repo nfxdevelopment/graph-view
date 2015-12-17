@@ -9,42 +9,34 @@ import android.util.Log;
  * A signal buffer holds a buffer with additional information on how it should be displayed on
  * screen. This can be used to pass buffer information between graphical and input objects.
  */
-public class SignalBuffer {
+public abstract class SignalBuffer {
     private static final String TAG = "SignalBuffer";
     /**
      * Information about the scaling of signal in the y axis
      */
-    private final ZoomDisplay mYZoomDisplay;
+    final ZoomDisplay mYZoomDisplay;
     /**
      * Information about the scaling of signal in the y axis
      */
-    private final ZoomDisplay mXZoomDisplay;
+    final ZoomDisplay mXZoomDisplay;
     /**
-     * So we now if the data is logarithmic or linear
+     * buffer of given size which is worked out at runtime. This data is normalized 0-1
      */
-    private final SignalScale mSignalScale;
-
+    final float[] mBuffer;
     /**
      * Unique Id for signal
      */
     private final int mId;
 
     /**
-     * buffer of given size which is worked out at runtime. This data is normalized 0-1
-     */
-    private final float[] mBuffer;
-
-    /**
      * Constructor
      *
      * @param id           unique id for signal
      * @param sizeOfBuffer size expecting to receive
-     * @param signalScale  linear or logarithmic
      */
-    public SignalBuffer(int id, int sizeOfBuffer, SignalScale signalScale) {
+    public SignalBuffer(int id, int sizeOfBuffer) {
         mId = id;
         mBuffer = new float[sizeOfBuffer];
-        mSignalScale = signalScale;
 
         mXZoomDisplay = new ZoomDisplay(1f, 0f);
         mYZoomDisplay = new ZoomDisplay(1f, 0f);
@@ -67,7 +59,6 @@ public class SignalBuffer {
             }
         }
     }
-
     /**
      * This will return a buffer with the desired {@code numberOfPoints} size. Essentially scaling
      * scaling the read buffer
@@ -77,44 +68,13 @@ public class SignalBuffer {
      *
      * @param scaledBuffer buffer to fill
      */
-    public void getScaledBuffer(float[] scaledBuffer) {
-
-        int numberOfPoints = scaledBuffer.length;
-
-        synchronized (this) {
-            // -1 to get the spacing between the samples.
-            float spacing = mXZoomDisplay.getZoomLevelPercentage() / (numberOfPoints - 1);
-
-            for (int i = 0; i < numberOfPoints; i++) {
-                float pointOffsetPercentage = (spacing * (float) i)
-                        + mXZoomDisplay.getDisplayOffsetPercentage();
-                float pointOffset = pointOffsetPercentage * (float) (getSizeOfBuffer() - 1);
-                float arrayPosRemainder = pointOffset % 1;
-
-                if (arrayPosRemainder == 0) {
-                    scaledBuffer[i] = ( mBuffer[(int) pointOffset]
-                            - mYZoomDisplay.getDisplayOffsetPercentage())
-                                        / mYZoomDisplay.getZoomLevelPercentage();
-                } else {
-                    int lowerPosition = (int) Math.floor(pointOffset);
-                    int upperPosition = (int) Math.ceil(pointOffset);
-
-                    float lowerValue = mBuffer[lowerPosition];
-                    float upperValue = mBuffer[upperPosition];
-
-                    scaledBuffer[i] = (lowerValue + ((upperValue - lowerValue) * arrayPosRemainder)
-                            - mYZoomDisplay.getDisplayOffsetPercentage())
-                                        / mYZoomDisplay.getZoomLevelPercentage();
-                }
-            }
-        }
-    }
+    public abstract void getScaledBuffer(float[] scaledBuffer);
 
     public int getId() {
         return mId;
     }
 
-    private int getSizeOfBuffer() {
+    int getSizeOfBuffer() {
         return mBuffer.length;
     }
 
@@ -124,10 +84,6 @@ public class SignalBuffer {
 
     public ZoomDisplay getYZoomDisplay() {
         return mYZoomDisplay;
-    }
-
-    public SignalScale getSignalScale() {
-        return mSignalScale;
     }
 
     public enum SignalScale {

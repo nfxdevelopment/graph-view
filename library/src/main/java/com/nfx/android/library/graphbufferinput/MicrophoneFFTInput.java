@@ -34,10 +34,11 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      */
     protected MicrophoneFFTInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
         super(graphSignalInputInterface);
-        // We want to remove the orignal signal from microphone input and add a new fft one
+        // We want to remove the original signal from microphone input and add a new fft one
         mSignalBuffers.removedSignalBuffer(0);
         mGraphSignalInputInterface.removeSignalBuffer(0);
-        mSignalBuffers.addSignalBuffer(0, inputBlockSize / 2, SignalBuffer.SignalScale.logarithmic);
+        mSignalBuffers.addSignalBuffer(0, inputBlockSize / 2, getSampleRate(),
+                SignalBuffer.SignalScale.logarithmic);
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
 
         fftBuffer = new float[inputBlockSize * 2];

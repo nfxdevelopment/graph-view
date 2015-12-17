@@ -28,8 +28,18 @@ public class SignalBuffers {
      * @param sizeOfBuffer size of the buffer to create
      * @param signalScale  either linear or logarithmic for use when displaying
      */
-    public void addSignalBuffer(int id, int sizeOfBuffer, SignalBuffer.SignalScale signalScale) {
-        SignalBuffer signalBuffer = new SignalBuffer(id, sizeOfBuffer, signalScale);
+    public void addSignalBuffer(int id, int sizeOfBuffer, float axisSpanValue,
+                                SignalBuffer.SignalScale signalScale) {
+        SignalBuffer signalBuffer;
+        if(signalScale == SignalBuffer.SignalScale.linear) {
+            signalBuffer = new LinSignalBuffer(id, sizeOfBuffer);
+        } else if(signalScale == SignalBuffer.SignalScale.logarithmic) {
+            signalBuffer = new LogSignalBuffer(id, sizeOfBuffer, axisSpanValue);
+        } else {
+            Log.e(TAG, "Signal Scale unknown");
+            return;
+        }
+
         if (mSignalBuffers.put(id, signalBuffer) != null) {
             Log.w(TAG, "signal id exists, overwriting");
         }
