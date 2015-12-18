@@ -71,16 +71,61 @@ public class Signal extends DrawableObject {
 
         float spacing = screenWidth / (float) (mDrawBuffer.length - 1);
 
+        // TODO Look at optimising the following
         for(int i = 0; i < (((int) screenWidth / mLineResolution) - 1); i++) {
-            float startPosY = screenTop + (screenHeight * mDrawBuffer[i]);
-            float startPosX = screenLeft + (spacing * (float) i);
-            float endPosY = screenTop + (screenHeight * mDrawBuffer[i + 1]);
-            float endPosX = screenLeft + (spacing * (float) (i + 1));
+            float startPosY = mDrawBuffer[i];
+            float endPosY = mDrawBuffer[i + 1];
 
-            canvas.drawLine(getDrawableArea().checkLimitX(startPosX),
-                    getDrawableArea().checkLimitY(startPosY),
-                    getDrawableArea().checkLimitX(endPosX),
-                    getDrawableArea().checkLimitY(endPosY), mSignalPaint);
+            // ensure that at least part of the line will be visble on screen
+            if((startPosY < 1f || endPosY < 1f) &&
+                    (startPosY > 0f || endPosY > 0f)) {
+
+                float startPosX = (float) i;
+                float endPosX = (float) (i + 1);
+
+                float gradient = (endPosY - startPosY) / (endPosX - startPosX);
+                // y = gradient*X + yIntercept
+                // yIntercept = y - gradient*X
+                float yIntercept = startPosY - gradient * startPosX;
+
+                // Both samples are within the Screen dimensions
+                if(startPosY > 1f) {
+                    // startPosY = 1
+                    // 1 = gradient*x + yIntercept
+                    // 1 - yIntercept / gradient = x
+                    startPosX = (1f - yIntercept) / gradient;
+                    startPosY = 1f;
+                } else if(startPosY < 0f) {
+                    // startPosY = 0
+                    // 1 = gradient*x + yIntercept
+                    // -yIntercept/gradient = x
+                    startPosX = -yIntercept / gradient;
+                    startPosY = 0f;
+                }
+                if(endPosY > 1f) {
+                    // endPosY = 1
+                    // 1 = gradient*x + yIntercept
+                    // 1 - yIntercept / gradient = x
+                    endPosX = (1f - yIntercept) / gradient;
+                    endPosY = 1f;
+                } else if(endPosY < 0f) {
+                    // endPosY = 0
+                    // 1 = gradient*x + yIntercept
+                    // -yIntercept/gradient = x
+                    endPosX = -yIntercept / gradient;
+                    endPosY = 0f;
+                }
+
+                float drawStartPosY = screenTop + (screenHeight * startPosY);
+                float drawStartPosX = screenLeft + (spacing * startPosX);
+                float drawEndPosY = screenTop + (screenHeight * endPosY);
+                float drawEndPosX = screenLeft + (spacing * endPosX);
+
+                canvas.drawLine(getDrawableArea().checkLimitX(drawStartPosX),
+                        getDrawableArea().checkLimitY(drawStartPosY),
+                        getDrawableArea().checkLimitX(drawEndPosX),
+                        getDrawableArea().checkLimitY(drawEndPosY), mSignalPaint);
+            }
         }
     }
 
