@@ -18,6 +18,14 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      * Number of historical buffers to store
      */
     final static int sNumberOfHistoryBuffers = 4;
+    // NW pulled from other magnitude scales. This will ensure a signal of +1 to -1 is equal to 0db
+    // This fudge factor is added to the output to make a realistically
+    // fully-saturated signal come to 0dB.  Without it, the signal would
+    // have to be solid samples of -32768 to read zero, which is not
+    // realistic.  This really is a fudge, because the best value depends
+    // on the input frequency and sampling rate.  We optimise here for
+    // a 1kHz signal at 16,000 samples/sec.
+    private static final float FUDGE = 0.63610f;
     /**
      * Computes the FFT
      */
@@ -84,7 +92,9 @@ public class MicrophoneFFTInput extends MicrophoneInput {
             for(int i = 1; i < bufferLength; ++i) {
                 real = fftBuffer[i * 2];
                 imaginary = fftBuffer[i * 2 - 1];
-                mMagnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary);
+                final float scale = buffer.length * FUDGE;
+                mMagnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary) /
+                        scale;
 
                 mMagnitudeBuffer[i] = 10f * (float) Math.log10(mMagnitudeBuffer[i]);
                 mMagnitudeBuffer[i] *= -0.01;
