@@ -25,7 +25,7 @@ public class MicrophoneInput extends Input {
     private static final int sAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
     // Audio input block size, in samples.
-    protected final int inputBlockSize = 2048;
+    protected final int inputBlockSize = 4096;
     /**
      * Audio input device
      */

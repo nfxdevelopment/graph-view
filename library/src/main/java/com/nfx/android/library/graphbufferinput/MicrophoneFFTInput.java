@@ -15,6 +15,10 @@ import org.jtransforms.fft.FloatFFT_1D;
 public class MicrophoneFFTInput extends MicrophoneInput {
 
     /**
+     * Number of historical buffers to store
+     */
+    final static int sNumberOfHistoryBuffers = 4;
+    /**
      * Computes the FFT
      */
     FloatFFT_1D fftCalculations = new FloatFFT_1D(inputBlockSize);
@@ -25,7 +29,19 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     /**
      * Buffer with the finished data in
      */
-    float[] magnitudeBuffer;
+    float[] returnedMagnitudeBuffer;
+    /**
+     * Last fft buffer to be converted
+     */
+    float[] mMagnitudeBuffer;
+    /**
+     * Stores a history of the previous buffers
+     */
+    float[][] mHistoryMagnitudeBuffers;
+    /**
+     * Current history buffer to write into
+     */
+    int mHistoryIndex = 0;
 
     /**
      * Constructor to initialise microphone for listening
@@ -42,8 +58,10 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
 
         fftBuffer = new float[inputBlockSize * 2];
-        magnitudeBuffer = new float[inputBlockSize / 2];
+        mMagnitudeBuffer = new float[inputBlockSize / 2];
+        returnedMagnitudeBuffer = new float[inputBlockSize / 2];
 
+        mHistoryMagnitudeBuffers = new float[sNumberOfHistoryBuffers][inputBlockSize / 2];
     }
 
     /**
@@ -60,18 +78,22 @@ public class MicrophoneFFTInput extends MicrophoneInput {
             fftCalculations.realForwardFull(fftBuffer);
 
             float real, imaginary;
-            for(int i = 1; i < magnitudeBuffer.length; ++i) {
+
+            int bufferLength = mMagnitudeBuffer.length;
+
+            for(int i = 1; i < bufferLength; ++i) {
                 real = fftBuffer[i * 2];
                 imaginary = fftBuffer[i * 2 - 1];
-                magnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary);
+                mMagnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary);
 
-                magnitudeBuffer[i] = 10f * (float) Math.log10(magnitudeBuffer[i]);
-                magnitudeBuffer[i] *= -0.01;
+                mMagnitudeBuffer[i] = 10f * (float) Math.log10(mMagnitudeBuffer[i]);
+                mMagnitudeBuffer[i] *= -0.01;
             }
 
-            magnitudeBuffer[0] = magnitudeBuffer[1];
+            mMagnitudeBuffer[0] = mMagnitudeBuffer[1];
 
-            mSignalBuffers.getSignalBuffer().get(0).setBuffer(magnitudeBuffer);
+            applyingFFTAveraging();
+            postBufferChange();
         }
     }
 
@@ -87,5 +109,34 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         for(int n = 1; n < bufferLength; n++) {
             buffer[n] *= 0.5 * (1 - Math.cos((twoPi * n) / (bufferLength - 1)));
         }
+    }
+
+    /**
+     * Averages the new buffer with the old buffers and storse the results the return buffer
+     */
+    private void applyingFFTAveraging() {
+        // Update the index.
+        if(++mHistoryIndex >= sNumberOfHistoryBuffers) {
+            mHistoryIndex = 0;
+        }
+
+        int bufferLength = mMagnitudeBuffer.length;
+
+        System.arraycopy(mMagnitudeBuffer, 0, mHistoryMagnitudeBuffers[0], 0, bufferLength);
+
+        for(int i = 0; i < bufferLength; ++i) {
+            returnedMagnitudeBuffer[i] = 0;
+            for(int g = 0; g < sNumberOfHistoryBuffers; ++g) {
+                returnedMagnitudeBuffer[i] += mHistoryMagnitudeBuffers[g][i];
+            }
+            returnedMagnitudeBuffer[i] /= sNumberOfHistoryBuffers;
+        }
+    }
+
+    /**
+     * When the return buffer is ready to go this function is called
+     */
+    private void postBufferChange() {
+        mSignalBuffers.getSignalBuffer().get(0).setBuffer(returnedMagnitudeBuffer);
     }
 }
