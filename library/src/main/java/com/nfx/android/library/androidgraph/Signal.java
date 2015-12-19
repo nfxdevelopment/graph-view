@@ -27,7 +27,7 @@ public class Signal extends DrawableObject {
     /**
      * How many points per on screen buffer. This is a screen width divisor
      */
-    private final int mLineResolution = 16;
+    private final int mLineResolution = 4;
     /**
      * Drawing buffer
      */
