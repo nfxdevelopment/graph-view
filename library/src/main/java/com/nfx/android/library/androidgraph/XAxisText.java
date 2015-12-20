@@ -25,26 +25,36 @@ public class XAxisText extends AxisText {
     }
 
     /**
-     * draw the axis text on to canvas
+     * draw the axis text on to canvas. Note this will only draw text if there is more than 1
+     * grid line
      *
      * @param canvas a canvas to draw onto
      */
     @Override
     public void doDraw(Canvas canvas) {
-        // Our limits are over laps with other grid lines, hence starting from 1 and -1
-        for (int i = 1; i < mGridLines.getNumberOfGridLines() - 1; ++i) {
-            // First calculate the number to display
-            String displayString = mGridLineValues[i];
+        // Calculate distance between lines
+        if(mGridLines.getNumberOfGridLines() > 1) {
+            float gridLineSpacing = mGridLines.getCurrentGridLineSpacing();
+            int textDrawInterval = (int) Math.ceil(((float) mBounds.width() * 2f) /
+                    gridLineSpacing);
 
-            float xIntersect = mGridLines.intersectZoomCompensated(i);
-            // Ensure the grid line is on screen and not overlapping the boarder text
-            if (xIntersect > (getDrawableArea().getLeft() + mBounds.width()) &&
-                    xIntersect < getDrawableArea().getRight() - mBounds.width()) {
-                int x = getDrawableArea().getLeft() + (int) xIntersect;
+            // Our limits are over laps with other grid lines, hence starting from 1 and -1
+            for(int i = textDrawInterval; i < mGridLines.getNumberOfGridLines() - 1;
+                i = i + textDrawInterval) {
+                // First calculate the number to display
+                String displayString = mGridLineValues[i];
 
-                // Remember the text is drawn on the baseline
-                canvas.drawText(displayString, x + mGraphBoarderSize, getDrawableArea().getTop() +
-                        (int) Math.abs(mTextPaint.ascent()), mTextPaint);
+                float xIntersect = mGridLines.intersectZoomCompensated(i);
+                // Ensure the grid line is on screen and not overlapping the boarder text
+                if(xIntersect > (mBounds.width()) &&
+                        xIntersect < getDrawableArea().getWidth() - (1.5f * mBounds.width())) {
+                    int x = getDrawableArea().getLeft() + (int) xIntersect;
+
+                    // Remember the text is drawn on the baseline
+                    canvas.drawText(displayString, x + mGraphBoarderSize, getDrawableArea()
+                            .getTop() +
+                            (int) Math.abs(mTextPaint.ascent()), mTextPaint);
+                }
             }
         }
     }

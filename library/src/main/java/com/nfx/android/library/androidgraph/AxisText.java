@@ -92,9 +92,8 @@ public abstract class AxisText extends DrawableObject {
         mGridLineValues = new String[gridLines.getNumberOfGridLines()];
         calculateGridLineValues();
 
-        String sMaximumString = "00000";
-        Rect bounds = new Rect();
-        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
+        String sMaximumString = "00.00K";
+        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
     }
 
     private String displayString(int gridLine) {
@@ -125,13 +124,7 @@ public abstract class AxisText extends DrawableObject {
      * @return maximum width of text
      */
     float getMaximumTextWidth() {
-        Rect bounds = new Rect();
-        /*
-      Max width of string to display
-     */
-        String sMaximumString = "-0.00";
-        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
-        return bounds.width();
+        return mBounds.width();
     }
 
     /**

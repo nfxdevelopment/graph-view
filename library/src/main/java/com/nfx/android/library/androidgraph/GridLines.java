@@ -138,9 +138,15 @@ public abstract class GridLines extends DrawableObject {
         mPaint.setColor(color);
     }
 
-    private float getGridLineSpacingInPixels() {
+    private float getGridLineDrawableWidth() {
         // -1 as we want the first grid line to be at 0 and the last at the width of the graph
         return mGridLinesSize / (float) (mNumberOfGridLines - 1);
+    }
+
+    public float getCurrentGridLineSpacing() {
+        return ((intersect(mNumberOfGridLines - 1) -
+                intersect(0)) / getZoomDisplay().getZoomLevelPercentage()) /
+                (float) (mNumberOfGridLines - 1);
     }
 
     /**
@@ -154,7 +160,7 @@ public abstract class GridLines extends DrawableObject {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        return mGridLinesOffset + getGridLineSpacingInPixels() * (float) (gridLine);
+        return mGridLinesOffset + getGridLineDrawableWidth() * (float) (gridLine);
     }
 
     /**
@@ -270,7 +276,7 @@ public abstract class GridLines extends DrawableObject {
      */
     private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
         Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
-        float zoomSpacing = getGridLineSpacingInPixels() / mZoomDisplay.getZoomLevelPercentage();
+        float zoomSpacing = getGridLineDrawableWidth() / mZoomDisplay.getZoomLevelPercentage();
 
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
             // If the grid lines spacing is greater than this number minor grid lines are added

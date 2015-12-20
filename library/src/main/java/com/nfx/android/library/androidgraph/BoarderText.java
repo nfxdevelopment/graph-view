@@ -83,7 +83,7 @@ public class BoarderText extends DrawableObject {
 
         mDecimalFormat.setRoundingMode(RoundingMode.CEILING);
 
-        String sMaximumString = "-0.00";
+        String sMaximumString = "00.00K";
         mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
 
         calculateValuesToDisplay();
@@ -97,7 +97,8 @@ public class BoarderText extends DrawableObject {
         canvas.drawText(mBottomY, getDrawableArea().getLeft() + mBounds.width(),
                 getDrawableArea().getBottom() - getRealTextHeight(), mTextPaint);
 
-        canvas.drawText(mLeftX, 2 * (getDrawableArea().getLeft() + mBounds.width()),
+        canvas.drawText(mLeftX, (getDrawableArea().getLeft() + mBounds.width() + (mBounds.width()
+                        / 2)),
                 getDrawableArea().getBottom() - Math.abs(mTextPaint.descent()), mTextPaint);
 
         canvas.drawText(mRightX, getDrawableArea().getRight(),
