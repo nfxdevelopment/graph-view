@@ -34,13 +34,6 @@ public class BackgroundManager {
      * Set dependant which constructor is called
      */
     private boolean mShowAxisText = false;
-    /**
-     * Minimum and Maximum values of the axis
-     */
-    private float mMinimumXValue;
-    private float mMaximumXValue;
-    private float mMinimumYValue;
-    private float mMaximumYValue;
 
 
     /**

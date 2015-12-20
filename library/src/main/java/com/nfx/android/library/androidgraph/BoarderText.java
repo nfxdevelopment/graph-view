@@ -108,14 +108,30 @@ public class BoarderText extends DrawableObject {
      * We calculate the value ahead of time to stop any hold up in doDraw
      */
     private void calculateValuesToDisplay() {
-        mTopY = String.valueOf(mDecimalFormat.format(mYMinimum +
-                ((1 - mYZoomDisplay.getDisplayOffsetPercentage()) * mYSpan)));
-        mBottomY = String.valueOf(mDecimalFormat.format(mYMinimum +
-                ((1 - mYZoomDisplay.getFarSideOffsetPercentage()) * mYSpan)));
-        mLeftX = String.valueOf(mDecimalFormat.format(mXMinimum +
-                (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan)));
-        mRightX = String.valueOf(mDecimalFormat.format(mXMinimum +
-                (mXZoomDisplay.getFarSideOffsetPercentage() * mXSpan)));
+        mTopY = displayString(mYMinimum +
+                ((1 - mYZoomDisplay.getDisplayOffsetPercentage()) * mYSpan));
+        mBottomY = displayString(mYMinimum +
+                ((1 - mYZoomDisplay.getFarSideOffsetPercentage()) * mYSpan));
+        mLeftX = displayString(mXMinimum +
+                (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan));
+        mRightX = displayString(mXMinimum +
+                (mXZoomDisplay.getFarSideOffsetPercentage() * mXSpan));
+    }
+
+    private String displayString(float valueToDisplay) {
+        float nonNegativeValue = Math.abs(valueToDisplay);
+
+        if(nonNegativeValue < 10f) {
+            return String.valueOf((float) Math.round(valueToDisplay * 100d) / 100d);
+        } else if(nonNegativeValue < 100f) {
+            return String.valueOf((float) Math.round(valueToDisplay * 10d) / 10d);
+        } else if(nonNegativeValue < 1000f) {
+            return String.valueOf(Math.round(valueToDisplay));
+        } else if(nonNegativeValue < 100000f) {
+            return String.valueOf((float) Math.round(valueToDisplay / 10d) / 100f) + "K";
+        } else {
+            return "NaN";
+        }
     }
 
     /**

@@ -92,7 +92,7 @@ public abstract class AxisText extends DrawableObject {
         mGridLineValues = new String[gridLines.getNumberOfGridLines()];
         calculateGridLineValues();
 
-        String sMaximumString = "-0.00";
+        String sMaximumString = "00000";
         Rect bounds = new Rect();
         mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
     }
@@ -101,8 +101,19 @@ public abstract class AxisText extends DrawableObject {
         float locationOnGraph = locationOnGraph(gridLine);
         // +1 as we are not labeling the limits here
         float valueToDisplay = mMinimumAxisValue + (mAxisValueSpan * locationOnGraph);
+        float nonNegativeValue = Math.abs(valueToDisplay);
 
-        return String.valueOf((float) Math.round(valueToDisplay * 100d) / 100d);
+        if(nonNegativeValue < 10f) {
+            return String.valueOf((float) Math.round(valueToDisplay * 100d) / 100d);
+        } else if(nonNegativeValue < 100f) {
+            return String.valueOf((float) Math.round(valueToDisplay * 10d) / 10d);
+        } else if(nonNegativeValue < 1000f) {
+            return String.valueOf(Math.round(valueToDisplay));
+        } else if(nonNegativeValue < 100000f) {
+            return String.valueOf((float) Math.round(valueToDisplay / 10d) / 100f) + "K";
+        } else {
+            return "NaN";
+        }
     }
 
     abstract float locationOnGraph(int gridLine);

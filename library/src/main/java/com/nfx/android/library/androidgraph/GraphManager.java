@@ -69,7 +69,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         holder.addCallback(this);
 
         mGraphManagerThread = new GraphManagerThread(context);
-        mBackgroundManager = new BackgroundManager(mContext, 0, 3, -1, 1);
+        mBackgroundManager = new BackgroundManager(mContext, 0, 44100, -100, 0);
         mSignalManager = new SignalManager(this);
     }
 
