@@ -34,17 +34,19 @@ public class XAxisText extends AxisText {
     public void doDraw(Canvas canvas) {
         // Calculate distance between lines
         if(mGridLines.getNumberOfGridLines() > 1) {
-            float gridLineSpacing = mGridLines.getCurrentGridLineSpacing();
+            float gridLineSpacing = mGridLines.getCurrentGridLineSpacing() *
+                    mGridLines.getDrawableArea().getWidth();
             int textDrawInterval = (int) Math.ceil(((float) mBounds.width() * 2f) /
                     gridLineSpacing);
 
             // Our limits are over laps with other grid lines, hence starting from 1 and -1
-            for(int i = textDrawInterval; i < mGridLines.getNumberOfGridLines() - 1;
+            for(int i = textDrawInterval; i < mGridLines.getNumberOfGridLines() - textDrawInterval;
                 i = i + textDrawInterval) {
                 // First calculate the number to display
                 String displayString = mGridLineValues[i];
 
-                float xIntersect = mGridLines.intersectZoomCompensated(i);
+                float xIntersect = mGridLines.intersectZoomCompensated(i) *
+                        mGridLines.getDrawableArea().getWidth();
                 // Ensure the grid line is on screen and not overlapping the boarder text
                 if(xIntersect > (mBounds.width()) &&
                         xIntersect < getDrawableArea().getWidth() - (1.5f * mBounds.width())) {
@@ -96,10 +98,5 @@ public class XAxisText extends AxisText {
         height -= getDrawableArea().getHeight();
 
         currentDrawableArea.setDrawableArea(xOffset, yOffset, width, height);
-    }
-
-    @Override
-    float locationOnGraph(int gridLine) {
-        return mGridLines.intersect(gridLine) / mGridLines.getDrawableArea().getWidth();
     }
 }

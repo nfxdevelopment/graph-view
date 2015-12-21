@@ -97,7 +97,7 @@ public abstract class AxisText extends DrawableObject {
     }
 
     private String displayString(int gridLine) {
-        float locationOnGraph = locationOnGraph(gridLine);
+        float locationOnGraph = mGridLines.intersect(gridLine);
         // +1 as we are not labeling the limits here
         float valueToDisplay = mMinimumAxisValue + (mAxisValueSpan * locationOnGraph);
         float nonNegativeValue = Math.abs(valueToDisplay);
@@ -114,8 +114,6 @@ public abstract class AxisText extends DrawableObject {
             return "NaN";
         }
     }
-
-    abstract float locationOnGraph(int gridLine);
 
     /**
      * This uses the maximum number which will be displayed on the axis, it still may be wider than
@@ -143,6 +141,10 @@ public abstract class AxisText extends DrawableObject {
 
     public float getMinimumAxisValue() {
         return mMinimumAxisValue;
+    }
+
+    public float getAxisValueSpan() {
+        return mAxisValueSpan;
     }
 
     public float getMaximumAxisValue() {

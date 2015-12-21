@@ -29,11 +29,11 @@ public class SignalBuffers {
      * @param signalScale  either linear or logarithmic for use when displaying
      */
     public void addSignalBuffer(int id, int sizeOfBuffer, float axisSpanValue,
-                                SignalBuffer.SignalScale signalScale) {
+                                GraphManager.Scale signalScale) {
         SignalBuffer signalBuffer;
-        if(signalScale == SignalBuffer.SignalScale.linear) {
+        if(signalScale == GraphManager.Scale.linear) {
             signalBuffer = new LinSignalBuffer(id, sizeOfBuffer);
-        } else if(signalScale == SignalBuffer.SignalScale.logarithmic) {
+        } else if(signalScale == GraphManager.Scale.logarithmic) {
             signalBuffer = new LogSignalBuffer(id, sizeOfBuffer, axisSpanValue);
         } else {
             Log.e(TAG, "Signal Scale unknown");

@@ -1,7 +1,6 @@
 package com.nfx.android.library.graphbufferinput;
 
 import com.nfx.android.library.androidgraph.GraphManager;
-import com.nfx.android.library.androidgraph.SignalBuffer;
 
 /**
  * NFX Development
@@ -19,7 +18,7 @@ public class TestInput extends Input {
     public void initialise() {
         int length = 8000;
         float[] buffer = new float[length];
-        mSignalBuffers.addSignalBuffer(0, length, length, SignalBuffer.SignalScale.logarithmic);
+        mSignalBuffers.addSignalBuffer(0, length, length, GraphManager.Scale.logarithmic);
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
 
         for(int i = 0; i < length; i++) {

@@ -85,9 +85,4 @@ public abstract class SignalBuffer {
     public ZoomDisplay getYZoomDisplay() {
         return mYZoomDisplay;
     }
-
-    public enum SignalScale {
-        logarithmic,
-        linear
-    }
 }

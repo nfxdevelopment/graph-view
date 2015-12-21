@@ -1,7 +1,6 @@
 package com.nfx.android.library.graphbufferinput;
 
 import com.nfx.android.library.androidgraph.GraphManager;
-import com.nfx.android.library.androidgraph.SignalBuffer;
 
 import org.jtransforms.fft.FloatFFT_1D;
 
@@ -62,7 +61,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         mSignalBuffers.removedSignalBuffer(0);
         mGraphSignalInputInterface.removeSignalBuffer(0);
         mSignalBuffers.addSignalBuffer(0, inputBlockSize / 2, getSampleRate(),
-                SignalBuffer.SignalScale.logarithmic);
+                GraphManager.Scale.logarithmic);
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
 
         fftBuffer = new float[inputBlockSize * 2];

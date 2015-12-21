@@ -38,7 +38,8 @@ public class YAxisText extends AxisText {
             // we need to invert the calculation of the display string
             String displayString = mGridLineValues[(mGridLines.getNumberOfGridLines() - 1) - i];
 
-            float yIntersect = mGridLines.intersectZoomCompensated(i);
+            float yIntersect = mGridLines.intersectZoomCompensated(i) * mGridLines
+                    .getDrawableArea().getHeight();
             // Ensure the grid line is on screen
             if (yIntersect > (getDrawableArea().getTop() + Math.abs(mTextPaint.ascent())) &&
                     yIntersect < (getDrawableArea().getBottom() -
@@ -85,16 +86,5 @@ public class YAxisText extends AxisText {
         width -= getDrawableArea().getWidth();
 
         currentDrawableArea.setDrawableArea(xOffset, yOffset, width, height);
-    }
-
-    /**
-     * A value representing the location of a given grid line on the graph. That value is given as
-     * a percentage.
-     *
-     * @param gridLine grid line number
-     * @return location of grid line
-     */
-    float locationOnGraph(int gridLine) {
-        return mGridLines.intersect(gridLine) / mGridLines.getDrawableArea().getHeight();
     }
 }

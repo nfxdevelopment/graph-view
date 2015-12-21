@@ -12,16 +12,25 @@ public abstract class LogGridLines extends GridLines {
     /**
      * Used to work out positions relative to this value
      */
-    private double maxLogValue;
+    double maxLogValue;
+    /**
+     * Given span for the axis. This is used to calculate the logarithmic scale
+     */
+    private float mAxisSpanValue;
+    /**
+     * The Decade the grid lines represent
+     */
+    private float mDecade;
 
     /**
      * Constructor which passes straight through
      *]
      * @param axisOrientation either the x or y axis
      */
-    LogGridLines(AxisOrientation
-                         axisOrientation) {
+    LogGridLines(AxisOrientation axisOrientation, float axisSpanValue, float decade) {
         super(axisOrientation);
+        mAxisSpanValue = axisSpanValue;
+        mDecade = decade;
     }
 
     /**
@@ -32,37 +41,17 @@ public abstract class LogGridLines extends GridLines {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        maxLogValue = Math.log(getDrawableArea().getHeight());
     }
 
-    /**
-     * Gives the value of where a grid line will interest x on the screen
-     * @param gridLine        grid line to find, base 0
-     * @param dimensionLength Either the width or length
-     * @return the x Intersect or -1 if the grid line is out of range
-     */
-    @Override
-    protected float intersectZoomCompensated(int gridLine, int dimensionLength) {
-        float linearOffset = intersect(gridLine);
-        if (linearOffset == LESS_THAN_VIEWABLE_AREA) {
-            return LESS_THAN_VIEWABLE_AREA;
+    float intersect(int gridLine) {
+        if(gridLine >= mNumberOfGridLines || gridLine < 0) {
+            return GRID_LINE_OUT_OF_RANGE;
         }
 
-        float virtualIntersectPercentage =
-                (float) (Math.log(linearOffset) / maxLogValue);
+        float lineLog = GraphManager.log(mDecade * (1f / (float) (getNumberOfGridLines() - 1) *
+                (float) gridLine));
+        float maxLog = GraphManager.log(mAxisSpanValue);
 
-        if (virtualIntersectPercentage > mZoomDisplay.getDisplayOffsetPercentage() &&
-                virtualIntersectPercentage < mZoomDisplay.getZoomLevelPercentage() +
-                        mZoomDisplay.getDisplayOffsetPercentage()) {
-
-            float intersectPercentage =
-                    (virtualIntersectPercentage - mZoomDisplay.getDisplayOffsetPercentage()) /
-                            mZoomDisplay.getZoomLevelPercentage();
-
-            return dimensionLength * intersectPercentage;
-        } else {
-            // It is outside our desired viewable area
-            return GREATER_THAN_VIEWABLE_AREA;
-        }
+        return lineLog / maxLog;
     }
 }

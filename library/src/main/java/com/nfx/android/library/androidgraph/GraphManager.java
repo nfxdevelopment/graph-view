@@ -69,8 +69,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         holder.addCallback(this);
 
         mGraphManagerThread = new GraphManagerThread(context);
-        mBackgroundManager = new BackgroundManager(mContext, 0, 44100, -100, 0);
+        mBackgroundManager = new BackgroundManager(mContext, 0, 100000, -100, 0);
         mSignalManager = new SignalManager(this);
+    }
+
+    static float log(float x) {
+        return (float) (Math.log(x) / Math.log(2));
     }
 
     public GraphSignalInputInterface getGraphSignalInputInterface() {
@@ -150,6 +154,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     public SignalManager getSignalManager() {
         return mSignalManager;
+    }
+
+    public enum Scale {
+        logarithmic,
+        linear
     }
 
     class GraphManagerThread extends Thread {

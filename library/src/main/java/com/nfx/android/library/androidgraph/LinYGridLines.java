@@ -27,7 +27,7 @@ public class LinYGridLines extends LinGridLines {
         super.doDraw(canvas);
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
-            float yIntersect = intersectZoomCompensated(i);
+            float yIntersect = intersectZoomCompensated(i) * getDrawableArea().getHeight();
             if (yIntersect >= 0) {
                 canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() +
                         yIntersect,
@@ -45,27 +45,21 @@ public class LinYGridLines extends LinGridLines {
     }
 
     /**
-     * calls the dimension specific intersectZoomCompensated workout
-     * @param gridLine grid line to find out the intersecting value
-     * @return value where line intersects
-     */
-    @Override
-    public float intersectZoomCompensated(int gridLine) {
-        return intersectZoomCompensated(gridLine, getDrawableArea().getHeight());
-    }
-
-    /**
      * The surface size has changed update the current object to resize drawing
      *
      * @param drawableArea new surface size
      */
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
-        setGridLinesSize(drawableArea.getHeight());
         setGridLinesOffset(0);
 
         if(mAxisText != null) {
             mAxisText.calculateGridLineValues();
         }
+    }
+
+    @Override
+    float getDimensionLength() {
+        return getDrawableArea().getHeight();
     }
 }

@@ -39,10 +39,6 @@ public abstract class GridLines extends DrawableObject {
      */
     private static final float INITIAL_LINE_STROKE_WIDTH = 4f;
     /**
-     * Number of grid lines to display in the area
-     */
-    final int mNumberOfGridLines = 6;
-    /**
      * Paint for the grid lines
      */
     final Paint mPaint = new Paint();
@@ -55,6 +51,10 @@ public abstract class GridLines extends DrawableObject {
      */
     private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
     /**
+     * Number of grid lines to display in the area
+     */
+    int mNumberOfGridLines = 6;
+    /**
      * Describes the viewable part of the grid
      */
     ZoomDisplay mZoomDisplay;
@@ -66,8 +66,12 @@ public abstract class GridLines extends DrawableObject {
      * Graph dimension size, This is needed for minor grid lines to calculate where to display in
      * cases of zoom
      */
-    private float mGridLinesSize;
-    private float mGridLinesOffset;
+    float mGridLinesSize;
+    float mGridLinesOffset;
+    /**
+     * scale for child grid lines
+     */
+    GraphManager.Scale mChildGridLineScale;
     /**
      * Base Context
      */
@@ -84,6 +88,8 @@ public abstract class GridLines extends DrawableObject {
         mZoomDisplay = new ZoomDisplay(1f, 0f);
         mPaint.setColor(INITIAL_LINE_COLOR);
         mPaint.setStrokeWidth(INITIAL_LINE_STROKE_WIDTH);
+
+        setGridLinesSize(1f);
     }
 
     @Override
@@ -120,6 +126,15 @@ public abstract class GridLines extends DrawableObject {
     }
 
     /**
+     * Set the number of Grid lines for this object
+     *
+     * @param numberOfGridLines amount of gridlines
+     */
+    public void setNumberOfGridLines(int numberOfGridLines) {
+        mNumberOfGridLines = numberOfGridLines;
+    }
+
+    /**
      * Change the stroke width of the lines at runtime
      *
      * @param strokeWidth new stroke width value
@@ -138,7 +153,7 @@ public abstract class GridLines extends DrawableObject {
         mPaint.setColor(color);
     }
 
-    private float getGridLineDrawableWidth() {
+    float getGridLineDrawableWidth() {
         // -1 as we want the first grid line to be at 0 and the last at the width of the graph
         return mGridLinesSize / (float) (mNumberOfGridLines - 1);
     }
@@ -155,30 +170,32 @@ public abstract class GridLines extends DrawableObject {
      * @param gridLine grid line to find out the intersecting value
      * @return intersecting point
      */
-    float intersect(int gridLine) {
-        if (gridLine >= mNumberOfGridLines || gridLine < 0) {
+    abstract float intersect(int gridLine);
+
+    /**
+     * Gives the value of where a grid line will interest x on the screen
+     *
+     * @param gridLine        grid line to find, base 0
+     * @return the x Intersect
+     *          -3 if the grid line is out of range
+     *          -1 if Less than viewable area
+     *          -2 if greater than viewable area
+     */
+    public float intersectZoomCompensated(int gridLine) {
+        float intersect = intersect(gridLine);
+        if(intersect == GRID_LINE_OUT_OF_RANGE) {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        return mGridLinesOffset + getGridLineDrawableWidth() * (float) (gridLine);
+        if(intersect < mZoomDisplay.getDisplayOffsetPercentage()) {
+            return LESS_THAN_VIEWABLE_AREA;
+        } else if(intersect > mZoomDisplay.getFarSideOffsetPercentage()) {
+            return GREATER_THAN_VIEWABLE_AREA;
+        } else {
+            return (intersect - mZoomDisplay.getDisplayOffsetPercentage()) /
+                    mZoomDisplay.getZoomLevelPercentage();
+        }
     }
-
-    /**
-     * To be implemented when axis orientation is know
-     *
-     * @param gridLine grid line to find out the intersecting value
-     * @return intersecting point
-     */
-    public abstract float intersectZoomCompensated(int gridLine);
-
-    /**
-     * To be implemented when scale is know LOG/LIN
-     *
-     * @param gridLine grid line to find out the intersecting value
-     * @param dimensionLength length of width or height
-     * @return intersecting point
-     */
-    protected abstract float intersectZoomCompensated(int gridLine, int dimensionLength);
 
     /**
      * The grid lines are a underlay and is considered a underlay there we do not change the
@@ -202,6 +219,10 @@ public abstract class GridLines extends DrawableObject {
 
     void setGridLinesOffset(float graphOffset) {
         mGridLinesOffset = graphOffset;
+    }
+
+    public void setChildGridLineScale(GraphManager.Scale scale) {
+        mChildGridLineScale = scale;
     }
 
     /**
@@ -276,11 +297,13 @@ public abstract class GridLines extends DrawableObject {
      */
     private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
         Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
-        float zoomSpacing = getGridLineDrawableWidth() / mZoomDisplay.getZoomLevelPercentage();
+        final float zoomSpacing =
+                (getGridLineDrawableWidth() / mZoomDisplay.getZoomLevelPercentage())
+                        * getDimensionLength();
+        final float mPlaceMinorGridLinesSize = 500f;
 
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
             // If the grid lines spacing is greater than this number minor grid lines are added
-            float mPlaceMinorGridLinesSize = 500f;
             if (zoomSpacing > mPlaceMinorGridLinesSize) {
                 float lowerIntersect = intersectZoomCompensated(i);
                 float upperIntersect = intersectZoomCompensated(i + 1);
@@ -306,12 +329,25 @@ public abstract class GridLines extends DrawableObject {
         if (!mChildGridLines.containsKey(majorGridLine)) {
             GridLines minorGridLine;
             if (mAxisOrientation == AxisOrientation.xAxis) {
-                minorGridLine = new LinXGridLines();
+                if(mChildGridLineScale == GraphManager.Scale.linear) {
+                    minorGridLine = new LinXGridLines();
+                } else {
+                    minorGridLine = new LogXGridLines(mAxisText.getAxisValueSpan(),
+                            mAxisText.getMaximumAxisValue() / (float) Math.pow(10,
+                                    (getNumberOfGridLines() - 2 - majorGridLine)));
+                }
             } else {
-                minorGridLine = new LinYGridLines();
+                if(mChildGridLineScale == GraphManager.Scale.linear) {
+                    minorGridLine = new LinYGridLines();
+                } else {
+                    minorGridLine = new LogYGridLines(mAxisText.getAxisValueSpan(),
+                            (int) mAxisText.getMaximumAxisValue() / (float) Math.pow(10,
+                                    (getNumberOfGridLines() - 2 - majorGridLine)));
+                }
             }
             minorGridLine.setGridStrokeWidth(2);
             minorGridLine.setColor(Color.DKGRAY);
+            minorGridLine.setNumberOfGridLines(11);
             mChildGridLines.put(majorGridLine, minorGridLine);
 
             if (mAxisText != null) {
@@ -321,8 +357,6 @@ public abstract class GridLines extends DrawableObject {
 
             minorGridLineSurfaceChanged(minorGridLine, majorGridLine);
             minorGridLine.setZoomDisplay(getZoomDisplay());
-            // If we have axis text we want our children to have axis text
-
         }
     }
 
@@ -337,8 +371,8 @@ public abstract class GridLines extends DrawableObject {
         DrawableArea parentDrawableArea = getDrawableArea();
         gridLine.surfaceChanged(parentDrawableArea);
 
-        int left = (int) intersect(majorGridLine);
-        int right = (int) intersect(majorGridLine + 1);
+        float left = intersect(majorGridLine);
+        float right = intersect(majorGridLine + 1);
 
         gridLine.surfaceChanged(parentDrawableArea);
 
@@ -350,6 +384,13 @@ public abstract class GridLines extends DrawableObject {
             gridLine.getAxisText().getDrawableArea().setDrawableArea(mAxisText.getDrawableArea());
         }
     }
+
+    /**
+     * Used to report back the height for the yAxis or width on the xAxis
+     *
+     * @return dimension length
+     */
+    abstract float getDimensionLength();
 
     public AxisText getAxisText() {
         return mAxisText;

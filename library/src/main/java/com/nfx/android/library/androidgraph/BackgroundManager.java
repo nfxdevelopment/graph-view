@@ -24,8 +24,8 @@ public class BackgroundManager {
     /**
      * Handles the drawing of all grid lines
      */
-    private final GridLines mYMajorGridLines;
-    private final GridLines mXMajorGridLines;
+    private final GridLines mYGridLines;
+    private final GridLines mXGridLines;
     /**
      * Handles the drawing of all text on axis
      */
@@ -53,8 +53,8 @@ public class BackgroundManager {
         mShowAxisText = true;
         mBoarderText = new BoarderText(context, minimumXValue, maximumXValue, minimumYValue,
                 maximumYValue);
-        mXMajorGridLines.showAxisText(context, minimumXValue, maximumXValue);
-        mYMajorGridLines.showAxisText(context, minimumYValue, maximumYValue);
+        mXGridLines.showAxisText(context, minimumXValue, maximumXValue);
+        mYGridLines.showAxisText(context, minimumYValue, maximumYValue);
     }
 
     /**
@@ -64,8 +64,8 @@ public class BackgroundManager {
         mBackground = new Background();
         mBoarder = new Boarder();
 
-        mXMajorGridLines = new LinXGridLines();
-        mYMajorGridLines = new LinYGridLines();
+        mXGridLines = new LinXGridLines();
+        mYGridLines = new LinYGridLines();
     }
 
     /**
@@ -80,16 +80,16 @@ public class BackgroundManager {
         if (mShowAxisText) {
             mBoarderText.surfaceChanged(drawableArea);
             // we have to call Y here first to shift the x text into the right location
-            mYMajorGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
-            mXMajorGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
-            mYMajorGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
-            mXMajorGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
+            mYGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
+            mXGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
+            mYGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
+            mXGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
         }
 
         mBoarder.surfaceChanged(drawableArea);
 
-        mXMajorGridLines.surfaceChanged(drawableArea);
-        mYMajorGridLines.surfaceChanged(drawableArea);
+        mXGridLines.surfaceChanged(drawableArea);
+        mYGridLines.surfaceChanged(drawableArea);
     }
 
     /**
@@ -100,21 +100,21 @@ public class BackgroundManager {
         mBackground.doDraw(canvas);
         mBoarder.doDraw(canvas);
 
-        mXMajorGridLines.doDraw(canvas);
-        mYMajorGridLines.doDraw(canvas);
+        mXGridLines.doDraw(canvas);
+        mYGridLines.doDraw(canvas);
 
         if (mShowAxisText) {
             mBoarderText.doDraw(canvas);
         }
     }
 
-//    public GridLines getXMajorGridLines() {
-//        return mXMajorGridLines;
-//    }
-//
-//    public GridLines getYMajorGridLines() {
-//        return mYMajorGridLines;
-//    }
+    public GridLines getXGridLines() {
+        return mXGridLines;
+    }
+
+    public GridLines getYGridLines() {
+        return mYGridLines;
+    }
 
     /**
      * This tells the graph that there are signals to display, each signal gets its own drawer,
@@ -126,8 +126,8 @@ public class BackgroundManager {
     public void setSignalBuffers(SignalBuffers signalBuffers) {
         for (SignalBuffer signalBuffer : signalBuffers.getSignalBuffer().values()) {
 
-            mXMajorGridLines.setZoomDisplay(signalBuffer.getXZoomDisplay());
-            mYMajorGridLines.setZoomDisplay(signalBuffer.getYZoomDisplay());
+            mXGridLines.setZoomDisplay(signalBuffer.getXZoomDisplay());
+            mYGridLines.setZoomDisplay(signalBuffer.getYZoomDisplay());
 
             mBoarderText.setZoomDisplay(signalBuffer.getXZoomDisplay(),
                     signalBuffer.getYZoomDisplay());

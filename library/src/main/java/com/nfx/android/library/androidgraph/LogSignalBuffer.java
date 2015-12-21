@@ -102,18 +102,18 @@ public class LogSignalBuffer extends SignalBuffer {
      * calculates where the scaled buffer index should point in relation to the given log buffer
      *
      * @param index               desired scaled index to calculate
-     * @param desiredBufferLength length od the desired scaled buffer
-     * @return
+     * @param desiredBufferLength length of the desired scaled buffer
+     * @return read buffer index to use
      */
     private float scaledIndexToLogBufferIndex(int index, int desiredBufferLength) {
-        float logMaximumZoomLevel = (float) (Math.pow(10 * mAxisSpanValue,
+        float logMaximumZoomLevel = (float) (Math.pow(2 * mAxisSpanValue,
                 ZoomDisplay.MAXIMUM_ZOOM_LEVEL) - 1f);
 
         float linearSpacing = mXZoomDisplay.getZoomLevelPercentage() / (desiredBufferLength - 1f);
 
         float linearStartPos = linearSpacing * index;
         float pointOffsetPercentage =
-                (float) (Math.pow(10 * mAxisSpanValue, (
+                (float) (Math.pow(2 * mAxisSpanValue, (
                         mXZoomDisplay.getDisplayOffsetPercentage()
                                 + linearStartPos)) - 1f) / logMaximumZoomLevel;
         return pointOffsetPercentage * (float) (getSizeOfBuffer() - 1);

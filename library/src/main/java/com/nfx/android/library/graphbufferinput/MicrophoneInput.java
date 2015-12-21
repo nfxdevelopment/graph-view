@@ -6,7 +6,6 @@ import android.media.MediaRecorder;
 import android.util.Log;
 
 import com.nfx.android.library.androidgraph.GraphManager;
-import com.nfx.android.library.androidgraph.SignalBuffer;
 
 /**
  * NFX Development
@@ -42,8 +41,7 @@ public class MicrophoneInput extends Input {
      */
     protected MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
         super(graphSignalInputInterface);
-        mSignalBuffers.addSignalBuffer(0, inputBlockSize, sampleRate,
-                SignalBuffer.SignalScale.linear);
+        mSignalBuffers.addSignalBuffer(0, inputBlockSize, sampleRate, GraphManager.Scale.linear);
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
 
         initialise();
