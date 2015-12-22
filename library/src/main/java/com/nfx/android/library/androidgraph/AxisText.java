@@ -41,11 +41,11 @@ public abstract class AxisText extends DrawableObject {
     /**
      * the lowest number that the axis displays
      */
-    private float mMinimumAxisValue = 0;
+    float mMinimumAxisValue = 0;
     /**
      * the span of the values displayed on the axis
      */
-    private float mAxisValueSpan = 1;
+    float mAxisValueSpan = 1;
     /**
      * the highest number the axis displays
      */
@@ -92,7 +92,7 @@ public abstract class AxisText extends DrawableObject {
         mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
     }
 
-    private String displayString(int gridLine) {
+    String displayString(int gridLine) {
         float locationOnGraph = mGridLines.intersect(gridLine);
         // +1 as we are not labeling the limits here
         float valueToDisplay = mMinimumAxisValue + (mAxisValueSpan * locationOnGraph);
