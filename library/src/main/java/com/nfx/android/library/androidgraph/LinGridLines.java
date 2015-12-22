@@ -17,6 +17,7 @@ public abstract class LinGridLines extends GridLines {
         mChildGridLineScale = GraphManager.Scale.linear;
     }
 
+    @Override
     float intersect(int gridLine) {
         if(gridLine >= mNumberOfGridLines || gridLine < 0) {
             return GRID_LINE_OUT_OF_RANGE;

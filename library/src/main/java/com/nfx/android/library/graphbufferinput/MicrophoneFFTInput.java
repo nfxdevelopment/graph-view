@@ -97,6 +97,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
                 mMagnitudeBuffer[i] = 10f * (float) Math.log10(mMagnitudeBuffer[i]);
                 mMagnitudeBuffer[i] *= -0.01;
+                mMagnitudeBuffer[i] = 1f - mMagnitudeBuffer[i];
             }
 
             mMagnitudeBuffer[0] = mMagnitudeBuffer[1];
@@ -131,7 +132,8 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
         int bufferLength = mMagnitudeBuffer.length;
 
-        System.arraycopy(mMagnitudeBuffer, 0, mHistoryMagnitudeBuffers[0], 0, bufferLength);
+        System.arraycopy(
+                mMagnitudeBuffer, 0, mHistoryMagnitudeBuffers[mHistoryIndex], 0, bufferLength);
 
         for(int i = 0; i < bufferLength; ++i) {
             returnedMagnitudeBuffer[i] = 0;

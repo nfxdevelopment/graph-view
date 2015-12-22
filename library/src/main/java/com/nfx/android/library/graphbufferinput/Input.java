@@ -78,17 +78,28 @@ public abstract class Input implements TouchInput.TouchListener {
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
-        scrollHandle(getZoomDisplayX(), distanceX, mDisplayMetrics.widthPixels);
-        scrollHandle(getZoomDisplayY(), distanceY, mDisplayMetrics.heightPixels);
+        scrollHandleX(distanceX, mDisplayMetrics.widthPixels);
+        scrollHandleY(distanceY, mDisplayMetrics.heightPixels);
 
         return true;
     }
 
-    private void scrollHandle(ZoomDisplay zoomDisplay, float distanceMoved, float displaySize) {
+    private void scrollHandleX(float distanceMoved, float displaySize) {
+        ZoomDisplay zoomDisplay = getZoomDisplayX();
         float displayOffset = zoomDisplay.getDisplayOffsetPercentage();
 
         float movementPercentage = (distanceMoved / displaySize) *
                 zoomDisplay.getZoomLevelPercentage();
+
+        zoomDisplay.setDisplayOffsetPercentage(displayOffset + movementPercentage);
+    }
+
+    private void scrollHandleY(float distanceMoved, float displaySize) {
+        ZoomDisplay zoomDisplay = getZoomDisplayY();
+        float displayOffset = zoomDisplay.getDisplayOffsetPercentage();
+
+        float movementPercentage = (distanceMoved / displaySize) *
+                zoomDisplay.getZoomLevelPercentage() * -1;
 
         zoomDisplay.setDisplayOffsetPercentage(displayOffset + movementPercentage);
     }

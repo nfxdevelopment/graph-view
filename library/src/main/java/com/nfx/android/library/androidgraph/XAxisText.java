@@ -53,7 +53,7 @@ public class XAxisText extends AxisText {
                     int x = getDrawableArea().getLeft() + (int) xIntersect;
 
                     // Remember the text is drawn on the baseline
-                    canvas.drawText(displayString, x + mGraphBoarderSize, getDrawableArea()
+                    canvas.drawText(displayString, x, getDrawableArea()
                             .getTop() +
                             (int) Math.abs(mTextPaint.ascent()), mTextPaint);
                 }

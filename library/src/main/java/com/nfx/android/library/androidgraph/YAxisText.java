@@ -34,20 +34,17 @@ public class YAxisText extends AxisText {
     public void doDraw(Canvas canvas) {
         // Our limits are over laps with other grid lines, hence starting from 1 and -1
         for (int i = 1; i < mGridLines.getNumberOfGridLines() - 1; ++i) {
-            // The drawing of text happens top to bottom but the scale goes bottom to top. Therefore
-            // we need to invert the calculation of the display string
-            String displayString = mGridLineValues[(mGridLines.getNumberOfGridLines() - 1) - i];
+            String displayString = mGridLineValues[i];
 
-            float yIntersect = mGridLines.intersectZoomCompensated(i) * mGridLines
-                    .getDrawableArea().getHeight();
+            float yIntersect = mGridLines.getDrawableArea().getHeight() -
+                    mGridLines.intersectZoomCompensated(i) *
+                            mGridLines.getDrawableArea().getHeight();
             // Ensure the grid line is on screen
-            if (yIntersect > (getDrawableArea().getTop() + Math.abs(mTextPaint.ascent())) &&
-                    yIntersect < (getDrawableArea().getBottom() -
-                            (getRealTextHeight() * 2) - mBounds.height())) {
-                int y = getDrawableArea().getTop() + (int) yIntersect + (mBounds.height() / 2);
+            if(yIntersect > (getDrawableArea().getTop() + getRealTextHeight()) &&
+                    yIntersect < (getDrawableArea().getBottom() - 2 * getRealTextHeight())) {
+                float y = getDrawableArea().getTop() + yIntersect + (getRealTextHeight() / 2);
 
-                canvas.drawText(displayString, getDrawableArea().getWidth(), y + mGraphBoarderSize,
-                        mTextPaint);
+                canvas.drawText(displayString, getDrawableArea().getWidth(), y, mTextPaint);
             }
         }
     }

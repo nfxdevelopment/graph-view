@@ -39,10 +39,6 @@ public abstract class AxisText extends DrawableObject {
      */
     private final DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
     /**
-     * boarder size
-     */
-    int mGraphBoarderSize = 0;
-    /**
      * the lowest number that the axis displays
      */
     private float mMinimumAxisValue = 0;
@@ -133,10 +129,6 @@ public abstract class AxisText extends DrawableObject {
      */
     float getRealTextHeight() {
         return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
-    }
-
-    public void setGraphBoarderSize(int boarderSize) {
-        mGraphBoarderSize = boarderSize;
     }
 
     public float getMinimumAxisValue() {

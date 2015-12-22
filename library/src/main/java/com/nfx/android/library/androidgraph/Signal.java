@@ -116,9 +116,9 @@ public class Signal extends DrawableObject {
                     endPosY = 0f;
                 }
 
-                float drawStartPosY = screenTop + (screenHeight * startPosY);
+                float drawStartPosY = screenHeight - (screenHeight * startPosY);
                 float drawStartPosX = screenLeft + (spacing * startPosX);
-                float drawEndPosY = screenTop + (screenHeight * endPosY);
+                float drawEndPosY = screenHeight - (screenHeight * endPosY);
                 float drawEndPosX = screenLeft + (spacing * endPosX);
 
                 canvas.drawLine(getDrawableArea().checkLimitX(drawStartPosX),

@@ -82,8 +82,6 @@ public class BackgroundManager {
             // we have to call Y here first to shift the x text into the right location
             mYGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
             mXGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
-            mYGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
-            mXGridLines.getAxisText().setGraphBoarderSize(mBoarder.getStrokeWidth());
         }
 
         mBoarder.surfaceChanged(drawableArea);
