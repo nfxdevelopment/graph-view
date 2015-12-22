@@ -86,7 +86,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
         mGraphManagerThread = new GraphManagerThread(context);
         mBackgroundManager = new BackgroundManager(mContext, mMinimumXValue, mMaximumXValue,
-                mMinimumXValue, mMaximumXValue);
+                mMinimumYValue, mMaximumYValue);
         mSignalManager = new SignalManager(this);
     }
 

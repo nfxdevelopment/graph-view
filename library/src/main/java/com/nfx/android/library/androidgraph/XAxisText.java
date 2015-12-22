@@ -32,40 +32,36 @@ public class XAxisText extends AxisText {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        // Calculate distance between lines
-        if(mGridLines.getNumberOfGridLines() > 1) {
+        float lastTextDrawn = mGridLines.intersectZoomCompensated(0) *
+                mGridLines.getDrawableArea().getWidth();
+        if(lastTextDrawn < 0) {
+            lastTextDrawn = 0;
+        }
+        final int lastGridLine = mGridLines.getNumberOfGridLines() - 1;
+        float drawLimitText = mGridLines.intersectZoomCompensated(lastGridLine) *
+                mGridLines.getDrawableArea().getWidth();
+        if(drawLimitText < 0) {
+            drawLimitText = getDrawableArea().getWidth();
+        }
 
-            float lastTextDrawn = mGridLines.intersectZoomCompensated(0) *
+        // Our limits are over laps with other grid lines, hence starting from 1 and limit -1
+        for(int i = 1; i < lastGridLine; ++i) {
+
+            float xIntersect = mGridLines.intersectZoomCompensated(i) *
                     mGridLines.getDrawableArea().getWidth();
-            if(lastTextDrawn < 0) {
-                lastTextDrawn = 0;
-            }
-            final int lastGridLine = mGridLines.getNumberOfGridLines() - 1;
-            float drawLimitText = mGridLines.intersectZoomCompensated(lastGridLine) *
-                    mGridLines.getDrawableArea().getWidth();
-            if(drawLimitText < 0) {
-                drawLimitText = getDrawableArea().getWidth();
-            }
 
-            // Our limits are over laps with other grid lines, hence starting from 1 and limit -1
-            for(int i = 1; i < lastGridLine; ++i) {
+            if(xIntersect > 0 &&
+                    xIntersect - lastTextDrawn > mBounds.width() &&
+                    drawLimitText - xIntersect > mBounds.width() * 1.5f) {
+                String displayString = mGridLineValues[i];
+                int x = getDrawableArea().getLeft() + (int) xIntersect;
 
-                float xIntersect = mGridLines.intersectZoomCompensated(i) *
-                        mGridLines.getDrawableArea().getWidth();
+                // Remember the text is drawn on the baseline
+                canvas.drawText(displayString, x, getDrawableArea()
+                        .getTop() +
+                        (int) Math.abs(mTextPaint.ascent()), mTextPaint);
 
-                if(xIntersect > 0 &&
-                        xIntersect - lastTextDrawn > mBounds.width() &&
-                        drawLimitText - xIntersect > mBounds.width() * 1.5f) {
-                    String displayString = mGridLineValues[i];
-                    int x = getDrawableArea().getLeft() + (int) xIntersect;
-
-                    // Remember the text is drawn on the baseline
-                    canvas.drawText(displayString, x, getDrawableArea()
-                            .getTop() +
-                            (int) Math.abs(mTextPaint.ascent()), mTextPaint);
-
-                    lastTextDrawn = xIntersect;
-                }
+                lastTextDrawn = xIntersect;
             }
         }
     }

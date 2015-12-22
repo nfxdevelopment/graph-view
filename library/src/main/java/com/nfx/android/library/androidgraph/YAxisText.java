@@ -32,19 +32,37 @@ public class YAxisText extends AxisText {
      */
     @Override
     public void doDraw(Canvas canvas) {
+
+        float lastTextDrawn = mGridLines.getDrawableArea().getHeight() -
+                mGridLines.intersectZoomCompensated(0) *
+                        mGridLines.getDrawableArea().getHeight();
+        if(lastTextDrawn > mGridLines.getDrawableArea().getHeight()) {
+            lastTextDrawn = mGridLines.getDrawableArea().getHeight();
+        }
+        final int lastGridLine = mGridLines.getNumberOfGridLines() - 1;
+        float drawLimitText = mGridLines.getDrawableArea().getHeight() -
+                mGridLines.intersectZoomCompensated(lastGridLine) *
+                        mGridLines.getDrawableArea().getHeight();
+        if(drawLimitText > mGridLines.getDrawableArea().getHeight()) {
+            drawLimitText = 0;
+        }
+
         // Our limits are over laps with other grid lines, hence starting from 1 and -1
-        for (int i = 1; i < mGridLines.getNumberOfGridLines() - 1; ++i) {
+        for(int i = 1; i < lastGridLine; ++i) {
             String displayString = mGridLineValues[i];
 
             float yIntersect = mGridLines.getDrawableArea().getHeight() -
                     mGridLines.intersectZoomCompensated(i) *
                             mGridLines.getDrawableArea().getHeight();
             // Ensure the grid line is on screen
-            if(yIntersect > (getDrawableArea().getTop() + getRealTextHeight()) &&
-                    yIntersect < (getDrawableArea().getBottom() - 2 * getRealTextHeight())) {
+            if(yIntersect < mGridLines.getDrawableArea().getHeight() &&
+                    lastTextDrawn - yIntersect > getRealTextHeight() * 1.5f &&
+                    yIntersect - drawLimitText > getRealTextHeight() * 1.5f) {
                 float y = getDrawableArea().getTop() + yIntersect + (getRealTextHeight() / 2);
 
                 canvas.drawText(displayString, getDrawableArea().getWidth(), y, mTextPaint);
+
+                lastTextDrawn = yIntersect;
             }
         }
     }

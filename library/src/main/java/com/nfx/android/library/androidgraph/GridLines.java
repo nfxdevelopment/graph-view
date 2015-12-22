@@ -291,7 +291,7 @@ public abstract class GridLines extends DrawableObject {
      */
     private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
         Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
-        final double zoomSpacing =
+        final float zoomSpacing =
                 (getGridLineDrawableWidth() / mZoomDisplay.getZoomLevelPercentage())
                         * getDimensionLength();
         final float mPlaceMinorGridLinesSize = 500f;
@@ -299,8 +299,8 @@ public abstract class GridLines extends DrawableObject {
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
             // If the grid lines spacing is greater than this number minor grid lines are added
             if (zoomSpacing > mPlaceMinorGridLinesSize) {
-                double lowerIntersect = intersectZoomCompensated(i);
-                double upperIntersect = intersectZoomCompensated(i + 1);
+                float lowerIntersect = intersectZoomCompensated(i);
+                float upperIntersect = intersectZoomCompensated(i + 1);
                 if (lowerIntersect != upperIntersect) {
                     adequateSpaceList.put(i, true);
                 } else {
@@ -376,6 +376,7 @@ public abstract class GridLines extends DrawableObject {
         if (mAxisText != null) {
             // We want out children Axis to have the same drawable area as our own.
             gridLine.getAxisText().getDrawableArea().setDrawableArea(mAxisText.getDrawableArea());
+            gridLine.getAxisText().calculateGridLineValues();
         }
     }
 
