@@ -247,6 +247,10 @@ public abstract class GridLines extends DrawableObject {
             gridLines.getValue().surfaceChanged(drawableArea);
             minorGridLineSurfaceChanged(gridLines.getValue(), gridLines.getKey());
         }
+
+        if(mAxisText != null) {
+            mAxisText.calculateGridLineValues();
+        }
     }
 
     private ZoomDisplay getZoomDisplay() {
@@ -274,10 +278,6 @@ public abstract class GridLines extends DrawableObject {
                     } else {
                         mChildGridLines.remove(majorGridLine.getKey());
                     }
-                }
-
-                if(mAxisText != null) {
-                    mAxisText.calculateGridLineValues();
                 }
             }
         });

@@ -55,7 +55,7 @@ public class XAxisText extends AxisText {
 
                 if(xIntersect > 0 &&
                         xIntersect - lastTextDrawn > mBounds.width() &&
-                        drawLimitText - xIntersect > mBounds.width()) {
+                        drawLimitText - xIntersect > mBounds.width() * 1.5f) {
                     String displayString = mGridLineValues[i];
                     int x = getDrawableArea().getLeft() + (int) xIntersect;
 

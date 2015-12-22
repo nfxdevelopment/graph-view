@@ -28,8 +28,6 @@ public class LogYGridLines extends LogGridLines {
     public void doDraw(Canvas canvas) {
         super.doDraw(canvas);
 
-        maxLogValue = GraphManager.log(getDrawableArea().getHeight());
-
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float yIntersect = intersectZoomCompensated(i) * getDrawableArea().getHeight();
             if (yIntersect >= 0) {
@@ -56,10 +54,7 @@ public class LogYGridLines extends LogGridLines {
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
         setGridLinesOffset(0);
-
-        if(mAxisText != null) {
-            mAxisText.calculateGridLineValues();
-        }
+        maxLogValue = GraphManager.log(getDrawableArea().getHeight());
     }
 
     @Override

@@ -53,10 +53,6 @@ public class LinYGridLines extends LinGridLines {
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
         setGridLinesOffset(0);
-
-        if(mAxisText != null) {
-            mAxisText.calculateGridLineValues();
-        }
     }
 
     @Override
