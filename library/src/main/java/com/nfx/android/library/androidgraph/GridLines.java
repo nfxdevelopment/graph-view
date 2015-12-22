@@ -58,6 +58,11 @@ public abstract class GridLines extends DrawableObject {
      * Describes the viewable part of the grid
      */
     ZoomDisplay mZoomDisplay;
+
+    /**
+     * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
+     */
+    ZoomDisplay mFixedZoomDisplay;
     /**
      * The axis text to be displayed if needed
      */
@@ -84,6 +89,7 @@ public abstract class GridLines extends DrawableObject {
      */
     GridLines(AxisOrientation axisOrientation) {
         mAxisOrientation = axisOrientation;
+        mFixedZoomDisplay = new ZoomDisplay(1f, 0f);
         // Set a default zoom Display
         mZoomDisplay = new ZoomDisplay(1f, 0f);
         mPaint.setColor(INITIAL_LINE_COLOR);
@@ -158,18 +164,6 @@ public abstract class GridLines extends DrawableObject {
         return mGridLinesSize / (float) (mNumberOfGridLines - 1);
     }
 
-    public float getCurrentGridLineSpacing() {
-        return ((intersect(mNumberOfGridLines - 1) -
-                intersect(0)) / getZoomDisplay().getZoomLevelPercentage()) /
-                (float) (mNumberOfGridLines - 1);
-    }
-
-    /**
-     * Gives the intersect point of a grid line a when the zoom level is 100 percent
-     *
-     * @param gridLine grid line to find out the intersecting value
-     * @return intersecting point
-     */
     abstract float intersect(int gridLine);
 
     /**
@@ -297,7 +291,7 @@ public abstract class GridLines extends DrawableObject {
      */
     private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
         Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
-        final float zoomSpacing =
+        final double zoomSpacing =
                 (getGridLineDrawableWidth() / mZoomDisplay.getZoomLevelPercentage())
                         * getDimensionLength();
         final float mPlaceMinorGridLinesSize = 500f;
@@ -305,8 +299,8 @@ public abstract class GridLines extends DrawableObject {
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
             // If the grid lines spacing is greater than this number minor grid lines are added
             if (zoomSpacing > mPlaceMinorGridLinesSize) {
-                float lowerIntersect = intersectZoomCompensated(i);
-                float upperIntersect = intersectZoomCompensated(i + 1);
+                double lowerIntersect = intersectZoomCompensated(i);
+                double upperIntersect = intersectZoomCompensated(i + 1);
                 if (lowerIntersect != upperIntersect) {
                     adequateSpaceList.put(i, true);
                 } else {
@@ -394,6 +388,10 @@ public abstract class GridLines extends DrawableObject {
 
     public AxisText getAxisText() {
         return mAxisText;
+    }
+
+    public ZoomDisplay getFixedZoomDisplay() {
+        return mFixedZoomDisplay;
     }
 
     enum AxisOrientation {

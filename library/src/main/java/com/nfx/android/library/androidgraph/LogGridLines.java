@@ -1,7 +1,5 @@
 package com.nfx.android.library.androidgraph;
 
-import android.graphics.Canvas;
-
 /**
  * NFX Development
  * Created by nick on 28/10/15.
@@ -33,16 +31,7 @@ public abstract class LogGridLines extends GridLines {
         mDecade = decade;
     }
 
-    /**
-     * Ensures maxLogValue is always up to date when we use it. This super has to be called before
-     * any drawing is done
-     *
-     * @param canvas a canvas to draw onto
-     */
     @Override
-    public void doDraw(Canvas canvas) {
-    }
-
     float intersect(int gridLine) {
         if(gridLine >= mNumberOfGridLines || gridLine < 0) {
             return GRID_LINE_OUT_OF_RANGE;

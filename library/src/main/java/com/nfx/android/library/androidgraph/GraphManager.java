@@ -20,6 +20,22 @@ import java.util.Collection;
 public class GraphManager extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "GraphManager";
     /**
+     * Maximum X value
+     */
+    final float mMaximumXValue = 44100f;
+    /**
+     * Minimum X Value
+     */
+    final float mMinimumXValue = 0f;
+    /**
+     * Maximum Y value
+     */
+    final float mMaximumYValue = 0f;
+    /**
+     * Minimum Y Value
+     */
+    final float mMinimumYValue = -100f;
+    /**
      * An object to draw all of the background information, including grid lines, axis information
      * and a background color
      */
@@ -69,12 +85,27 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         holder.addCallback(this);
 
         mGraphManagerThread = new GraphManagerThread(context);
-        mBackgroundManager = new BackgroundManager(mContext, 0, 100000, -100, 0);
+        mBackgroundManager = new BackgroundManager(mContext, mMinimumXValue, mMaximumXValue,
+                mMinimumXValue, mMaximumXValue);
         mSignalManager = new SignalManager(this);
     }
 
     static float log(float x) {
         return (float) (Math.log(x) / Math.log(2));
+    }
+
+    public void setXAxisToDisplayLogarithmic() {
+        mBackgroundManager.getXGridLines().setChildGridLineScale(Scale.logarithmic);
+        float max = mMaximumXValue;
+        int i = 0;
+        while(max >= 1) {
+            i++;
+            max /= 10;
+        }
+        float newMax = (float) Math.pow(10, i);
+        mBackgroundManager.getXGridLines().showAxisText(mContext, mMinimumXValue, newMax);
+        mBackgroundManager.getXGridLines().getFixedZoomDisplay().setZoomLevelPercentage(
+                log(mMaximumXValue) / log(newMax));
     }
 
     public GraphSignalInputInterface getGraphSignalInputInterface() {

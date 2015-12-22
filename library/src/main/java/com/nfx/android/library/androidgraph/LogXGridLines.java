@@ -22,7 +22,7 @@ public class LogXGridLines extends LogGridLines {
     @Override
     public void showAxisText(Context context, float minimumValue, float maximumValue) {
         super.showAxisText(context, minimumValue, maximumValue);
-        mAxisText = new XAxisText(context, this, minimumValue, maximumValue);
+        mAxisText = new LogXAxisText(context, this, minimumValue, maximumValue);
     }
 
     /**

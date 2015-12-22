@@ -17,6 +17,12 @@ public abstract class LinGridLines extends GridLines {
         mChildGridLineScale = GraphManager.Scale.linear;
     }
 
+    /**
+     * Gives the intersect point of a grid line a when the zoom level is 100 percent
+     *
+     * @param gridLine grid line to find out the intersecting value
+     * @return intersecting point
+     */
     @Override
     float intersect(int gridLine) {
         if(gridLine >= mNumberOfGridLines || gridLine < 0) {

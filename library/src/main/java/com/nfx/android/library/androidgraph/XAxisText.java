@@ -34,28 +34,37 @@ public class XAxisText extends AxisText {
     public void doDraw(Canvas canvas) {
         // Calculate distance between lines
         if(mGridLines.getNumberOfGridLines() > 1) {
-            float gridLineSpacing = mGridLines.getCurrentGridLineSpacing() *
-                    mGridLines.getDrawableArea().getWidth();
-            int textDrawInterval = (int) Math.ceil(((float) mBounds.width() * 2f) /
-                    gridLineSpacing);
 
-            // Our limits are over laps with other grid lines, hence starting from 1 and -1
-            for(int i = textDrawInterval; i < mGridLines.getNumberOfGridLines() - textDrawInterval;
-                i = i + textDrawInterval) {
-                // First calculate the number to display
-                String displayString = mGridLineValues[i];
+            float lastTextDrawn = mGridLines.intersectZoomCompensated(0) *
+                    mGridLines.getDrawableArea().getWidth();
+            if(lastTextDrawn < 0) {
+                lastTextDrawn = 0;
+            }
+            final int lastGridLine = mGridLines.getNumberOfGridLines() - 1;
+            float drawLimitText = mGridLines.intersectZoomCompensated(lastGridLine) *
+                    mGridLines.getDrawableArea().getWidth();
+            if(drawLimitText < 0) {
+                drawLimitText = getDrawableArea().getWidth();
+            }
+
+            // Our limits are over laps with other grid lines, hence starting from 1 and limit -1
+            for(int i = 1; i < lastGridLine; ++i) {
 
                 float xIntersect = mGridLines.intersectZoomCompensated(i) *
                         mGridLines.getDrawableArea().getWidth();
-                // Ensure the grid line is on screen and not overlapping the boarder text
-                if(xIntersect > (mBounds.width()) &&
-                        xIntersect < getDrawableArea().getWidth() - (1.5f * mBounds.width())) {
+
+                if(xIntersect > 0 &&
+                        xIntersect - lastTextDrawn > mBounds.width() &&
+                        drawLimitText - xIntersect > mBounds.width()) {
+                    String displayString = mGridLineValues[i];
                     int x = getDrawableArea().getLeft() + (int) xIntersect;
 
                     // Remember the text is drawn on the baseline
                     canvas.drawText(displayString, x, getDrawableArea()
                             .getTop() +
                             (int) Math.abs(mTextPaint.ascent()), mTextPaint);
+
+                    lastTextDrawn = xIntersect;
                 }
             }
         }
