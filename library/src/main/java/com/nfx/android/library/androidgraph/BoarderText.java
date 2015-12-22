@@ -110,9 +110,9 @@ public class BoarderText extends DrawableObject {
      */
     private void calculateValuesToDisplay() {
         mTopY = displayString(mYMinimum +
-                ((1 - mYZoomDisplay.getDisplayOffsetPercentage()) * mYSpan));
+                (mYZoomDisplay.getFarSideOffsetPercentage() * mYSpan));
         mBottomY = displayString(mYMinimum +
-                ((1 - mYZoomDisplay.getFarSideOffsetPercentage()) * mYSpan));
+                (mYZoomDisplay.getDisplayOffsetPercentage() * mYSpan));
         mLeftX = displayString(mXMinimum +
                 (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan));
         mRightX = displayString(mXMinimum +
