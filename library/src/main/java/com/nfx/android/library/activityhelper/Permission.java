@@ -6,6 +6,7 @@ package com.nfx.android.library.activityhelper;
  * <p/>
  * A helper class to simplify permissions so strings are not miss typed etc.
  */
+@SuppressWarnings("unused")
 public class Permission {
 
     private static final int PERMISSION_OFFSET = 1000;

@@ -12,6 +12,7 @@ import android.graphics.Paint;
  * logarithmic or linear fashion at runtime
  */
 public class Signal extends DrawableObject {
+    @SuppressWarnings("unused")
     private static final String TAG = "Signal";
 
     /**
@@ -63,7 +64,6 @@ public class Signal extends DrawableObject {
     @Override
     public void doDraw(Canvas canvas) {
         float screenLeft = (float) getDrawableArea().getLeft();
-        float screenTop = (float) getDrawableArea().getTop();
         float screenHeight = (float) getDrawableArea().getHeight();
         float screenWidth = (float) getDrawableArea().getWidth();
 
@@ -76,7 +76,7 @@ public class Signal extends DrawableObject {
             float startPosY = mDrawBuffer[i];
             float endPosY = mDrawBuffer[i + 1];
 
-            // ensure that at least part of the line will be visble on screen
+            // ensure that at least part of the line will be visible on screen
             if((startPosY < 1f || endPosY < 1f) &&
                     (startPosY > 0f || endPosY > 0f)) {
 

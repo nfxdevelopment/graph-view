@@ -6,16 +6,13 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-
 /**
  * NFX Development
  * Created by nick on 29/10/15.
  *
  * Base class for drawing axis text onto a canvas
  */
-public abstract class AxisText extends DrawableObject {
+abstract class AxisText extends DrawableObject {
     private static final String TAG = "AxisText";
 
     /**
@@ -35,17 +32,13 @@ public abstract class AxisText extends DrawableObject {
      */
     final Rect mBounds = new Rect();
     /**
-     * The format to display in
-     */
-    private final DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
-    /**
-     * the lowest number that the axis displays
-     */
-    float mMinimumAxisValue = 0;
-    /**
      * the span of the values displayed on the axis
      */
     float mAxisValueSpan = 1;
+    /**
+     * the lowest number that the axis displays
+     */
+    private float mMinimumAxisValue = 0;
     /**
      * the highest number the axis displays
      */
@@ -82,8 +75,6 @@ public abstract class AxisText extends DrawableObject {
         int mUnscaledTextSize = 16;
         mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
         mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-
-        mDecimalFormat.setRoundingMode(RoundingMode.CEILING);
 
         mGridLineValues = new String[gridLines.getNumberOfGridLines()];
         calculateGridLineValues();

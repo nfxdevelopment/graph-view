@@ -54,7 +54,6 @@ public class LogYGridLines extends LogGridLines {
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
         setGridLinesOffset(0);
-        maxLogValue = GraphManager.log(getDrawableArea().getHeight());
     }
 
     @Override

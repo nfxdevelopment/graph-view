@@ -71,16 +71,6 @@ public abstract class NfxActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         ArrayList<String> permissionsToAskFor = new ArrayList<>();
@@ -100,22 +90,6 @@ public abstract class NfxActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     /**
      * Ask for all the permissions in the array
      *
@@ -131,6 +105,7 @@ public abstract class NfxActivity extends AppCompatActivity {
      * This will clear the shared preferences flags so all permissions will be attempted again if
      * denied previously.
      */
+    @SuppressWarnings("unused")
     public void clearUserAlreadyAskedFlags() {
         for (Permission permission : mPermissionsRequested.values()) {
             mSharedPreferences.edit().putBoolean(permission.toString(), true).apply();

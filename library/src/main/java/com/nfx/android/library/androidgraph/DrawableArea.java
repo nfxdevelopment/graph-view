@@ -23,6 +23,7 @@ class DrawableArea {
      * @param width   width dimension
      * @param height  height dimension
      */
+    @SuppressWarnings("SameParameterValue")
     public DrawableArea(int xOffset, int yOffset, int width, int height) {
         mXOffset = xOffset;
         mYOffset = yOffset;

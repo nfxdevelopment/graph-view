@@ -17,7 +17,9 @@ public class ZoomDisplay {
     /**
      * Minimum zoom level
      */
+    @SuppressWarnings("WeakerAccess")
     static public final float MINIMUM_ZOOM_LEVEL = 0f;
+    @SuppressWarnings("unused")
     private static final String TAG = "ZoomDisplay";
     /**
      * Subscribe to this listener to get Zoom notification changes
@@ -41,6 +43,7 @@ public class ZoomDisplay {
      * @param displayOffsetPercentage a float referenced as 0% = 0 100% = 1 if outside this value a
      *                                warning is logged and 0f will be assigned
      **/
+    @SuppressWarnings("SameParameterValue")
     ZoomDisplay(float zoomLevelPercentage, float displayOffsetPercentage) {
         if(zoomLevelPercentage < MAXIMUM_ZOOM_LEVEL && zoomLevelPercentage > MINIMUM_ZOOM_LEVEL) {
             mZoomLevelPercentage = zoomLevelPercentage;

@@ -6,7 +6,7 @@ import android.content.Context;
  * NFX Development
  * Created by nick on 22/12/15.
  */
-public class LogXAxisText extends XAxisText {
+class LogXAxisText extends XAxisText {
     /**
      * Constructor
      *

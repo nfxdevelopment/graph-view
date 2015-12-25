@@ -8,7 +8,7 @@ public class LogSignalBuffer extends SignalBuffer {
     /**
      * Given span for the X axis. This is used to calculate the logarithmic scale
      */
-    private float mAxisSpanValue;
+    private final float mAxisSpanValue;
 
     /**
      * Constructor

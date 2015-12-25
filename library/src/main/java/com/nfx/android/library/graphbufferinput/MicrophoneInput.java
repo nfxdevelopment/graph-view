@@ -16,33 +16,44 @@ import com.nfx.android.library.androidgraph.GraphManager;
  */
 public class MicrophoneInput extends Input {
     private final static String TAG = "MicrophoneInput";
-    // The desired sampling rate for this analyser, in samples/sec.
-    private static final int sampleRate = 44100;
     /**
-     * Audio buffer size calculated at runtime
+     * The desired sampling rate for this analyser, in samples/sec.
      */
-    private static final int sAudioBufferSize = AudioRecord.getMinBufferSize(sampleRate,
-            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
-    // Audio input block size, in samples.
-    protected final int inputBlockSize = 4096;
+    private static final int sSampleRate = 44100;
+    /**
+     * Audio input block size, in samples.
+     */
+    int mInputBlockSize = 4096;
     /**
      * Audio input device
      */
-    private AudioRecord audioInput;
-    // Flag whether the thread should be running.
-    private boolean running = false;
-    // The thread, if any, which is currently reading.  Null if not running.
-    private Thread readerThread = null;
+    private AudioRecord mAudioInput;
+    /**
+     * Flag whether the thread should be mRunning.
+     */
+    private boolean mRunning = false;
+    /**
+     * The thread, if any, which is currently reading.  Null if not mRunning.
+     */
+    private Thread mReaderThread = null;
 
     /**
      * Constructor to initialise microphone for listening
      *
      * @param graphSignalInputInterface interface to send signal data to
      */
+    @SuppressWarnings("WeakerAccess")
     protected MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
         super(graphSignalInputInterface);
-        mSignalBuffers.addSignalBuffer(0, inputBlockSize, sampleRate, GraphManager.Scale.linear);
+        mSignalBuffers.addSignalBuffer(0, mInputBlockSize, sSampleRate, GraphManager.Scale.linear);
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
+
+        final int audioBufferSize = AudioRecord.getMinBufferSize(sSampleRate,
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
+
+        if(audioBufferSize < mInputBlockSize) {
+            mInputBlockSize = audioBufferSize;
+        }
 
         initialise();
     }
@@ -52,44 +63,43 @@ public class MicrophoneInput extends Input {
         // Set up the audio input.
         AudioFormat audioFormat = new AudioFormat.Builder()
                 .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
-                .setSampleRate(sampleRate)
+                .setSampleRate(sSampleRate)
                 .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
                 .build();
-        audioInput = new AudioRecord.Builder()
+        mAudioInput = new AudioRecord.Builder()
                 .setAudioSource(MediaRecorder.AudioSource.MIC)
                 .setAudioFormat(audioFormat)
-                .setBufferSizeInBytes(inputBlockSize)
+                .setBufferSizeInBytes(mInputBlockSize)
                 .build();
-
     }
 
     @Override
     public void start() {
-        running = true;
-        readerThread = new Thread(new Runnable() {
+        mRunning = true;
+        mReaderThread = new Thread(new Runnable() {
             public void run() {
                 readerRun();
             }
         }, "Audio Reader");
 
-        readerThread.start();
+        mReaderThread.start();
     }
 
     @Override
     public void stop() {
-        running = false;
+        mRunning = false;
         try {
-            if (readerThread != null)
-                readerThread.join();
+            if(mReaderThread != null)
+                mReaderThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        readerThread = null;
+        mReaderThread = null;
 
         // Kill the audio input.
-        if (audioInput != null) {
-            audioInput.release();
-            audioInput = null;
+        if(mAudioInput != null) {
+            mAudioInput.release();
+            mAudioInput = null;
         }
     }
 
@@ -102,19 +112,19 @@ public class MicrophoneInput extends Input {
      * Main loop of the audio reader.  This runs in our own thread.
      */
     private void readerRun() {
-        float[] buffer = new float[inputBlockSize];
+        float[] buffer = new float[mInputBlockSize];
 
         try {
             Log.i(TAG, "Reader: Start Recording");
-            audioInput.startRecording();
-            while (running) {
+            mAudioInput.startRecording();
+            while(mRunning) {
 
-                int bytesRead = audioInput.read(buffer, 0, inputBlockSize, AudioRecord
+                int bytesRead = mAudioInput.read(buffer, 0, mInputBlockSize, AudioRecord
                         .READ_BLOCKING);
 
                 if (bytesRead < 0) {
                     Log.e(TAG, "Audio read failed: error " + bytesRead);
-                    running = false;
+                    mRunning = false;
                     break;
                 }
 
@@ -123,8 +133,8 @@ public class MicrophoneInput extends Input {
                 }
             }
         } finally {
-            if (audioInput.getState() == AudioRecord.RECORDSTATE_RECORDING)
-                audioInput.stop();
+            if(mAudioInput.getState() == AudioRecord.RECORDSTATE_RECORDING)
+                mAudioInput.stop();
         }
     }
 
@@ -133,13 +143,14 @@ public class MicrophoneInput extends Input {
      *
      * @param buffer Buffer containing the data.
      */
-    protected void readDone(float[] buffer) {
+    void readDone(float[] buffer) {
         if (mGraphSignalInputInterface != null) {
             mSignalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public int getSampleRate() {
-        return sampleRate;
+        return sSampleRate;
     }
 }

@@ -41,6 +41,7 @@ public class Background extends DrawableObject {
     /**
      * Use this to change the color at any point, changes will be seen after doDraw is called
      **/
+    @SuppressWarnings("unused")
     public void setBackgroundColor(int color){
         mPaint.setColor(color);
     }

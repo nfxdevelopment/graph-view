@@ -55,8 +55,6 @@ public class LogXGridLines extends LogGridLines {
         super.surfaceChanged(drawableArea);
         setGridLinesOffset(0);
 
-        maxLogValue = GraphManager.log(1 + mGridLinesSize);
-
     }
 
     @Override

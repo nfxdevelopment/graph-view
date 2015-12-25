@@ -6,7 +6,7 @@ package com.nfx.android.library.androidgraph;
  *
  * To be extend by a axis specific class.
  */
-public abstract class LinGridLines extends GridLines {
+abstract class LinGridLines extends GridLines {
     /**
      * Constructor which passes straight through
      *

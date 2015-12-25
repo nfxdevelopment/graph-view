@@ -58,15 +58,6 @@ public class Boarder extends DrawableObject {
     }
 
     /**
-     * returns the stroke width of the boarder
-     *
-     * @return stroke width only
-     */
-    public int getStrokeWidth() {
-        return STROKE_WIDTH;
-    }
-
-    /**
      * This will change the drawable area passed in to reflect the new drawable area after the
      * Boarder object is finished with it
      *

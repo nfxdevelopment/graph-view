@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,17 +18,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class GridLines extends DrawableObject {
 
     /**
-     * Indicates that the grid line is less than the viewable area
-     */
-    static final float LESS_THAN_VIEWABLE_AREA = -1;
-    /**
-     * Indicates that the grid line is greater than the viewable area
-     */
-    static final float GREATER_THAN_VIEWABLE_AREA = -2;
-    /**
      * When a using asks for a grid line which is not present in this object
      */
     static final float GRID_LINE_OUT_OF_RANGE = -3;
+    /**
+     * Indicates that the grid line is less than the viewable area
+     */
+    private static final float LESS_THAN_VIEWABLE_AREA = -1;
+    /**
+     * Indicates that the grid line is greater than the viewable area
+     */
+    private static final float GREATER_THAN_VIEWABLE_AREA = -2;
     /**
      * Color of the grid lines
      */
@@ -51,32 +50,31 @@ public abstract class GridLines extends DrawableObject {
      */
     private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
     /**
+     * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
+     */
+    private final ZoomDisplay mFixedZoomDisplay;
+    /**
      * Number of grid lines to display in the area
      */
     int mNumberOfGridLines = 6;
     /**
-     * Describes the viewable part of the grid
-     */
-    ZoomDisplay mZoomDisplay;
-
-    /**
-     * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
-     */
-    ZoomDisplay mFixedZoomDisplay;
-    /**
      * The axis text to be displayed if needed
      */
     AxisText mAxisText;
-    /**
-     * Graph dimension size, This is needed for minor grid lines to calculate where to display in
-     * cases of zoom
-     */
-    float mGridLinesSize;
     float mGridLinesOffset;
     /**
      * scale for child grid lines
      */
     GraphManager.Scale mChildGridLineScale;
+    /**
+     * Describes the viewable part of the grid
+     */
+    private ZoomDisplay mZoomDisplay;
+    /**
+     * Graph dimension size, This is needed for minor grid lines to calculate where to display in
+     * cases of zoom
+     */
+    private float mGridLinesSize;
     /**
      * Base Context
      */
@@ -103,23 +101,13 @@ public abstract class GridLines extends DrawableObject {
         if (mAxisText != null) {
             mAxisText.doDraw(canvas);
         }
-        Iterator<GridLines> iterator = mChildGridLines.values().iterator();
-        while(iterator.hasNext()) {
-            iterator.next().doDraw(canvas);
+        for(GridLines gridLines : mChildGridLines.values()) {
+            gridLines.doDraw(canvas);
         }
     }
 
     public void showAxisText(Context context, float minimumValue, float maximumValue) {
         mContext = context;
-    }
-
-    /**
-     * Gets the axis object is references
-     *
-     * @return a enum value for current axis
-     */
-    public AxisOrientation getAxisOrientation() {
-        return mAxisOrientation;
     }
 
     /**
@@ -134,7 +122,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * Set the number of Grid lines for this object
      *
-     * @param numberOfGridLines amount of gridlines
+     * @param numberOfGridLines amount of grid lines
      */
     public void setNumberOfGridLines(int numberOfGridLines) {
         mNumberOfGridLines = numberOfGridLines;
@@ -145,6 +133,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param strokeWidth new stroke width value
      */
+    @SuppressWarnings("SameParameterValue")
     private void setGridStrokeWidth(int strokeWidth) {
         mPaint.setStrokeWidth(strokeWidth);
 
@@ -155,6 +144,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param color new color value
      */
+    @SuppressWarnings("SameParameterValue")
     private void setColor(int color) {
         mPaint.setColor(color);
     }
@@ -207,7 +197,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param gridLinesSize size of the full graph viewable area
      */
-    void setGridLinesSize(float gridLinesSize) {
+    private void setGridLinesSize(float gridLinesSize) {
         mGridLinesSize = gridLinesSize;
     }
 
@@ -215,6 +205,7 @@ public abstract class GridLines extends DrawableObject {
         mGridLinesOffset = graphOffset;
     }
 
+    @SuppressWarnings("SameParameterValue")
     public void setChildGridLineScale(GraphManager.Scale scale) {
         mChildGridLineScale = scale;
     }
@@ -387,7 +378,7 @@ public abstract class GridLines extends DrawableObject {
      */
     abstract float getDimensionLength();
 
-    public AxisText getAxisText() {
+    private AxisText getAxisText() {
         return mAxisText;
     }
 

@@ -19,12 +19,12 @@ public abstract class Input implements TouchInput.TouchListener {
     /**
      * Signal object to send to the graph
      */
-    protected final SignalBuffers mSignalBuffers = new SignalBuffers();
-    protected boolean mPaused = false;
+    final SignalBuffers mSignalBuffers = new SignalBuffers();
     /**
      * The interface in which to send updates to
      */
-    protected GraphManager.GraphSignalInputInterface mGraphSignalInputInterface;
+    final GraphManager.GraphSignalInputInterface mGraphSignalInputInterface;
+    boolean mPaused = false;
     private DisplayMetrics mDisplayMetrics;
     private float lastSpanX;
     private float lastSpanY;
@@ -36,6 +36,7 @@ public abstract class Input implements TouchInput.TouchListener {
     /**
      * Initialise anything that needs to be setup prior to start
      */
+    @SuppressWarnings("unused")
     public abstract void initialise();
 
     /**
@@ -51,6 +52,7 @@ public abstract class Input implements TouchInput.TouchListener {
     /**
      * destroy the buffers and listeners getting ready to die
      */
+    @SuppressWarnings({"EmptyMethod", "unused"})
     public abstract void destroy();
 
 

@@ -18,23 +18,24 @@ import java.util.Collection;
  * handle a resize at runtime.
  */
 public class GraphManager extends SurfaceView implements SurfaceHolder.Callback {
+    @SuppressWarnings("unused")
     private static final String TAG = "GraphManager";
     /**
      * Maximum X value
      */
-    final float mMaximumXValue = 44100f;
+    private final float mMaximumXValue = 44100f;
     /**
      * Minimum X Value
      */
-    final float mMinimumXValue = 0f;
+    private final float mMinimumXValue = 0f;
     /**
      * Maximum Y value
      */
-    final float mMaximumYValue = 0f;
+    private final float mMaximumYValue = 0f;
     /**
      * Minimum Y Value
      */
-    final float mMinimumYValue = -100f;
+    private final float mMinimumYValue = -100f;
     /**
      * An object to draw all of the background information, including grid lines, axis information
      * and a background color
@@ -183,10 +184,6 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         return mBackgroundManager;
     }
 
-    public SignalManager getSignalManager() {
-        return mSignalManager;
-    }
-
     public enum Scale {
         logarithmic,
         linear
@@ -252,6 +249,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
             mSignalManager.setSignalBuffers(signal);
         }
 
+        @SuppressWarnings("SameParameterValue")
         public void removeSignalBuffer(int id) {
             mSignalManager.removeSignal(id);
         }

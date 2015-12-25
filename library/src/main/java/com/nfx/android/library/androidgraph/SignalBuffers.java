@@ -28,6 +28,7 @@ public class SignalBuffers {
      * @param sizeOfBuffer size of the buffer to create
      * @param signalScale  either linear or logarithmic for use when displaying
      */
+    @SuppressWarnings("SameParameterValue")
     public void addSignalBuffer(int id, int sizeOfBuffer, float axisSpanValue,
                                 GraphManager.Scale signalScale) {
         SignalBuffer signalBuffer;
@@ -50,6 +51,7 @@ public class SignalBuffers {
      *
      * @param id unique id of the signal
      */
+    @SuppressWarnings("SameParameterValue")
     public void removedSignalBuffer(int id) {
         mSignalBuffers.remove(id);
     }

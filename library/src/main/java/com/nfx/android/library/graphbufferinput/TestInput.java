@@ -6,6 +6,7 @@ import com.nfx.android.library.androidgraph.GraphManager;
  * NFX Development
  * Created by nick on 14/12/15.
  */
+@SuppressWarnings("unused")
 public class TestInput extends Input {
 
     public TestInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
@@ -25,6 +26,7 @@ public class TestInput extends Input {
             buffer[i] = (float) i / (float) length;
         }
 
+        //noinspection ConstantConditions
         if(mGraphSignalInputInterface != null) {
             mSignalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
         }

@@ -12,6 +12,7 @@ import android.graphics.Canvas;
  * are possible by overriding surfaceChanged
  */
 public class BackgroundManager {
+    @SuppressWarnings("unused")
     private static final String TAG = "BackgroundManager";
     /**
      * An object which draws onto the canvas
@@ -60,6 +61,7 @@ public class BackgroundManager {
     /**
      * Constructor for Background Manager, all drawable objects are created here
      */
+    @SuppressWarnings("WeakerAccess")
     public BackgroundManager() {
         mBackground = new Background();
         mBoarder = new Boarder();

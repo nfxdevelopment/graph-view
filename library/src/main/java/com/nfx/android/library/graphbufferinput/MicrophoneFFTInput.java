@@ -16,7 +16,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     /**
      * Number of historical buffers to store
      */
-    final static int sNumberOfHistoryBuffers = 4;
+    private final static int sNumberOfHistoryBuffers = 4;
     // NW pulled from other magnitude scales. This will ensure a signal of +1 to -1 is equal to 0db
     // This fudge factor is added to the output to make a realistically
     // fully-saturated signal come to 0dB.  Without it, the signal would
@@ -28,27 +28,27 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     /**
      * Computes the FFT
      */
-    FloatFFT_1D fftCalculations = new FloatFFT_1D(inputBlockSize);
+    private final FloatFFT_1D fftCalculations = new FloatFFT_1D(mInputBlockSize);
     /**
      * Buffer to pass to the fft class
      */
-    float[] fftBuffer;
+    private final float[] fftBuffer;
     /**
      * Buffer with the finished data in
      */
-    float[] returnedMagnitudeBuffer;
+    private final float[] returnedMagnitudeBuffer;
     /**
      * Last fft buffer to be converted
      */
-    float[] mMagnitudeBuffer;
+    private final float[] mMagnitudeBuffer;
     /**
      * Stores a history of the previous buffers
      */
-    float[][] mHistoryMagnitudeBuffers;
+    private final float[][] mHistoryMagnitudeBuffers;
     /**
      * Current history buffer to write into
      */
-    int mHistoryIndex = 0;
+    private int mHistoryIndex = 0;
 
     /**
      * Constructor to initialise microphone for listening
@@ -60,15 +60,15 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         // We want to remove the original signal from microphone input and add a new fft one
         mSignalBuffers.removedSignalBuffer(0);
         mGraphSignalInputInterface.removeSignalBuffer(0);
-        mSignalBuffers.addSignalBuffer(0, inputBlockSize / 2, getSampleRate(),
+        mSignalBuffers.addSignalBuffer(0, mInputBlockSize / 2, getSampleRate(),
                 GraphManager.Scale.logarithmic);
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
 
-        fftBuffer = new float[inputBlockSize * 2];
-        mMagnitudeBuffer = new float[inputBlockSize / 2];
-        returnedMagnitudeBuffer = new float[inputBlockSize / 2];
+        fftBuffer = new float[mInputBlockSize * 2];
+        mMagnitudeBuffer = new float[mInputBlockSize / 2];
+        returnedMagnitudeBuffer = new float[mInputBlockSize / 2];
 
-        mHistoryMagnitudeBuffers = new float[sNumberOfHistoryBuffers][inputBlockSize / 2];
+        mHistoryMagnitudeBuffers = new float[sNumberOfHistoryBuffers][mInputBlockSize / 2];
     }
 
     /**
@@ -112,7 +112,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      *
      * @param buffer buffer to apply the hanning window to
      */
-    public void applyHanningWindow(float[] buffer) {
+    private void applyHanningWindow(float[] buffer) {
         int bufferLength = buffer.length;
         double twoPi = 2.0 * Math.PI;
 
@@ -122,7 +122,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     }
 
     /**
-     * Averages the new buffer with the old buffers and storse the results the return buffer
+     * Averages the new buffer with the old buffers and stores the results the return buffer
      */
     private void applyingFFTAveraging() {
         // Update the index.

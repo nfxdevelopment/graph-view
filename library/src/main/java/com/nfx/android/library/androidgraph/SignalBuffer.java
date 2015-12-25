@@ -34,6 +34,7 @@ public abstract class SignalBuffer {
      * @param id           unique id for signal
      * @param sizeOfBuffer size expecting to receive
      */
+    @SuppressWarnings("WeakerAccess")
     public SignalBuffer(int id, int sizeOfBuffer) {
         mId = id;
         mBuffer = new float[sizeOfBuffer];

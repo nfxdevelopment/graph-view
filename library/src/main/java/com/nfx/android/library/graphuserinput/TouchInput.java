@@ -141,6 +141,7 @@ public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback 
     /**
      * Implement this listener within com.nfx.android.library.graphbufferinput.Input
      */
+    @SuppressWarnings({"SameReturnValue", "UnusedParameters"})
     public interface TouchListener {
         void surfaceChanged(DisplayMetrics displayMetrics);
 

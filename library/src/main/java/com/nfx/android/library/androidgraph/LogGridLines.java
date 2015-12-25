@@ -6,19 +6,15 @@ package com.nfx.android.library.androidgraph;
  *
  * To be extend by a axis specific class.
  */
-public abstract class LogGridLines extends GridLines {
-    /**
-     * Used to work out positions relative to this value
-     */
-    double maxLogValue;
+abstract class LogGridLines extends GridLines {
     /**
      * Given span for the axis. This is used to calculate the logarithmic scale
      */
-    private float mAxisSpanValue;
+    private final float mAxisSpanValue;
     /**
      * The Decade the grid lines represent
      */
-    private float mDecade;
+    private final float mDecade;
 
     /**
      * Constructor which passes straight through

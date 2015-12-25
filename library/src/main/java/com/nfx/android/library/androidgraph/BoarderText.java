@@ -6,9 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-
 /**
  * NFX Development
  * Created by nick on 24/11/15.
@@ -28,10 +25,6 @@ public class BoarderText extends DrawableObject {
     private final float mYMinimum;
     private final float mXSpan;
     private final float mYSpan;
-    /**
-     * The format in which to display on screen
-     */
-    private final DecimalFormat mDecimalFormat = new DecimalFormat("0.00");
     /**
      * Maximum Bounds of text
      */
@@ -80,8 +73,6 @@ public class BoarderText extends DrawableObject {
         int mUnscaledTextSize = 16;
         mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
         mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-
-        mDecimalFormat.setRoundingMode(RoundingMode.CEILING);
 
         String sMaximumString = "00.00K";
         mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
