@@ -103,8 +103,7 @@ abstract class AxisText extends DrawableObject {
     }
 
     /**
-     * This uses the maximum number which will be displayed on the axis, it still may be wider than
-     * this though change in the future TODO
+     * This uses the maximum number which will be displayed on the axis
      *
      * @return maximum width of text
      */

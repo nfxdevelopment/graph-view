@@ -51,7 +51,14 @@ class SignalManager {
             signal.surfaceChanged(mDrawableArea);
             mSignalDrawers.put(signalBuffer.getId(), signal);
         }
-        mGraphManager.getBackgroundManager().setSignalBuffers(mSignalBuffers);
+
+        // If there is more than one then the default zoom display objects then a default zoom of
+        // 1f with 0f offset is used
+        if(mSignalBuffers.getSignalBuffer().size() == 1) {
+            SignalBuffer onlySignalBuffer = mSignalBuffers.getSignalBuffer().get(0);
+            mGraphManager.getBackgroundManager().setZoomDisplay(onlySignalBuffer.getXZoomDisplay(),
+                    onlySignalBuffer.getYZoomDisplay());
+        }
     }
 
     public void removeSignal(int id) {

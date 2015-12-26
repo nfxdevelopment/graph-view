@@ -117,20 +117,15 @@ public class BackgroundManager {
     }
 
     /**
-     * This tells the graph that there are signals to display, each signal gets its own drawer,
-     * At the current time the last signal in the list will control the zoom levels. This is because
-     * we are trying to control a single axis zoom from multiple signals. TODO
+     * Sets the zoom Display object for the background objects to use and listen to
      *
-     * @param signalBuffers pass the object of signals to display on the graph
+     * @param xZoomDisplay zoom object for the x axis
+     * @param yZoomDisplay zoom object for the y axis
      */
-    public void setSignalBuffers(SignalBuffers signalBuffers) {
-        for (SignalBuffer signalBuffer : signalBuffers.getSignalBuffer().values()) {
+    public void setZoomDisplay(ZoomDisplay xZoomDisplay, ZoomDisplay yZoomDisplay) {
+        mXGridLines.setZoomDisplay(xZoomDisplay);
+        mYGridLines.setZoomDisplay(yZoomDisplay);
 
-            mXGridLines.setZoomDisplay(signalBuffer.getXZoomDisplay());
-            mYGridLines.setZoomDisplay(signalBuffer.getYZoomDisplay());
-
-            mBoarderText.setZoomDisplay(signalBuffer.getXZoomDisplay(),
-                    signalBuffer.getYZoomDisplay());
-        }
+        mBoarderText.setZoomDisplay(xZoomDisplay, yZoomDisplay);
     }
 }
