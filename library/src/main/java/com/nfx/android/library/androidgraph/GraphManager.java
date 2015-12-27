@@ -116,6 +116,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
                 log(mMaximumXValue) / log(newMax));
     }
 
+    /**
+     * Returns the signal input interface for the graph manager
+     *
+     * @return GraphSignalInputInterface object
+     */
     public GraphSignalInputInterface getGraphSignalInputInterface() {
         return mGraphSignalInputInterface;
     }
@@ -132,6 +137,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     /**
      * Any time a change in size is seen this is called, this information is used to manipulate
      * any drawable areas graph manager knows of
+     *
      * @param holder the surface holder that has changed
      * @param format the new pixel format
      * @param width the new width
@@ -146,6 +152,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     /**
      * Called when surface is destroyed. Here we kill the thread cleanly
+     *
      * @param holder the surface holder that has been destroyed
      */
     @Override
