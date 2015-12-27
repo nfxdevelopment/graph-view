@@ -13,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * NFX Development
  * Created by nick on 27/10/15.
  *
- * Extend from this class to create a drawable line with view zooming capabilities
+ * Extend from this class to create a drawable lines representing graph lines. This will draw a
+ * single axis for the given number of lines.
  */
 public abstract class GridLines extends DrawableObject {
 
@@ -96,6 +97,11 @@ public abstract class GridLines extends DrawableObject {
         setGridLinesSize(1f);
     }
 
+    /**
+     * Super should always be called to ensure the Axis text and any child lines are drawn if needed
+     *
+     * @param canvas a canvas to draw onto
+     */
     @Override
     public void doDraw(Canvas canvas) {
         if (mAxisText != null) {

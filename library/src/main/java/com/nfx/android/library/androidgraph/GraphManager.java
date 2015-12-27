@@ -23,7 +23,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     /**
      * Maximum X value
      */
-    private final float mMaximumXValue = 44100f;
+    private final float mMaximumXValue = 22050f;
     /**
      * Minimum X Value
      */
@@ -91,6 +91,13 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mSignalManager = new SignalManager(this);
     }
 
+    /**
+     * A local Log function to use for the x axis. This used so we can change the implementation
+     * quickly
+     *
+     * @param x value to convert
+     * @return log value of {@code x}
+     */
     static float log(float x) {
         return (float) (Math.log(x) / Math.log(2));
     }
@@ -147,15 +154,17 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     }
 
     /**
-     * Start the thread to start displaying the graph
+     * Start displaying the graph output on screen
      */
     public void start() {
-
         mGraphManagerThread = new GraphManagerThread(mContext);
         mGraphManagerThread.setRun(true);
         mGraphManagerThread.start();
     }
 
+    /**
+     * Stop updating the screen and remove signal listeners
+     */
     public void stop() {
         mSignalManager.removeSignalDrawers();
 
@@ -175,6 +184,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         }
     }
 
+    /**
+     * Calls through to children draw methods which fills the canvas with current graphic data
+     *
+     * @param canvas canvas to draw on
+     */
     private void doDraw(Canvas canvas) {
         mBackgroundManager.doDraw(canvas);
         mSignalManager.doDraw(canvas);
@@ -184,12 +198,22 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         return mBackgroundManager;
     }
 
+    /**
+     * Scale information data type
+     */
     public enum Scale {
         logarithmic,
         linear
     }
 
-    class GraphManagerThread extends Thread {
+    /**
+     * The drawing thread for the graph data
+     */
+    private class GraphManagerThread extends Thread {
+        /**
+         * Screen refresh Rate in milliseconds
+         */
+        private final static long sScreenRefreshRate = 60;
         /**
          * Indicate whether the surface has been created & is ready to draw
          */
@@ -204,6 +228,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         @Override
         public void run() {
             while (mRun) {
+                long startTime = (System.currentTimeMillis());
                 Canvas canvas = null;
                 final SurfaceHolder surfaceHolder = getHolder();
                 try {
@@ -219,9 +244,11 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
                         surfaceHolder.unlockCanvasAndPost(canvas);
                     }
                 }
+                long endTime = System.currentTimeMillis();
+                long sleepTime = sScreenRefreshRate - (endTime - startTime);
 
                 try {
-                    sleep(20, 0);
+                    sleep(sleepTime, 0);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
