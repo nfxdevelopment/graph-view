@@ -220,7 +220,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         /**
          * Screen refresh Rate in milliseconds
          */
-        private final static long sScreenRefreshRate = 60;
+        private final static long sScreenRefreshRate = 17;
         /**
          * Indicate whether the surface has been created & is ready to draw
          */
