@@ -42,6 +42,8 @@ public class BoarderText extends DrawableObject {
     private String mTopY;
     private String mBottomY;
 
+    private boolean mXAxisIsLogarithmic = false;
+
     /**
      * @param context  needed to work out the text size
      * @param xMinimum minimum value on the x axis
@@ -104,10 +106,23 @@ public class BoarderText extends DrawableObject {
                 (mYZoomDisplay.getFarSideOffsetPercentage() * mYSpan));
         mBottomY = displayString(mYMinimum +
                 (mYZoomDisplay.getDisplayOffsetPercentage() * mYSpan));
-        mLeftX = displayString(mXMinimum +
-                (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan));
-        mRightX = displayString(mXMinimum +
-                (mXZoomDisplay.getFarSideOffsetPercentage() * mXSpan));
+
+        if(mXAxisIsLogarithmic) {
+
+            float logMax = (float) Math.pow(mXSpan, ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
+            float logPositionOnScreen =
+                    (float) Math.pow(mXSpan, mXZoomDisplay.getDisplayOffsetPercentage());
+            mLeftX = displayString(mXMinimum + (logPositionOnScreen / logMax) * mXSpan);
+
+            logPositionOnScreen =
+                    (float) Math.pow(mXSpan, mXZoomDisplay.getFarSideOffsetPercentage());
+            mRightX = displayString(mXMinimum + (logPositionOnScreen / logMax) * mXSpan);
+        } else {
+            mLeftX = displayString(mXMinimum +
+                    (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan));
+            mRightX = displayString(mXMinimum +
+                    (mXZoomDisplay.getFarSideOffsetPercentage() * mXSpan));
+        }
     }
 
     private String displayString(float valueToDisplay) {
@@ -172,5 +187,14 @@ public class BoarderText extends DrawableObject {
      */
     private float getRealTextHeight() {
         return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
+    }
+
+
+    public void setXAxisIsLogarithmic() {
+        this.mXAxisIsLogarithmic = true;
+    }
+
+    public void setXAxisIsLinear() {
+        this.mXAxisIsLogarithmic = false;
     }
 }
