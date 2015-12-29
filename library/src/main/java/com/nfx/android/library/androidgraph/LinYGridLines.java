@@ -29,7 +29,7 @@ public class LinYGridLines extends LinGridLines {
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float yIntersect = getDrawableArea().getHeight() - (intersectZoomCompensated(i) *
                     getDrawableArea().getHeight());
-            if (yIntersect >= 0) {
+            if(yIntersect >= 0 && yIntersect < getDimensionLength()) {
                 canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() +
                         yIntersect,
                         getDrawableArea().getRight(), getDrawableArea().getTop() + yIntersect,

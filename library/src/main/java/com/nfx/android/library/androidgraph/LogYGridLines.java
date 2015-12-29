@@ -30,7 +30,7 @@ public class LogYGridLines extends LogGridLines {
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float yIntersect = intersectZoomCompensated(i) * getDrawableArea().getHeight();
-            if (yIntersect >= 0) {
+            if(yIntersect >= 0 && yIntersect < getDimensionLength()) {
                 canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() +
                         yIntersect,
                         getDrawableArea().getRight(), getDrawableArea().getTop() + yIntersect,

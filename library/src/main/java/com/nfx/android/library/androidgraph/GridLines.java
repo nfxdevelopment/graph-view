@@ -167,9 +167,6 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param gridLine        grid line to find, base 0
      * @return the x Intersect
-     *          -3 if the grid line is out of range
-     *          -1 if Less than viewable area
-     *          -2 if greater than viewable area
      */
     public float intersectZoomCompensated(int gridLine) {
         float intersect = intersect(gridLine);
@@ -180,15 +177,9 @@ public abstract class GridLines extends DrawableObject {
         intersect -= mFixedZoomDisplay.getDisplayOffsetPercentage();
         intersect /= mFixedZoomDisplay.getZoomLevelPercentage();
 
-        if(intersect < mZoomDisplay.getDisplayOffsetPercentage()) {
-            return LESS_THAN_VIEWABLE_AREA;
-        } else if(intersect > mZoomDisplay.getFarSideOffsetPercentage()) {
-            return GREATER_THAN_VIEWABLE_AREA;
-        } else {
-            intersect -= mZoomDisplay.getDisplayOffsetPercentage();
-            intersect /= mZoomDisplay.getZoomLevelPercentage();
-            return intersect;
-        }
+        intersect -= mZoomDisplay.getDisplayOffsetPercentage();
+        intersect /= mZoomDisplay.getZoomLevelPercentage();
+        return intersect;
     }
 
     /**
@@ -292,24 +283,27 @@ public abstract class GridLines extends DrawableObject {
      */
     private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
         Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
-        final float zoomSpacing =
-                (getGridLineDrawableWidth() / mZoomDisplay.getZoomLevelPercentage())
-                        * getDimensionLength();
         final float mPlaceMinorGridLinesSize = 500f;
 
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
-            // If the grid lines spacing is greater than this number minor grid lines are added
-            if (zoomSpacing > mPlaceMinorGridLinesSize) {
-                float lowerIntersect = intersectZoomCompensated(i);
-                float upperIntersect = intersectZoomCompensated(i + 1);
-                if (lowerIntersect != upperIntersect) {
+
+            float lowerIntersect = intersectZoomCompensated(i);
+            float upperIntersect = intersectZoomCompensated(i + 1);
+
+            if((lowerIntersect > 0 && lowerIntersect < getDimensionLength()) ||
+                    (upperIntersect > 0 &&
+                            upperIntersect < getDimensionLength())) {
+                float gridLineSpacing = (upperIntersect - lowerIntersect) *
+                        getDimensionLength();
+                // If the grid lines spacing is greater than this number minor grid lines are added
+                if(gridLineSpacing > mPlaceMinorGridLinesSize) {
                     adequateSpaceList.put(i, true);
-                } else {
-                    adequateSpaceList.put(i, false);
+                    continue;
                 }
-            } else {
-                adequateSpaceList.put(i, false);
             }
+
+            adequateSpaceList.put(i, false);
+
         }
 
         return adequateSpaceList;

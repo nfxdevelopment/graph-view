@@ -28,7 +28,7 @@ public class LinXGridLines extends LinGridLines {
 
         for (int i = 0; i < mNumberOfGridLines; ++i) {
             float xIntersect = intersectZoomCompensated(i) * getDrawableArea().getWidth();
-            if (xIntersect >= 0) {
+            if(xIntersect >= 0 && xIntersect < getDimensionLength()) {
                 canvas.drawLine(getDrawableArea().getLeft() + xIntersect, getDrawableArea()
                         .getTop(),
                         getDrawableArea().getLeft() + xIntersect, getDrawableArea().getBottom(),
