@@ -23,8 +23,7 @@ public class LogSignalBuffer extends SignalBuffer {
     public LogSignalBuffer(int id, int sizeOfBuffer, float axisSpanValue) {
         super(id, sizeOfBuffer);
         mAxisSpanValue = axisSpanValue;
-        mLogMaximumZoomLevel = (float) (Math.pow(mAxisSpanValue,
-                ZoomDisplay.MAXIMUM_ZOOM_LEVEL) - 1f);
+        mLogMaximumZoomLevel = (float) (Math.pow(mAxisSpanValue, ZoomDisplay.MAXIMUM_ZOOM_LEVEL));
     }
 
     /**
@@ -118,7 +117,7 @@ public class LogSignalBuffer extends SignalBuffer {
         float pointOffsetPercentage =
                 (float) (Math.pow(mAxisSpanValue, (
                         mXZoomDisplay.getDisplayOffsetPercentage()
-                                + linearStartPos)) - 1f) / mLogMaximumZoomLevel;
+                                + linearStartPos))) / mLogMaximumZoomLevel;
         return pointOffsetPercentage * (float) (getSizeOfBuffer() - 1);
     }
 }
