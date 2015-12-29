@@ -114,6 +114,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mBackgroundManager.getXGridLines().showAxisText(mContext, mMinimumXValue, newMax);
         mBackgroundManager.getXGridLines().getFixedZoomDisplay().setZoomLevelPercentage(
                 log(mMaximumXValue) / log(newMax));
+        mBackgroundManager.getBoarderText().setXAxisIsLogarithmic();
     }
 
     /**
@@ -253,6 +254,9 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
                 }
                 long endTime = System.currentTimeMillis();
                 long sleepTime = sScreenRefreshRate - (endTime - startTime);
+                if(sleepTime < 0) {
+                    sleepTime = 1;
+                }
 
                 try {
                     sleep(sleepTime, 0);

@@ -27,6 +27,7 @@ public class BackgroundManager {
      */
     private final GridLines mYGridLines;
     private final GridLines mXGridLines;
+
     /**
      * Handles the drawing of all text on axis
      */
@@ -128,4 +129,9 @@ public class BackgroundManager {
 
         mBoarderText.setZoomDisplay(xZoomDisplay, yZoomDisplay);
     }
+
+    public BoarderText getBoarderText() {
+        return mBoarderText;
+    }
+
 }

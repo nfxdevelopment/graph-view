@@ -53,7 +53,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
      */
-    private final ZoomDisplay mFixedZoomDisplay;
+    ZoomDisplay mFixedZoomDisplay;
     /**
      * Number of grid lines to display in the area
      */
@@ -177,13 +177,17 @@ public abstract class GridLines extends DrawableObject {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
+        intersect -= mFixedZoomDisplay.getDisplayOffsetPercentage();
+        intersect /= mFixedZoomDisplay.getZoomLevelPercentage();
+
         if(intersect < mZoomDisplay.getDisplayOffsetPercentage()) {
             return LESS_THAN_VIEWABLE_AREA;
         } else if(intersect > mZoomDisplay.getFarSideOffsetPercentage()) {
             return GREATER_THAN_VIEWABLE_AREA;
         } else {
-            return (intersect - mZoomDisplay.getDisplayOffsetPercentage()) /
-                    mZoomDisplay.getZoomLevelPercentage();
+            intersect -= mZoomDisplay.getDisplayOffsetPercentage();
+            intersect /= mZoomDisplay.getZoomLevelPercentage();
+            return intersect;
         }
     }
 
@@ -339,7 +343,9 @@ public abstract class GridLines extends DrawableObject {
             minorGridLine.setGridStrokeWidth(2);
             minorGridLine.setColor(Color.DKGRAY);
             minorGridLine.setNumberOfGridLines(11);
+            minorGridLine.setFixedZoomDisplay(mFixedZoomDisplay);
             mChildGridLines.put(majorGridLine, minorGridLine);
+
 
             if (mAxisText != null) {
                 minorGridLine.showAxisText(mContext, mAxisText.getMinimumAxisValue(),
@@ -390,6 +396,10 @@ public abstract class GridLines extends DrawableObject {
 
     public ZoomDisplay getFixedZoomDisplay() {
         return mFixedZoomDisplay;
+    }
+
+    public void setFixedZoomDisplay(ZoomDisplay mFixedZoomDisplay) {
+        this.mFixedZoomDisplay = mFixedZoomDisplay;
     }
 
     enum AxisOrientation {

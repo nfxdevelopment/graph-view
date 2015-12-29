@@ -9,6 +9,10 @@ public class LogSignalBuffer extends SignalBuffer {
      * Given span for the X axis. This is used to calculate the logarithmic scale
      */
     private final float mAxisSpanValue;
+    /**
+     * 2 to power of the maximum value
+     */
+    private float mLogMaximumZoomLevel;
 
     /**
      * Constructor
@@ -19,6 +23,8 @@ public class LogSignalBuffer extends SignalBuffer {
     public LogSignalBuffer(int id, int sizeOfBuffer, float axisSpanValue) {
         super(id, sizeOfBuffer);
         mAxisSpanValue = axisSpanValue;
+        mLogMaximumZoomLevel = (float) (Math.pow(2 * mAxisSpanValue,
+                ZoomDisplay.MAXIMUM_ZOOM_LEVEL) - 1f);
     }
 
     /**
@@ -106,16 +112,13 @@ public class LogSignalBuffer extends SignalBuffer {
      * @return read buffer index to use
      */
     private float scaledIndexToLogBufferIndex(int index, int desiredBufferLength) {
-        float logMaximumZoomLevel = (float) (Math.pow(2 * mAxisSpanValue,
-                ZoomDisplay.MAXIMUM_ZOOM_LEVEL) - 1f);
-
         float linearSpacing = mXZoomDisplay.getZoomLevelPercentage() / (desiredBufferLength - 1f);
 
         float linearStartPos = linearSpacing * index;
         float pointOffsetPercentage =
                 (float) (Math.pow(2 * mAxisSpanValue, (
                         mXZoomDisplay.getDisplayOffsetPercentage()
-                                + linearStartPos)) - 1f) / logMaximumZoomLevel;
+                                + linearStartPos)) - 1f) / mLogMaximumZoomLevel;
         return pointOffsetPercentage * (float) (getSizeOfBuffer() - 1);
     }
 }
