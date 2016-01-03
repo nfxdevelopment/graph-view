@@ -23,7 +23,8 @@ public class LogSignalBuffer extends SignalBuffer {
     public LogSignalBuffer(int id, int sizeOfBuffer, float axisSpanValue) {
         super(id, sizeOfBuffer);
         mAxisSpanValue = axisSpanValue;
-        mLogMaximumZoomLevel = (float) (Math.pow(mAxisSpanValue, ZoomDisplay.MAXIMUM_ZOOM_LEVEL));
+        mLogMaximumZoomLevel = GraphManager.powFrequency(
+                mAxisSpanValue, ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
     }
 
     /**
@@ -104,7 +105,8 @@ public class LogSignalBuffer extends SignalBuffer {
     }
 
     /**
-     * calculates where the scaled buffer index should point in relation to the given log buffer
+     * calculates where the scaled buffer index should point in relation to the given
+     * logFrequency buffer
      *
      * @param index               desired scaled index to calculate
      * @param desiredBufferLength length of the desired scaled buffer
@@ -115,7 +117,7 @@ public class LogSignalBuffer extends SignalBuffer {
 
         float linearStartPos = linearSpacing * index;
         float pointOffsetPercentage =
-                (float) (Math.pow(mAxisSpanValue, (
+                (GraphManager.powFrequency(mAxisSpanValue, (
                         mXZoomDisplay.getDisplayOffsetPercentage()
                                 + linearStartPos))) / mLogMaximumZoomLevel;
         return pointOffsetPercentage * (float) (getSizeOfBuffer() - 1);

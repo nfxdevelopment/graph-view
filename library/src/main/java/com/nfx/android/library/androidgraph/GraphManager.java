@@ -98,8 +98,19 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * @param x value to convert
      * @return log value of {@code x}
      */
-    static float log(float x) {
+    static float logFrequency(float x) {
         return (float) (Math.log(x) / Math.log(2));
+    }
+
+    /**
+     * A local power function to use for the x axis. This used so we can change the implementation
+     * quickly
+     *
+     * @param x value to convert
+     * @return 2*maxFrequncy ^ X
+     */
+    static float powFrequency(float maxFrequency, float x) {
+        return (float) Math.pow(maxFrequency, x);
     }
 
     public void setXAxisToDisplayLogarithmic() {
@@ -113,7 +124,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         float newMax = (float) Math.pow(10, i);
         mBackgroundManager.getXGridLines().showAxisText(mContext, mMinimumXValue, newMax);
         mBackgroundManager.getXGridLines().getFixedZoomDisplay().setZoomLevelPercentage(
-                log(mMaximumXValue) / log(newMax));
+                logFrequency(mMaximumXValue) / logFrequency(newMax));
         mBackgroundManager.getBoarderText().setXAxisIsLogarithmic();
     }
 

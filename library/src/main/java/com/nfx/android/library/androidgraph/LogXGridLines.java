@@ -15,8 +15,8 @@ public class LogXGridLines extends LogGridLines {
     /**
      * Constructor
      */
-    public LogXGridLines(float axisValueSpan, float decade) {
-        super(AxisOrientation.xAxis, axisValueSpan, decade);
+    public LogXGridLines(float axisValueSpan, float logOffset, float decade) {
+        super(AxisOrientation.xAxis, axisValueSpan, logOffset, decade);
     }
 
     @Override

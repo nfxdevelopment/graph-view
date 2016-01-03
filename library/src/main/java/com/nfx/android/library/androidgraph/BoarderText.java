@@ -108,15 +108,12 @@ public class BoarderText extends DrawableObject {
                 (mYZoomDisplay.getDisplayOffsetPercentage() * mYSpan));
 
         if(mXAxisIsLogarithmic) {
-
-            float logMax = (float) Math.pow(mXSpan, ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
             float logPositionOnScreen =
-                    (float) Math.pow(mXSpan, mXZoomDisplay.getDisplayOffsetPercentage());
-            mLeftX = displayString(mXMinimum + (logPositionOnScreen / logMax) * mXSpan);
-
+                    GraphManager.powFrequency(mXSpan, mXZoomDisplay.getDisplayOffsetPercentage());
+            mLeftX = displayString(logPositionOnScreen);
             logPositionOnScreen =
-                    (float) Math.pow(mXSpan, mXZoomDisplay.getFarSideOffsetPercentage());
-            mRightX = displayString(mXMinimum + (logPositionOnScreen / logMax) * mXSpan);
+                    GraphManager.powFrequency(mXSpan, mXZoomDisplay.getFarSideOffsetPercentage());
+            mRightX = displayString(logPositionOnScreen);
         } else {
             mLeftX = displayString(mXMinimum +
                     (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan));

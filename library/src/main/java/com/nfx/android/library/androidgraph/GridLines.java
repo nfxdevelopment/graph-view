@@ -321,7 +321,13 @@ public abstract class GridLines extends DrawableObject {
                 if(mChildGridLineScale == GraphManager.Scale.linear) {
                     minorGridLine = new LinXGridLines();
                 } else {
+                    float locationOnGraph = intersect(majorGridLine);
+
+                    float minimum =
+                            GraphManager.powFrequency(mAxisText.getAxisValueSpan(),
+                                    locationOnGraph);
                     minorGridLine = new LogXGridLines(mAxisText.getAxisValueSpan(),
+                            minimum,
                             mAxisText.getMaximumAxisValue() / (float) Math.pow(10,
                                     (getNumberOfGridLines() - 2 - majorGridLine)));
                 }
@@ -329,7 +335,12 @@ public abstract class GridLines extends DrawableObject {
                 if(mChildGridLineScale == GraphManager.Scale.linear) {
                     minorGridLine = new LinYGridLines();
                 } else {
+                    float locationOnGraph = intersect(majorGridLine);
+
+                    float minimum =
+                            GraphManager.powFrequency(mAxisText.getAxisValueSpan(), locationOnGraph);
                     minorGridLine = new LogYGridLines(mAxisText.getAxisValueSpan(),
+                            minimum,
                             (int) mAxisText.getMaximumAxisValue() / (float) Math.pow(10,
                                     (getNumberOfGridLines() - 2 - majorGridLine)));
                 }

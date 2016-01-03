@@ -15,16 +15,22 @@ abstract class LogGridLines extends GridLines {
      * The Decade the grid lines represent
      */
     private final float mDecade;
+    /**
+     * Log Offset used for minor grid lines to calculate location
+     */
+    private final float mLogOffset;
 
     /**
      * Constructor which passes straight through
      *]
      * @param axisOrientation either the x or y axis
      */
-    LogGridLines(AxisOrientation axisOrientation, float axisSpanValue, float decade) {
+    LogGridLines(AxisOrientation axisOrientation, float axisSpanValue, float logOffset,
+                 float decade) {
         super(axisOrientation);
         mAxisSpanValue = axisSpanValue;
         mDecade = decade;
+        mLogOffset = logOffset;
     }
 
     @Override
@@ -33,9 +39,9 @@ abstract class LogGridLines extends GridLines {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        float lineLog = GraphManager.log(mDecade * (1f / (float) (getNumberOfGridLines() - 1) *
-                (float) gridLine));
-        float maxLog = GraphManager.log(mAxisSpanValue);
+        float lineLog = GraphManager.logFrequency(mLogOffset +
+                (mDecade * (1f / (float) (getNumberOfGridLines() - 1) * (float) gridLine)));
+        float maxLog = GraphManager.logFrequency(mAxisSpanValue);
 
         return lineLog / maxLog;
     }

@@ -25,7 +25,7 @@ class LogXAxisText extends XAxisText {
         float locationOnGraph = mGridLines.intersect(gridLine);
 
         float valueToDisplay =
-                (float) Math.pow(mAxisValueSpan, locationOnGraph);
+                GraphManager.powFrequency(mAxisValueSpan, locationOnGraph);
 
         float nonNegativeValue = Math.abs(valueToDisplay);
 
