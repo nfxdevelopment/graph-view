@@ -62,7 +62,7 @@ public abstract class GridLines extends DrawableObject {
      * The axis text to be displayed if needed
      */
     AxisText mAxisText;
-    float mGridLinesOffset;
+    float mGridLinesOffset = 0;
     /**
      * scale for child grid lines
      */
@@ -321,33 +321,18 @@ public abstract class GridLines extends DrawableObject {
                 if(mChildGridLineScale == GraphManager.Scale.linear) {
                     minorGridLine = new LinXGridLines();
                 } else {
-                    float locationOnGraph = intersect(majorGridLine);
-
-                    float minimum =
-                            GraphManager.powFrequency(mAxisText.getAxisValueSpan(),
-                                    locationOnGraph);
-                    minorGridLine = new LogXGridLines(mAxisText.getAxisValueSpan(),
-                            minimum,
-                            mAxisText.getMaximumAxisValue() / (float) Math.pow(10,
-                                    (getNumberOfGridLines() - 2 - majorGridLine)));
+                    minorGridLine = new LogXGridLines(mAxisText.getAxisValueSpan());
                 }
             } else {
                 if(mChildGridLineScale == GraphManager.Scale.linear) {
                     minorGridLine = new LinYGridLines();
                 } else {
-                    float locationOnGraph = intersect(majorGridLine);
-
-                    float minimum =
-                            GraphManager.powFrequency(mAxisText.getAxisValueSpan(), locationOnGraph);
-                    minorGridLine = new LogYGridLines(mAxisText.getAxisValueSpan(),
-                            minimum,
-                            (int) mAxisText.getMaximumAxisValue() / (float) Math.pow(10,
-                                    (getNumberOfGridLines() - 2 - majorGridLine)));
+                    minorGridLine = new LogYGridLines(mAxisText.getAxisValueSpan());
                 }
             }
             minorGridLine.setGridStrokeWidth(2);
             minorGridLine.setColor(Color.DKGRAY);
-            minorGridLine.setNumberOfGridLines(11);
+            minorGridLine.setNumberOfGridLines(10);
             minorGridLine.setFixedZoomDisplay(mFixedZoomDisplay);
             mChildGridLines.put(majorGridLine, minorGridLine);
 
