@@ -7,19 +7,24 @@ package com.nfx.android.library.androidgraph;
  * To be extend by a axis specific class.
  */
 abstract class LogGridLines extends GridLines {
-    /**
-     * Given span for the axis. This is used to calculate the logarithmic scale
-     */
-    private final float mAxisSpanValue;
+
+    private final float mGridLineMinimumValue;
+    private final float mGridLineSpanValue;
+    private final float mLogAxisSpanValue;
+
 
     /**
      * Constructor which passes straight through
      *]
      * @param axisOrientation either the x or y axis
      */
-    LogGridLines(AxisOrientation axisOrientation, float axisSpanValue) {
+    LogGridLines(AxisOrientation axisOrientation, float gridLineMinimumValue,
+                 float gridLineMaximumValue, float axisSpanValue) {
         super(axisOrientation);
-        mAxisSpanValue = axisSpanValue;
+        mChildGridLineScale = GraphManager.Scale.logarithmic;
+        this.mGridLineMinimumValue = gridLineMinimumValue;
+        this.mGridLineSpanValue = gridLineMaximumValue - gridLineMinimumValue;
+        this.mLogAxisSpanValue = GraphManager.logFrequency(axisSpanValue);
     }
 
     @Override
@@ -28,10 +33,10 @@ abstract class LogGridLines extends GridLines {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        float lineLog = GraphManager.logFrequency(
-                ((1f / (float) (getNumberOfGridLines())) * (float) gridLine));
-        float maxLog = GraphManager.logFrequency(mAxisSpanValue);
+        float lineLog = GraphManager.logFrequency(mGridLineMinimumValue +
+                mGridLineSpanValue * ((1f / (float) (getNumberOfGridLines() - 1)) * (float)
+                        gridLine));
 
-        return mGridLinesOffset + (lineLog / maxLog);
+        return lineLog / mLogAxisSpanValue;
     }
 }

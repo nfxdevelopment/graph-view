@@ -23,7 +23,7 @@ public class MicrophoneInput extends Input {
     /**
      * Audio input block size, in samples.
      */
-    int mInputBlockSize = 4096;
+    int mInputBlockSize = 2048;
     /**
      * Audio input device
      */

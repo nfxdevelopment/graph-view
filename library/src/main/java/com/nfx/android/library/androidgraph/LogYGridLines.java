@@ -15,8 +15,9 @@ public class LogYGridLines extends LogGridLines {
     /**
      * Constructor
      */
-    public LogYGridLines(float axisValueSpan) {
-        super(AxisOrientation.yAxis, axisValueSpan);
+    public LogYGridLines(float gridLineMinimumValue, float gridLineMaximumValue,
+                         float axisValueSpan) {
+        super(AxisOrientation.yAxis, gridLineMinimumValue, gridLineMaximumValue, axisValueSpan);
     }
 
     /**
