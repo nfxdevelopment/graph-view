@@ -40,7 +40,7 @@ public class XAxisText extends AxisText {
         final int lastGridLine = mGridLines.getNumberOfGridLines() - 1;
         float drawLimitText = mGridLines.intersectZoomCompensated(lastGridLine) *
                 mGridLines.getDrawableArea().getWidth();
-        if(drawLimitText < 0) {
+        if(drawLimitText > getDrawableArea().getWidth()) {
             drawLimitText = getDrawableArea().getWidth();
         }
 
@@ -50,7 +50,7 @@ public class XAxisText extends AxisText {
             float xIntersect = mGridLines.intersectZoomCompensated(i) *
                     mGridLines.getDrawableArea().getWidth();
 
-            if(xIntersect > 0 &&
+            if(xIntersect > 0 && xIntersect < getDrawableArea().getWidth() &&
                     xIntersect - lastTextDrawn > mBounds.width() &&
                     drawLimitText - xIntersect > mBounds.width() * 1.5f) {
                 String displayString = mGridLineValues[i];
