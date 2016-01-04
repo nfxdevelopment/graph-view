@@ -34,8 +34,7 @@ abstract class LogGridLines extends GridLines {
         }
 
         float lineLog = GraphManager.logFrequency(mGridLineMinimumValue +
-                mGridLineSpanValue * ((1f / (float) (getNumberOfGridLines() - 1)) * (float)
-                        gridLine));
+                ((mGridLineSpanValue / (float) (getNumberOfGridLines() - 1)) * (float) gridLine));
 
         return lineLog / mLogAxisSpanValue;
     }
