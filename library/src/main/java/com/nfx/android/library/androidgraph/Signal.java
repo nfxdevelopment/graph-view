@@ -66,6 +66,7 @@ public class Signal extends DrawableObject {
         float screenLeft = (float) getDrawableArea().getLeft();
         float screenHeight = (float) getDrawableArea().getHeight();
         float screenWidth = (float) getDrawableArea().getWidth();
+        float screenTop = (float) getDrawableArea().getTop();
 
         mSignalBuffer.getScaledBuffer(mDrawBuffer);
 
@@ -116,9 +117,9 @@ public class Signal extends DrawableObject {
                     endPosY = 0f;
                 }
 
-                float drawStartPosY = screenHeight - (screenHeight * startPosY);
+                float drawStartPosY = screenTop + screenHeight - (screenHeight * startPosY);
                 float drawStartPosX = screenLeft + (spacing * startPosX);
-                float drawEndPosY = screenHeight - (screenHeight * endPosY);
+                float drawEndPosY = screenTop + screenHeight - (screenHeight * endPosY);
                 float drawEndPosX = screenLeft + (spacing * endPosX);
 
                 canvas.drawLine(getDrawableArea().checkLimitX(drawStartPosX),
