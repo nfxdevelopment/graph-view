@@ -110,10 +110,10 @@ public class BoarderText extends DrawableObject {
         if(mXAxisIsLogarithmic) {
             float logPositionOnScreen =
                     GraphManager.powFrequency(mXSpan, mXZoomDisplay.getDisplayOffsetPercentage());
-            mLeftX = displayString(logPositionOnScreen);
+            mLeftX = displayString(mXMinimum + logPositionOnScreen);
             logPositionOnScreen =
                     GraphManager.powFrequency(mXSpan, mXZoomDisplay.getFarSideOffsetPercentage());
-            mRightX = displayString(logPositionOnScreen);
+            mRightX = displayString(mXMinimum + logPositionOnScreen);
         } else {
             mLeftX = displayString(mXMinimum +
                     (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan));
@@ -185,7 +185,6 @@ public class BoarderText extends DrawableObject {
     private float getRealTextHeight() {
         return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
     }
-
 
     public void setXAxisIsLogarithmic() {
         this.mXAxisIsLogarithmic = true;
