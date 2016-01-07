@@ -44,6 +44,8 @@ public class YAxisText extends AxisText {
                 mGridLines.intersectZoomCompensated(lastGridLine) *
                         mGridLines.getDrawableArea().getHeight();
         if(drawLimitText > mGridLines.getDrawableArea().getHeight()) {
+            drawLimitText = mGridLines.getDrawableArea().getHeight();
+        } else if(drawLimitText < 0) {
             drawLimitText = 0;
         }
 
@@ -56,8 +58,8 @@ public class YAxisText extends AxisText {
                             mGridLines.getDrawableArea().getHeight();
             // Ensure the grid line is on screen
             if(yIntersect < mGridLines.getDrawableArea().getHeight() &&
-                    lastTextDrawn - yIntersect > getRealTextHeight() * 1.5f &&
-                    yIntersect - drawLimitText > getRealTextHeight() * 1.5f) {
+                    lastTextDrawn - yIntersect > getRealTextHeight() * 1f &&
+                    yIntersect - drawLimitText > getRealTextHeight() * 1f) {
                 float y = getDrawableArea().getTop() + yIntersect + (getRealTextHeight() / 2);
 
                 canvas.drawText(displayString, getDrawableArea().getWidth(), y, mTextPaint);
