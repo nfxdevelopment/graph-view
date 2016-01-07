@@ -69,11 +69,12 @@ public class Signal extends DrawableObject {
         float screenTop = (float) getDrawableArea().getTop();
 
         mSignalBuffer.getScaledBuffer(mDrawBuffer);
+        int drawBufferLength = mDrawBuffer.length;
 
-        float spacing = screenWidth / (float) (mDrawBuffer.length - 1);
+        float spacing = screenWidth / (float) (drawBufferLength - 1);
 
         // TODO Look at optimising the following
-        for(int i = 0; i < (((int) screenWidth / mLineResolution) - 1); i++) {
+        for(int i = 0; i < (drawBufferLength - 1); i++) {
             float startPosY = mDrawBuffer[i];
             float endPosY = mDrawBuffer[i + 1];
 
@@ -89,7 +90,7 @@ public class Signal extends DrawableObject {
                 // yIntercept = y - gradient*X
                 float yIntercept = startPosY - gradient * startPosX;
 
-                // Both samples are within the Screen dimensions
+                // Check if samples are outside of screen range
                 if(startPosY > 1f) {
                     // startPosY = 1
                     // 1 = gradient*x + yIntercept

@@ -315,18 +315,34 @@ public abstract class GridLines extends DrawableObject {
      * @param majorGridLine the grid line number to insert the minor grid line after
      */
     private void addMinorGridLine(int majorGridLine) {
+        int numberOfChildGridLines = 11;
         if (!mChildGridLines.containsKey(majorGridLine)) {
             GridLines minorGridLine;
             if (mAxisOrientation == AxisOrientation.xAxis) {
                 if(mChildGridLineScale == GraphManager.Scale.linear) {
                     minorGridLine = new LinXGridLines();
                 } else {
-
                     float gridLineMinimumValue = GraphManager.powFrequency(
                             mAxisText.getAxisValueSpan(), intersect(majorGridLine));
 
                     float gridLineMaximumValue = GraphManager.powFrequency(
                             mAxisText.getAxisValueSpan(), intersect(majorGridLine + 1));
+
+                    // calculates the number of gridLines needed to give a equal whole number
+                    // spacing
+                    float removeTrailingZeros =
+                            Math.round(gridLineMaximumValue - gridLineMinimumValue);
+                    while(removeTrailingZeros % 1 == 0) {
+                        removeTrailingZeros /= 10f;
+                    }
+                    removeTrailingZeros *= 10;
+
+                    for(int i = 9; i > 0; i--) {
+                        if((removeTrailingZeros / (float) i) % 1 > 0) {
+                            numberOfChildGridLines = i + 2;
+                            break;
+                        }
+                    }
 
                     minorGridLine = new LogXGridLines(gridLineMinimumValue,
                             gridLineMaximumValue, mAxisText.getAxisValueSpan());
@@ -341,6 +357,22 @@ public abstract class GridLines extends DrawableObject {
                     float gridLineMaximumValue = GraphManager.powFrequency(
                             mAxisText.getAxisValueSpan(), intersect(majorGridLine + 1));
 
+                    // calculates the number of gridLines needed to give a equal whole number
+                    // spacing
+                    float removeTrailingZeros =
+                            Math.round(gridLineMaximumValue - gridLineMinimumValue);
+                    while(removeTrailingZeros % 1 == 0) {
+                        removeTrailingZeros /= 10f;
+                    }
+                    removeTrailingZeros *= 10;
+
+                    for(int i = 9; i > 0; i--) {
+                        if((removeTrailingZeros / (float) i) % 1 > 0) {
+                            numberOfChildGridLines = i + 2;
+                            break;
+                        }
+                    }
+
                     minorGridLine = new LogYGridLines(gridLineMinimumValue,
                             gridLineMaximumValue, mAxisText.getAxisValueSpan());
 
@@ -348,7 +380,7 @@ public abstract class GridLines extends DrawableObject {
             }
             minorGridLine.setGridStrokeWidth(2);
             minorGridLine.setColor(Color.DKGRAY);
-            minorGridLine.setNumberOfGridLines(10);
+            minorGridLine.setNumberOfGridLines(numberOfChildGridLines);
             minorGridLine.setFixedZoomDisplay(mFixedZoomDisplay);
             mChildGridLines.put(majorGridLine, minorGridLine);
 

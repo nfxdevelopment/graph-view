@@ -38,14 +38,18 @@ public class LogSignalBuffer extends SignalBuffer {
     public void getScaledBuffer(float[] scaledBuffer) {
 
         int numberOfPoints = scaledBuffer.length;
+        float linearSpacing = mXZoomDisplay.getZoomLevelPercentage() / (float) (numberOfPoints - 1);
+
 
         synchronized(this) {
             for(int i = 0; i < numberOfPoints; i++) {
                 // Calculate the array index to read from
-                float centreOffset = scaledIndexToLogBufferIndex(i, numberOfPoints);
-                float averageFromLowerIndex = scaledIndexToLogBufferIndex(i - 1, numberOfPoints);
-                float averageFromHigherIndex = scaledIndexToLogBufferIndex(i + 1, numberOfPoints);
+                float centreOffset = scaledIndexToLogBufferIndex(i, linearSpacing);
+                float averageFromLowerIndex = scaledIndexToLogBufferIndex(i - 1, linearSpacing);
+                float averageFromHigherIndex = scaledIndexToLogBufferIndex(i + 1, linearSpacing);
 
+                // Work out the point falling between the centre and next offset and also the centre
+                // and last offset
                 float lowBound = centreOffset + ((averageFromLowerIndex - centreOffset) / 2f);
                 float highBound = centreOffset + ((averageFromHigherIndex - centreOffset) / 2f);
 
@@ -109,13 +113,12 @@ public class LogSignalBuffer extends SignalBuffer {
      * logFrequency buffer
      *
      * @param index               desired scaled index to calculate
-     * @param desiredBufferLength length of the desired scaled buffer
+     * @param linearSpacing       Space between each point on a linear scale
      * @return read buffer index to use
      */
-    private float scaledIndexToLogBufferIndex(int index, int desiredBufferLength) {
-        float linearSpacing = mXZoomDisplay.getZoomLevelPercentage() / (desiredBufferLength - 1f);
-
+    private float scaledIndexToLogBufferIndex(int index, float linearSpacing) {
         float linearStartPos = linearSpacing * index;
+
         float pointOffsetPercentage =
                 (GraphManager.powFrequency(mAxisSpanValue, (
                         mXZoomDisplay.getDisplayOffsetPercentage()
