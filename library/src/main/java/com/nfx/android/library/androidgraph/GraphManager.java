@@ -110,10 +110,17 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * @return 2*maxFrequncy ^ X
      */
     static float powFrequency(float maxFrequency, float x) {
-        return (float) Math.pow(maxFrequency, x);
+        float frequency = (float) Math.pow(maxFrequency, x);
+        if(frequency == 1f) {
+            return 0f;
+        } else {
+            return frequency;
+        }
     }
 
     public void setXAxisToDisplayLogarithmic() {
+        float minimumValueAppliedToSignal = 10f;
+
         mBackgroundManager.getXGridLines().setChildGridLineScale(Scale.logarithmic);
         float max = mMaximumXValue;
         int i = 0;
@@ -125,7 +132,15 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mBackgroundManager.getXGridLines().showAxisText(mContext, mMinimumXValue, newMax);
         mBackgroundManager.getXGridLines().getFixedZoomDisplay().setZoomLevelPercentage(
                 logFrequency(mMaximumXValue) / logFrequency(newMax));
+
         mBackgroundManager.getBoarderText().setXAxisIsLogarithmic();
+
+        for(SignalBuffer signalBuffer :
+                mSignalManager.getSignalBuffers().getSignalBuffer().values()) {
+            signalBuffer.getXZoomDisplay().setZoomLimits(
+                    logFrequency(minimumValueAppliedToSignal) / logFrequency(mMaximumXValue),
+                    ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
+        }
     }
 
     /**

@@ -37,30 +37,6 @@ class SignalManager {
         mGraphManager = graphManager;
     }
 
-    /**
-     * This tells the graph that there are signals to display, each signal gets its own drawer,
-     * At the current time the last signal in the list will control the zoom levels. This is because
-     * we are trying to control a single axis zoom from multiple signals. TODO
-     *
-     * @param signalBuffers pass the object of signals to display on the graph
-     */
-    public void setSignalBuffers(SignalBuffers signalBuffers) {
-        mSignalBuffers = signalBuffers;
-        for (SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
-            Signal signal = new Signal(signalBuffer);
-            signal.surfaceChanged(mDrawableArea);
-            mSignalDrawers.put(signalBuffer.getId(), signal);
-        }
-
-        // If there is more than one then the default zoom display objects then a default zoom of
-        // 1f with 0f offset is used
-        if(mSignalBuffers.getSignalBuffer().size() == 1) {
-            SignalBuffer onlySignalBuffer = mSignalBuffers.getSignalBuffer().get(0);
-            mGraphManager.getBackgroundManager().setZoomDisplay(onlySignalBuffer.getXZoomDisplay(),
-                    onlySignalBuffer.getYZoomDisplay());
-        }
-    }
-
     public void removeSignal(int id) {
         mSignalDrawers.remove(id);
     }
@@ -84,7 +60,7 @@ class SignalManager {
      * @param canvas canvas to draw the objects onto
      */
     public void doDraw(Canvas canvas) {
-        if (mSignalBuffers != null) {
+        if(mSignalBuffers != null) {
             for(Signal signal : mSignalDrawers.values()) {
                 signal.doDraw(canvas);
             }
@@ -96,5 +72,33 @@ class SignalManager {
      */
     public void removeSignalDrawers() {
         mSignalDrawers.clear();
+    }
+
+    public SignalBuffers getSignalBuffers() {
+        return mSignalBuffers;
+    }
+
+    /**
+     * This tells the graph that there are signals to display, each signal gets its own drawer,
+     * At the current time the last signal in the list will control the zoom levels. This is because
+     * we are trying to control a single axis zoom from multiple signals. TODO
+     *
+     * @param signalBuffers pass the object of signals to display on the graph
+     */
+    public void setSignalBuffers(SignalBuffers signalBuffers) {
+        mSignalBuffers = signalBuffers;
+        for(SignalBuffer signalBuffer : mSignalBuffers.getSignalBuffer().values()) {
+            Signal signal = new Signal(signalBuffer);
+            signal.surfaceChanged(mDrawableArea);
+            mSignalDrawers.put(signalBuffer.getId(), signal);
+        }
+
+        // If there is more than one then the default zoom display objects then a default zoom of
+        // 1f with 0f offset is used
+        if(mSignalBuffers.getSignalBuffer().size() == 1) {
+            SignalBuffer onlySignalBuffer = mSignalBuffers.getSignalBuffer().get(0);
+            mGraphManager.getBackgroundManager().setZoomDisplay(onlySignalBuffer.getXZoomDisplay(),
+                    onlySignalBuffer.getYZoomDisplay());
+        }
     }
 }
