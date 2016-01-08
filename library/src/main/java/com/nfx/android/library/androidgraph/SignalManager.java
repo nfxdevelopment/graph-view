@@ -9,7 +9,7 @@ import java.util.Map;
  * NFX Development
  * Created by nick on 31/10/15.
  */
-class SignalManager {
+public class SignalManager {
     /**
      * parent object
      */

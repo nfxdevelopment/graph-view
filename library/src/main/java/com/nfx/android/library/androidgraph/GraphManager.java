@@ -2,7 +2,6 @@ package com.nfx.android.library.androidgraph;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -20,22 +19,6 @@ import java.util.Collection;
 public class GraphManager extends SurfaceView implements SurfaceHolder.Callback {
     @SuppressWarnings("unused")
     private static final String TAG = "GraphManager";
-    /**
-     * Maximum X value
-     */
-    private final float mMaximumXValue = 22050f;
-    /**
-     * Minimum X Value
-     */
-    private final float mMinimumXValue = 0f;
-    /**
-     * Maximum Y value
-     */
-    private final float mMaximumYValue = 0f;
-    /**
-     * Minimum Y Value
-     */
-    private final float mMinimumYValue = -100f;
     /**
      * An object to draw all of the background information, including grid lines, axis information
      * and a background color
@@ -67,18 +50,13 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * Constructor for graph manager
      *
      * @param context current application context
-     * @param attrs   attributes
+     * @param minimumXValue minimum value on x axis
+     * @param maximumXValue maximum value on x axis
+     * @param minimumYValue minimum value on y axis
+     * @param maximumYValue maximum value on y axis
      */
-    public GraphManager(Context context, AttributeSet attrs) {
-        this(context);
-    }
-
-    /**
-     * Constructor for graph manager
-     *
-     * @param context current application context
-     */
-    public GraphManager(Context context) {
+    public GraphManager(Context context, float minimumXValue,
+                        float maximumXValue, float minimumYValue, float maximumYValue) {
         super(context);
         mContext = context;
 
@@ -86,8 +64,25 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         holder.addCallback(this);
 
         mGraphManagerThread = new GraphManagerThread(context);
-        mBackgroundManager = new BackgroundManager(mContext, mMinimumXValue, mMaximumXValue,
-                mMinimumYValue, mMaximumYValue);
+        mBackgroundManager = new BackgroundManager(context, minimumXValue, maximumXValue,
+                minimumYValue, maximumYValue);
+        mSignalManager = new SignalManager(this);
+    }
+
+    /**
+     * Constructor for graph manager
+     *
+     * @param context current application context
+     *
+     */
+    public GraphManager(Context context) {
+        super(context);
+        mContext = context;
+
+        SurfaceHolder holder = getHolder();
+        holder.addCallback(this);
+        mGraphManagerThread = new GraphManagerThread(context);
+        mBackgroundManager = new BackgroundManager();
         mSignalManager = new SignalManager(this);
     }
 
@@ -98,7 +93,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * @param frequency value to convert
      * @return log value of {@code x}
      */
-    static float frequencyToGraphPosition(float frequency) {
+    protected static float frequencyToGraphPosition(float frequency) {
         return (float) (Math.log(frequency) / Math.log(2));
     }
 
@@ -109,38 +104,12 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * @param screenPosition value to convert
      * @return 2*maxFrequency ^ X
      */
-    static float graphPositionToFrequency(float maxFrequency, float screenPosition) {
+    protected static float graphPositionToFrequency(float maxFrequency, float screenPosition) {
         float frequency = (float) Math.pow(maxFrequency, screenPosition);
         if(frequency == 1f) {
             return 0f;
         } else {
             return frequency;
-        }
-    }
-
-    public void setXAxisToDisplayLogarithmic() {
-        float minimumValueAppliedToSignal = 10f;
-
-        mBackgroundManager.getXGridLines().setChildGridLineScale(Scale.logarithmic);
-        float max = mMaximumXValue;
-        int i = 0;
-        while(max >= 1) {
-            i++;
-            max /= 10;
-        }
-        float newMax = (float) Math.pow(10, i);
-        mBackgroundManager.getXGridLines().showAxisText(mContext, mMinimumXValue, newMax);
-        mBackgroundManager.getXGridLines().getFixedZoomDisplay().setZoomLevelPercentage(
-                frequencyToGraphPosition(mMaximumXValue) / frequencyToGraphPosition(newMax));
-
-        mBackgroundManager.getBoarderText().setXAxisIsLogarithmic();
-
-        for(SignalBuffer signalBuffer :
-                mSignalManager.getSignalBuffers().getSignalBuffer().values()) {
-            signalBuffer.getXZoomDisplay().setZoomLimits(
-                    frequencyToGraphPosition(minimumValueAppliedToSignal) /
-                            frequencyToGraphPosition(mMaximumXValue),
-                    ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
         }
     }
 
@@ -231,6 +200,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     public BackgroundManager getBackgroundManager() {
         return mBackgroundManager;
+    }
+
+    public SignalManager getSignalManager() {
+        return mSignalManager;
     }
 
     /**
