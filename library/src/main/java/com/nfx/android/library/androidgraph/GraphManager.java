@@ -95,22 +95,22 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * A local Log function to use for the x axis. This used so we can change the implementation
      * quickly
      *
-     * @param x value to convert
+     * @param frequency value to convert
      * @return log value of {@code x}
      */
-    static float logFrequency(float x) {
-        return (float) (Math.log(x) / Math.log(2));
+    static float frequencyToGraphPosition(float frequency) {
+        return (float) (Math.log(frequency) / Math.log(2));
     }
 
     /**
      * A local power function to use for the x axis. This used so we can change the implementation
      * quickly
      *
-     * @param x value to convert
-     * @return 2*maxFrequncy ^ X
+     * @param screenPosition value to convert
+     * @return 2*maxFrequency ^ X
      */
-    static float powFrequency(float maxFrequency, float x) {
-        float frequency = (float) Math.pow(maxFrequency, x);
+    static float graphPositionToFrequency(float maxFrequency, float screenPosition) {
+        float frequency = (float) Math.pow(maxFrequency, screenPosition);
         if(frequency == 1f) {
             return 0f;
         } else {
@@ -131,14 +131,15 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         float newMax = (float) Math.pow(10, i);
         mBackgroundManager.getXGridLines().showAxisText(mContext, mMinimumXValue, newMax);
         mBackgroundManager.getXGridLines().getFixedZoomDisplay().setZoomLevelPercentage(
-                logFrequency(mMaximumXValue) / logFrequency(newMax));
+                frequencyToGraphPosition(mMaximumXValue) / frequencyToGraphPosition(newMax));
 
         mBackgroundManager.getBoarderText().setXAxisIsLogarithmic();
 
         for(SignalBuffer signalBuffer :
                 mSignalManager.getSignalBuffers().getSignalBuffer().values()) {
             signalBuffer.getXZoomDisplay().setZoomLimits(
-                    logFrequency(minimumValueAppliedToSignal) / logFrequency(mMaximumXValue),
+                    frequencyToGraphPosition(minimumValueAppliedToSignal) /
+                            frequencyToGraphPosition(mMaximumXValue),
                     ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
         }
     }

@@ -109,10 +109,11 @@ public class BoarderText extends DrawableObject {
 
         if(mXAxisIsLogarithmic) {
             float logPositionOnScreen =
-                    GraphManager.powFrequency(mXSpan, mXZoomDisplay.getDisplayOffsetPercentage());
+                    GraphManager.graphPositionToFrequency(mXSpan, mXZoomDisplay
+                            .getDisplayOffsetPercentage());
             mLeftX = displayString(mXMinimum + logPositionOnScreen);
             logPositionOnScreen =
-                    GraphManager.powFrequency(mXSpan, mXZoomDisplay.getFarSideOffsetPercentage());
+                    GraphManager.graphPositionToFrequency(mXSpan, mXZoomDisplay.getFarSideOffsetPercentage());
             mRightX = displayString(mXMinimum + logPositionOnScreen);
         } else {
             mLeftX = displayString(mXMinimum +

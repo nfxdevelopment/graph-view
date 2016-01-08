@@ -24,7 +24,7 @@ abstract class LogGridLines extends GridLines {
         mChildGridLineScale = GraphManager.Scale.logarithmic;
         this.mGridLineMinimumValue = gridLineMinimumValue;
         this.mGridLineSpanValue = gridLineMaximumValue - gridLineMinimumValue;
-        this.mLogAxisSpanValue = GraphManager.logFrequency(axisSpanValue);
+        this.mLogAxisSpanValue = GraphManager.frequencyToGraphPosition(axisSpanValue);
     }
 
     @Override
@@ -33,7 +33,7 @@ abstract class LogGridLines extends GridLines {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        float lineLog = GraphManager.logFrequency(mGridLineMinimumValue +
+        float lineLog = GraphManager.frequencyToGraphPosition(mGridLineMinimumValue +
                 ((mGridLineSpanValue / (float) (getNumberOfGridLines() - 1)) * (float) gridLine));
 
         return lineLog / mLogAxisSpanValue;

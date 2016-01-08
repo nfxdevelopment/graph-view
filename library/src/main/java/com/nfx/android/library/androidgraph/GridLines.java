@@ -322,10 +322,10 @@ public abstract class GridLines extends DrawableObject {
                 if(mChildGridLineScale == GraphManager.Scale.linear) {
                     minorGridLine = new LinXGridLines();
                 } else {
-                    float gridLineMinimumValue = GraphManager.powFrequency(
+                    float gridLineMinimumValue = GraphManager.graphPositionToFrequency(
                             mAxisText.getAxisValueSpan(), intersect(majorGridLine));
 
-                    float gridLineMaximumValue = GraphManager.powFrequency(
+                    float gridLineMaximumValue = GraphManager.graphPositionToFrequency(
                             mAxisText.getAxisValueSpan(), intersect(majorGridLine + 1));
 
                     // calculates the number of gridLines needed to give a equal whole number
@@ -351,10 +351,10 @@ public abstract class GridLines extends DrawableObject {
                 if(mChildGridLineScale == GraphManager.Scale.linear) {
                     minorGridLine = new LinYGridLines();
                 } else {
-                    float gridLineMinimumValue = GraphManager.powFrequency(
+                    float gridLineMinimumValue = GraphManager.graphPositionToFrequency(
                             mAxisText.getAxisValueSpan(), intersect(majorGridLine));
 
-                    float gridLineMaximumValue = GraphManager.powFrequency(
+                    float gridLineMaximumValue = GraphManager.graphPositionToFrequency(
                             mAxisText.getAxisValueSpan(), intersect(majorGridLine + 1));
 
                     // calculates the number of gridLines needed to give a equal whole number
