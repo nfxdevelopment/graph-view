@@ -10,7 +10,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * when the surface size has changed.
  */
 public class ZoomDisplay {
+    /**
+     * Absolute maximum zoom value
+     */
     public static final float MAXIMUM_ZOOM_LEVEL = 1f;
+    /**
+     * Absolute minimum zoom level
+     */
+    public static final float MINIMUM_ZOOM_LEVEL = 0f;
     @SuppressWarnings("unused")
     private static final String TAG = "ZoomDisplay";
     /**
@@ -84,8 +91,8 @@ public class ZoomDisplay {
     public void setDisplayOffsetPercentage(float displayOffsetPercentage) {
         if(displayOffsetPercentage < mMinimumZoomLevel) {
             displayOffsetPercentage = mMinimumZoomLevel;
-        } else if(displayOffsetPercentage > mMaximumZoomLevel) {
-            displayOffsetPercentage = mMaximumZoomLevel;
+        } else if(displayOffsetPercentage > MAXIMUM_ZOOM_LEVEL) {
+            displayOffsetPercentage = MAXIMUM_ZOOM_LEVEL;
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
@@ -122,10 +129,10 @@ public class ZoomDisplay {
      *                            warning is logged and nothing happens
      */
     public void setZoomLevelPercentage(float zoomLevelPercentage) {
-        if(zoomLevelPercentage < mMinimumZoomLevel) {
+        if(zoomLevelPercentage < MINIMUM_ZOOM_LEVEL) {
             return;
-        } else if(zoomLevelPercentage > mMaximumZoomLevel) {
-            zoomLevelPercentage = mMaximumZoomLevel;
+        } else if(zoomLevelPercentage > MAXIMUM_ZOOM_LEVEL) {
+            zoomLevelPercentage = MAXIMUM_ZOOM_LEVEL;
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
