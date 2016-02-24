@@ -51,10 +51,6 @@ public abstract class GridLines extends DrawableObject {
      */
     private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
     /**
-     * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
-     */
-    ZoomDisplay mFixedZoomDisplay;
-    /**
      * Number of grid lines to display in the area
      */
     int mNumberOfGridLines = 6;
@@ -67,6 +63,10 @@ public abstract class GridLines extends DrawableObject {
      * scale for child grid lines
      */
     GraphManager.Scale mChildGridLineScale;
+    /**
+     * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
+     */
+    private ZoomDisplay mFixedZoomDisplay;
     /**
      * Describes the viewable part of the grid
      */
@@ -436,6 +436,7 @@ public abstract class GridLines extends DrawableObject {
         return mFixedZoomDisplay;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void setFixedZoomDisplay(ZoomDisplay mFixedZoomDisplay) {
         this.mFixedZoomDisplay = mFixedZoomDisplay;
     }

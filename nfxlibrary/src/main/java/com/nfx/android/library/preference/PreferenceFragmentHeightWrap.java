@@ -1,6 +1,5 @@
 package com.nfx.android.library.preference;
 
-import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,17 +24,12 @@ public class PreferenceFragmentHeightWrap extends PreferenceFragment {
         setListViewHeightBasedOnItems(getView());
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
     /**
      * Sets ListView height dynamically based on the height of the items.
      *
      * @return true if the listView is successfully resized, false otherwise
      */
-    public boolean setListViewHeightBasedOnItems(View view) {
+    private boolean setListViewHeightBasedOnItems(View view) {
 
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         ListAdapter listAdapter = listView.getAdapter();

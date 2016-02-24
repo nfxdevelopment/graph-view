@@ -47,15 +47,6 @@ public class LogYGridLines extends LogGridLines {
         mAxisText = new YAxisText(context, this, minimumValue, maximumValue);
     }
 
-    /**
-     * The surface size has changed update the current object to resize drawing
-     *
-     * @param drawableArea new surface size
-     */
-    public void surfaceChanged(DrawableArea drawableArea) {
-        super.surfaceChanged(drawableArea);
-    }
-
     @Override
     float getDimensionLength() {
         return getDrawableArea().getHeight();

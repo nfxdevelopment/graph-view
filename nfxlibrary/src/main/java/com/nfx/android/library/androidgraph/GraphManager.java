@@ -100,7 +100,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     /**
      * A local power function to use for the x axis. This used so we can change the implementation
      * quickly
-     *monmo
+     *
      * @param screenPosition value to convert
      * @return 2*maxFrequency ^ X
      */
@@ -202,6 +202,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         return mBackgroundManager;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public SignalManager getSignalManager() {
         return mSignalManager;
     }

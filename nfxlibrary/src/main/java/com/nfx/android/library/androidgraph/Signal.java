@@ -26,10 +26,6 @@ public class Signal extends DrawableObject {
     private final Paint mSignalPaint;
 
     /**
-     * How many points per on screen buffer. This is a screen width divisor
-     */
-    private final int mLineResolution = 4;
-    /**
      * Drawing buffer
      */
     private float[] mDrawBuffer;
@@ -134,6 +130,10 @@ public class Signal extends DrawableObject {
     @Override
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
+        /*
+      How many points per on screen buffer. This is a screen width divisor
+     */
+        int mLineResolution = 4;
         mDrawBuffer = new float[getDrawableArea().getWidth() / mLineResolution];
     }
 

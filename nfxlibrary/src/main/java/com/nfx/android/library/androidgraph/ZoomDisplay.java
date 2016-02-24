@@ -17,6 +17,7 @@ public class ZoomDisplay {
     /**
      * Absolute minimum zoom level
      */
+    @SuppressWarnings("WeakerAccess")
     public static final float MINIMUM_ZOOM_LEVEL = 0f;
     @SuppressWarnings("unused")
     private static final String TAG = "ZoomDisplay";

@@ -12,7 +12,7 @@ public class LogSignalBuffer extends SignalBuffer {
     /**
      * 2 to power of the maximum value
      */
-    private float mLogMaximumZoomLevel;
+    private final float mLogMaximumZoomLevel;
 
     /**
      * Constructor
