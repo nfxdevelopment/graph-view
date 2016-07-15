@@ -13,10 +13,6 @@ import org.jtransforms.fft.FloatFFT_1D;
  */
 public class MicrophoneFFTInput extends MicrophoneInput {
 
-    /**
-     * Number of historical buffers to store
-     */
-    private final static int sNumberOfHistoryBuffers = 4;
     // NW pulled from other magnitude scales. This will ensure a signal of +1 to -1 is equal to 0db
     // This fudge factor is added to the output to make a realistically
     // fully-saturated signal come to 0dB.  Without it, the signal would
@@ -26,25 +22,29 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     // a 1kHz signal at 16,000 samples/sec.
     private static final float FUDGE = 0.63610f;
     /**
+     * Number of historical buffers to store
+     */
+    private int sNumberOfHistoryBuffers = 4;
+    /**
      * Computes the FFT
      */
-    private final FloatFFT_1D fftCalculations = new FloatFFT_1D(mInputBlockSize);
+    private FloatFFT_1D fftCalculations = null;
     /**
      * Buffer to pass to the fft class
      */
-    private final float[] fftBuffer;
+    private float[] fftBuffer;
     /**
      * Buffer with the finished data in
      */
-    private final float[] returnedMagnitudeBuffer;
+    private float[] returnedMagnitudeBuffer;
     /**
      * Last fft buffer to be converted
      */
-    private final float[] mMagnitudeBuffer;
+    private float[] mMagnitudeBuffer;
     /**
      * Stores a history of the previous buffers
      */
-    private final float[][] mHistoryMagnitudeBuffers;
+    private float[][] mHistoryMagnitudeBuffers;
     /**
      * Current history buffer to write into
      */
@@ -54,15 +54,25 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      * Constructor to initialise microphone for listening
      *
      * @param graphSignalInputInterface interface to send signal data to
+     * @param binSize set the bin size of the fft
      */
-    protected MicrophoneFFTInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
-        super(graphSignalInputInterface);
+    protected MicrophoneFFTInput(GraphManager.GraphSignalInputInterface
+                                         graphSignalInputInterface, int binSize) {
+        super(graphSignalInputInterface, binSize);
+    }
+
+    @Override
+    public void initialise() {
+        super.initialise();
+
         // We want to remove the original signal from microphone input and add a new fft one
         mSignalBuffers.removedSignalBuffer(0);
         mGraphSignalInputInterface.removeSignalBuffer(0);
         mSignalBuffers.addSignalBuffer(0, mInputBlockSize / 2, getSampleRate() / 2,
                 GraphManager.Scale.logarithmic);
         mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
+
+        fftCalculations = new FloatFFT_1D(mInputBlockSize);
 
         fftBuffer = new float[mInputBlockSize * 2];
         mMagnitudeBuffer = new float[mInputBlockSize / 2];
@@ -150,4 +160,11 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     private void postBufferChange() {
         mSignalBuffers.getSignalBuffer().get(0).setBuffer(returnedMagnitudeBuffer);
     }
+
+    public void setNumberOfHistoryBuffers(int sNumberOfHistoryBuffers) {
+        this.sNumberOfHistoryBuffers = sNumberOfHistoryBuffers;
+
+        mHistoryMagnitudeBuffers = new float[sNumberOfHistoryBuffers][mInputBlockSize / 2];
+    }
+
 }

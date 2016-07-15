@@ -170,7 +170,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * Stop updating the screen and remove signal listeners
      */
     public void stop() {
-        mSignalManager.removeSignalDrawers();
+        mBackgroundManager.stop();
 
         boolean retry = true;
         if (mGraphManagerThread != null) {

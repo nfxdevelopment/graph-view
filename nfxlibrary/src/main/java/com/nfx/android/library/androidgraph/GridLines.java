@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,23 +84,7 @@ public abstract class GridLines extends DrawableObject {
     ZoomChangedListener mZoomChangeListener = new ZoomChangedListener() {
         @Override
         public void zoomChanged() {
-            Map<Integer, Boolean> minorXGridLinesToDisplay =
-                    adequateSpaceForMinorGridLines();
-
-            for(Map.Entry<Integer, Boolean> majorGridLine : minorXGridLinesToDisplay
-                    .entrySet()) {
-                if(majorGridLine.getValue()) {
-                    if(!mChildGridLines.containsKey(majorGridLine.getKey())) {
-                        addMinorGridLine(majorGridLine.getKey());
-                    }
-                } else {
-                    GridLines childGridLine = mChildGridLines.remove(majorGridLine.getKey());
-                    // We must ensure the observer is removed
-                    if(childGridLine != null) {
-                        childGridLine.removeZoomDisplay();
-                    }
-                }
-            }
+            refreshChildGridLines();
         }
     };
 
@@ -265,6 +250,7 @@ public abstract class GridLines extends DrawableObject {
         if(mAxisText != null) {
             mAxisText.calculateGridLineValues();
         }
+        refreshChildGridLines();
     }
 
     private ZoomDisplay getZoomDisplay() {
@@ -288,6 +274,29 @@ public abstract class GridLines extends DrawableObject {
     public void removeZoomDisplay() {
         mZoomDisplay.removeListener(mZoomChangeListener);
         mZoomDisplay = new ZoomDisplay(1f, 0f);
+    }
+
+    /**
+     * Checks to see if there is still space for child grid lines and add/removes them where needed
+     */
+    private void refreshChildGridLines() {
+        Map<Integer, Boolean> minorXGridLinesToDisplay =
+                adequateSpaceForMinorGridLines();
+
+        for(Map.Entry<Integer, Boolean> majorGridLine : minorXGridLinesToDisplay
+                .entrySet()) {
+            if(majorGridLine.getValue()) {
+                if(!mChildGridLines.containsKey(majorGridLine.getKey())) {
+                    addMinorGridLine(majorGridLine.getKey());
+                }
+            } else {
+                GridLines childGridLine = mChildGridLines.remove(majorGridLine.getKey());
+                // We must ensure the observer is removed
+                if(childGridLine != null) {
+                    childGridLine.removeZoomDisplay();
+                }
+            }
+        }
     }
 
     /**
@@ -433,6 +442,15 @@ public abstract class GridLines extends DrawableObject {
             // We want out children Axis to have the same drawable area as our own.
             gridLine.getAxisText().getDrawableArea().setDrawableArea(mAxisText.getDrawableArea());
             gridLine.getAxisText().calculateGridLineValues();
+        }
+    }
+
+    void removeAllChildGridLines() {
+        for(Iterator<Map.Entry<Integer, GridLines>> it = mChildGridLines.entrySet().iterator();
+            it.hasNext(); ) {
+            Map.Entry<Integer, GridLines> entry = it.next();
+            entry.getValue().removeAllChildGridLines();
+            it.remove();
         }
     }
 

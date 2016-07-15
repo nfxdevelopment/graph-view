@@ -134,4 +134,8 @@ public class BackgroundManager {
         return mBoarderText;
     }
 
+    public void stop() {
+        mXGridLines.removeAllChildGridLines();
+        mYGridLines.removeAllChildGridLines();
+    }
 }

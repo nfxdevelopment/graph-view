@@ -33,7 +33,7 @@ public class MicrophoneInput extends Input {
      */
     private boolean mRunning = false;
     /**
-     * The thread, if any, which is currently reading.  Null if not mRunning.
+     * The thread, if any, which is currently reading.  Null if not mRunning
      */
     private Thread mReaderThread = null;
 
@@ -45,21 +45,35 @@ public class MicrophoneInput extends Input {
     @SuppressWarnings("WeakerAccess")
     protected MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
         super(graphSignalInputInterface);
-        mSignalBuffers.addSignalBuffer(0, mInputBlockSize, sSampleRate, GraphManager.Scale.linear);
-        mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
+    }
 
-        final int audioBufferSize = AudioRecord.getMinBufferSize(sSampleRate,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
-
-        if(audioBufferSize < mInputBlockSize) {
-            mInputBlockSize = audioBufferSize;
-        }
-
-        initialise();
+    /**
+     * Constructor to initialise microphone for listening
+     *
+     * @param graphSignalInputInterface interface to send signal data to
+     */
+    protected MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface,
+                              int inputBlockSize) {
+        this(graphSignalInputInterface);
+        this.mInputBlockSize = inputBlockSize;
     }
 
     @Override
     public void initialise() {
+        final int audioBufferSize = AudioRecord.getMinBufferSize(sSampleRate,
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
+
+        if(mInputBlockSize < audioBufferSize) {
+            mInputBlockSize = audioBufferSize;
+        }
+
+        mSignalBuffers.addSignalBuffer(0, mInputBlockSize, sSampleRate, GraphManager.Scale.linear);
+        mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
+    }
+
+    @Override
+    public void start() {
+
         // Set up the audio input.
         AudioFormat audioFormat = new AudioFormat.Builder()
                 .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
@@ -71,10 +85,7 @@ public class MicrophoneInput extends Input {
                 .setAudioFormat(audioFormat)
                 .setBufferSizeInBytes(mInputBlockSize)
                 .build();
-    }
 
-    @Override
-    public void start() {
         mRunning = true;
         mReaderThread = new Thread(new Runnable() {
             public void run() {
@@ -152,5 +163,11 @@ public class MicrophoneInput extends Input {
     @SuppressWarnings("WeakerAccess")
     public int getSampleRate() {
         return sSampleRate;
+    }
+
+    public void setInputBlockSize(int inputBlockSize) {
+        stop();
+        mInputBlockSize = inputBlockSize;
+        initialise();
     }
 }
