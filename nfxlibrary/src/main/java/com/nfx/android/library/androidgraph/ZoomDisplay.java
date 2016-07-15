@@ -1,6 +1,6 @@
 package com.nfx.android.library.androidgraph;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Observable;
 
 /**
  * NFX Development
@@ -9,7 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * A helper class which will hold the zoom values of a given view. A listener can get updates
  * when the surface size has changed.
  */
-public class ZoomDisplay {
+public class ZoomDisplay extends Observable {
     /**
      * Absolute maximum zoom value
      */
@@ -21,11 +21,6 @@ public class ZoomDisplay {
     public static final float MINIMUM_ZOOM_LEVEL = 0f;
     @SuppressWarnings("unused")
     private static final String TAG = "ZoomDisplay";
-    /**
-     * Subscribe to this listener to get Zoom notification changes
-     */
-    private final CopyOnWriteArrayList<ZoomChangedListener> mZoomChangedListener = new
-            CopyOnWriteArrayList<>();
     /**
      * Maximum zoom level
      */
@@ -71,8 +66,17 @@ public class ZoomDisplay {
      * register a listener for zoom changed reports
      * @param listener register listener
      */
-    public void setTheListener(ZoomChangedListener listener) {
-        mZoomChangedListener.add(listener);
+    public void addListener(ZoomChangedListener listener) {
+        addObserver(listener);
+    }
+
+    /**
+     * remove a listener for zoom changed reports
+     *
+     * @param listener remove from listener
+     */
+    public void removeListener(ZoomChangedListener listener) {
+        deleteObserver(listener);
     }
 
     /**
@@ -103,11 +107,8 @@ public class ZoomDisplay {
             mDisplayOffsetPercentage = displayOffsetPercentage;
         }
 
-        if (!mZoomChangedListener.isEmpty()) {
-            for (ZoomChangedListener listener : mZoomChangedListener) {
-                listener.zoomChanged();
-            }
-        }
+        setChanged();
+        notifyObservers();
     }
 
     /**
@@ -147,11 +148,8 @@ public class ZoomDisplay {
 
         mZoomLevelPercentage = zoomLevelPercentage;
 
-        if (!mZoomChangedListener.isEmpty()) {
-            for (ZoomChangedListener listener : mZoomChangedListener) {
-                listener.zoomChanged();
-            }
-        }
+        setChanged();
+        notifyObservers();
     }
 
     public void setZoomLimits(float minimumZoomLevel, float maximumZoomLevel) {
@@ -159,12 +157,5 @@ public class ZoomDisplay {
         mMaximumZoomLevel = maximumZoomLevel;
         setZoomLevelPercentage(maximumZoomLevel - minimumZoomLevel);
         setDisplayOffsetPercentage(minimumZoomLevel);
-    }
-
-    /**
-     * An interface for subscribes to get information about view zoom level changes
-     */
-    public interface ZoomChangedListener {
-        void zoomChanged();
     }
 }

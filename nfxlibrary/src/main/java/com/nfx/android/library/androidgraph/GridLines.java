@@ -80,6 +80,28 @@ public abstract class GridLines extends DrawableObject {
      * Base Context
      */
     private Context mContext;
+    ZoomChangedListener mZoomChangeListener = new ZoomChangedListener() {
+        @Override
+        public void zoomChanged() {
+            Map<Integer, Boolean> minorXGridLinesToDisplay =
+                    adequateSpaceForMinorGridLines();
+
+            for(Map.Entry<Integer, Boolean> majorGridLine : minorXGridLinesToDisplay
+                    .entrySet()) {
+                if(majorGridLine.getValue()) {
+                    if(!mChildGridLines.containsKey(majorGridLine.getKey())) {
+                        addMinorGridLine(majorGridLine.getKey());
+                    }
+                } else {
+                    GridLines childGridLine = mChildGridLines.remove(majorGridLine.getKey());
+                    // We must ensure the observer is removed
+                    if(childGridLine != null) {
+                        childGridLine.removeZoomDisplay();
+                    }
+                }
+            }
+        }
+    };
 
     /**
      * Constructor of GridLines
@@ -257,22 +279,15 @@ public abstract class GridLines extends DrawableObject {
     public void setZoomDisplay(ZoomDisplay zoomDisplay) {
         mZoomDisplay = zoomDisplay;
 
-        zoomDisplay.setTheListener(new ZoomDisplay.ZoomChangedListener() {
-            @Override
-            public void zoomChanged() {
-                Map<Integer, Boolean> minorXGridLinesToDisplay =
-                        adequateSpaceForMinorGridLines();
+        zoomDisplay.addListener(mZoomChangeListener);
+    }
 
-                for (Map.Entry<Integer, Boolean> majorGridLine : minorXGridLinesToDisplay
-                        .entrySet()) {
-                    if (majorGridLine.getValue()) {
-                        addMinorGridLine(majorGridLine.getKey());
-                    } else {
-                        mChildGridLines.remove(majorGridLine.getKey());
-                    }
-                }
-            }
-        });
+    /**
+     * remove the zoomDisplay, this is done to remove the listener.
+     */
+    public void removeZoomDisplay() {
+        mZoomDisplay.removeListener(mZoomChangeListener);
+        mZoomDisplay = new ZoomDisplay(1f, 0f);
     }
 
     /**

@@ -163,13 +163,13 @@ public class BoarderText extends DrawableObject {
         /*
             We have to list for changes to the zoom offset to update the shown values
          */
-        mXZoomDisplay.setTheListener(new ZoomDisplay.ZoomChangedListener() {
+        mXZoomDisplay.addListener(new ZoomChangedListener() {
             @Override
             public void zoomChanged() {
                 calculateValuesToDisplay();
             }
         });
-        mYZoomDisplay.setTheListener(new ZoomDisplay.ZoomChangedListener() {
+        mYZoomDisplay.addListener(new ZoomChangedListener() {
             @Override
             public void zoomChanged() {
                 calculateValuesToDisplay();
