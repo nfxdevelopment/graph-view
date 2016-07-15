@@ -88,9 +88,9 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
             int bufferLength = mMagnitudeBuffer.length;
 
-            for(int i = 1; i < bufferLength; ++i) {
+            for(int i = 0; i < bufferLength; ++i) {
                 real = fftBuffer[i * 2];
-                imaginary = fftBuffer[i * 2 - 1];
+                imaginary = fftBuffer[i * 2 + 1];
                 final float scale = buffer.length * FUDGE;
                 mMagnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary) /
                         scale;
