@@ -11,8 +11,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.nfx.android.library.graphbufferinput.Input;
-
 /**
  * NFX Development
  * Created by nick on 23/11/15.
@@ -46,7 +44,7 @@ public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback 
      * @param view  listen to the touch inputs from view
      * @param input pass the touch information onto input
      */
-    public TouchInput(SurfaceView view, Input input) {
+    public TouchInput(SurfaceView view, TouchListener input) {
         view.setOnTouchListener(this);
         mContext = view.getContext();
         mTouchListener = input;
