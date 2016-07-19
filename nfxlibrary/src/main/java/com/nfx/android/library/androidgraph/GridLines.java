@@ -229,9 +229,6 @@ public abstract class GridLines extends DrawableObject {
         if (mAxisText != null) {
             mAxisText.surfaceChanged(drawableArea);
         }
-        for (GridLines gridLines : mChildGridLines.values()) {
-            gridLines.notifyAxisTextOfSurfaceChange(drawableArea);
-        }
     }
 
     /**
