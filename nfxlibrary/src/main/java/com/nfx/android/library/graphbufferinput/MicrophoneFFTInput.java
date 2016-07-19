@@ -65,13 +65,6 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     public void initialise() {
         super.initialise();
 
-        // We want to remove the original signal from microphone input and add a new fft one
-        mSignalBuffers.removedSignalBuffer(0);
-        mGraphSignalInputInterface.removeSignalBuffer(0);
-        mSignalBuffers.addSignalBuffer(0, mInputBlockSize / 2, getSampleRate() / 2,
-                GraphManager.Scale.logarithmic);
-        mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
-
         fftCalculations = new FloatFFT_1D(mInputBlockSize);
 
         fftBuffer = new float[mInputBlockSize * 2];
@@ -79,6 +72,10 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         returnedMagnitudeBuffer = new float[mInputBlockSize / 2];
 
         mHistoryMagnitudeBuffers = new float[sNumberOfHistoryBuffers][mInputBlockSize / 2];
+
+        mGraphSignalInputInterface.removeInput(mSignalBufferInterface);
+        mSignalBufferInterface =
+                mGraphSignalInputInterface.addInput(mInputBlockSize / 2, getSampleRate() / 2);
     }
 
     /**
@@ -113,7 +110,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
             mMagnitudeBuffer[0] = mMagnitudeBuffer[1];
 
             applyingFFTAveraging();
-            postBufferChange();
+            super.readDone(returnedMagnitudeBuffer);
         }
     }
 
@@ -152,13 +149,6 @@ public class MicrophoneFFTInput extends MicrophoneInput {
             }
             returnedMagnitudeBuffer[i] /= sNumberOfHistoryBuffers;
         }
-    }
-
-    /**
-     * When the return buffer is ready to go this function is called
-     */
-    private void postBufferChange() {
-        mSignalBuffers.getSignalBuffer().get(0).setBuffer(returnedMagnitudeBuffer);
     }
 
     public void setNumberOfHistoryBuffers(int sNumberOfHistoryBuffers) {

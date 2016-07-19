@@ -18,7 +18,7 @@ public class Signal extends DrawableObject {
     /**
      * The buffer which will be drawn by this object
      */
-    private final SignalBuffer mSignalBuffer;
+    private final SignalBufferInterface mSignalBufferInterface;
 
     /**
      * Style of the signal
@@ -33,10 +33,10 @@ public class Signal extends DrawableObject {
     /**
      * Constructor
      *
-     * @param signalBuffer the buffer to be drawn
+     * @param signalBufferInterface the buffer to be drawn
      */
-    Signal(SignalBuffer signalBuffer) {
-        mSignalBuffer = signalBuffer;
+    Signal(SignalBufferInterface signalBufferInterface) {
+        mSignalBufferInterface = signalBufferInterface;
 
         mSignalPaint = new Paint();
         /*
@@ -64,7 +64,7 @@ public class Signal extends DrawableObject {
         float screenWidth = (float) getDrawableArea().getWidth();
         float screenTop = (float) getDrawableArea().getTop();
 
-        mSignalBuffer.getScaledBuffer(mDrawBuffer);
+        mSignalBufferInterface.getScaledBuffer(mDrawBuffer);
         int drawBufferLength = mDrawBuffer.length;
 
         float spacing = screenWidth / (float) (drawBufferLength - 1);

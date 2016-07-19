@@ -67,8 +67,7 @@ public class MicrophoneInput extends Input {
             mInputBlockSize = audioBufferSize;
         }
 
-        mSignalBuffers.addSignalBuffer(0, mInputBlockSize, sSampleRate, GraphManager.Scale.linear);
-        mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
+        mSignalBufferInterface = mGraphSignalInputInterface.addInput(mInputBlockSize, sSampleRate);
     }
 
     @Override
@@ -155,8 +154,8 @@ public class MicrophoneInput extends Input {
      * @param buffer Buffer containing the data.
      */
     void readDone(float[] buffer) {
-        if (mGraphSignalInputInterface != null) {
-            mSignalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
+        if(mSignalBufferInterface != null) {
+            mSignalBufferInterface.setBuffer(buffer);
         }
     }
 
@@ -168,6 +167,11 @@ public class MicrophoneInput extends Input {
     public void setInputBlockSize(int inputBlockSize) {
         stop();
         mInputBlockSize = inputBlockSize;
+
+        // As we need to change the buffer size of the input we have to change reinitialise all the
+        // arrays
+        mGraphSignalInputInterface.removeInput(mSignalBufferInterface);
         initialise();
+        start();
     }
 }

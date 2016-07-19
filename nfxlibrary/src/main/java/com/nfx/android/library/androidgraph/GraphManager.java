@@ -34,6 +34,10 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     private final GraphSignalInputInterface mGraphSignalInputInterface = new
             GraphSignalInputInterface();
     /**
+     * X axis is log or lin
+     */
+    protected Scale mAxisScale;
+    /**
      * Handle to the application context, used to e.g. fetch Drawables.
      */
     private Context mContext;
@@ -48,17 +52,18 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
 
     /**
      * Constructor for graph manager
-     *
-     * @param context current application context
+     *  @param context current application context
      * @param minimumXValue minimum value on x axis
      * @param maximumXValue maximum value on x axis
      * @param minimumYValue minimum value on y axis
      * @param maximumYValue maximum value on y axis
+     * @param axisScale set the graph to log or lin
      */
-    public GraphManager(Context context, float minimumXValue,
-                        float maximumXValue, float minimumYValue, float maximumYValue) {
+    public GraphManager(Context context, float minimumXValue, float maximumXValue,
+                        float minimumYValue, float maximumYValue, Scale axisScale) {
         super(context);
         mContext = context;
+        this.mAxisScale = axisScale;
 
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
@@ -67,6 +72,13 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         mBackgroundManager = new BackgroundManager(context, minimumXValue, maximumXValue,
                 minimumYValue, maximumYValue);
         mSignalManager = new SignalManager(this);
+
+
+        if(axisScale == Scale.logarithmic) {
+            setXAxisLogarithmic();
+        } else {
+            setXAxisLinear();
+        }
     }
 
     /**
@@ -78,6 +90,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
     public GraphManager(Context context) {
         super(context);
         mContext = context;
+        this.mAxisScale = Scale.logarithmic;
 
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
@@ -93,7 +106,7 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * @param frequency value to convert
      * @return log value of {@code x}
      */
-    protected static float frequencyToGraphPosition(float frequency) {
+    protected static float logFrequencyToGraphPosition(float frequency) {
         return (float) (Math.log(frequency) / Math.log(2));
     }
 
@@ -207,6 +220,30 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
         return mSignalManager;
     }
 
+    public void setXAxisLogarithmic() {
+        // Axis are reset so lets remove all the children
+        getBackgroundManager().getXGridLines().removeAllChildGridLines();
+        getBackgroundManager().getYGridLines().removeAllChildGridLines();
+
+        mAxisScale = Scale.logarithmic;
+        getBackgroundManager().getXGridLines().setChildGridLineScale(Scale.logarithmic);
+        getBackgroundManager().getBoarderText().setXAxisIsLogarithmic();
+
+        mSignalManager.setXAxisLogarithmic();
+    }
+
+    public void setXAxisLinear() {
+        // Axis are reset so lets remove all the children
+        getBackgroundManager().getXGridLines().removeAllChildGridLines();
+        getBackgroundManager().getYGridLines().removeAllChildGridLines();
+
+        mAxisScale = Scale.linear;
+        getBackgroundManager().getXGridLines().setChildGridLineScale(Scale.linear);
+        getBackgroundManager().getBoarderText().setXAxisIsLinear();
+
+        mSignalManager.setXAxisLinear();
+    }
+
     /**
      * Scale information data type
      */
@@ -284,13 +321,13 @@ public class GraphManager extends SurfaceView implements SurfaceHolder.Callback 
      * graph manager
      */
     public class GraphSignalInputInterface {
-        public void setSignalBuffers(SignalBuffers signal) {
-            mSignalManager.setSignalBuffers(signal);
+        public SignalBufferInterface addInput(int sizeOfBuffer, float axisSpan) {
+            return mSignalManager.addSignalBuffer(sizeOfBuffer, axisSpan, mAxisScale);
         }
 
         @SuppressWarnings("SameParameterValue")
-        public void removeSignalBuffer(int id) {
-            mSignalManager.removeSignal(id);
+        public void removeInput(SignalBufferInterface signalBufferInterface) {
+            mSignalManager.removedSignalBuffer(signalBufferInterface);
         }
     }
 }

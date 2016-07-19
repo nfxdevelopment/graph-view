@@ -6,10 +6,6 @@ package com.nfx.android.library.androidgraph;
  */
 public class LogSignalBuffer extends SignalBuffer {
     /**
-     * Given span for the X axis. This is used to calculate the logarithmic scale
-     */
-    private final float mAxisSpanValue;
-    /**
      * 2 to power of the maximum value
      */
     private final float mLogMaximumZoomLevel;
@@ -17,14 +13,12 @@ public class LogSignalBuffer extends SignalBuffer {
     /**
      * Constructor
      *
-     * @param id           unique id for signal
      * @param sizeOfBuffer size expecting to receive
      */
-    public LogSignalBuffer(int id, int sizeOfBuffer, float axisSpanValue) {
-        super(id, sizeOfBuffer);
-        mAxisSpanValue = axisSpanValue;
+    public LogSignalBuffer(int sizeOfBuffer, float axisSpanValue) {
+        super(sizeOfBuffer, axisSpanValue);
         mLogMaximumZoomLevel = GraphManager.graphPositionToFrequency(
-                mAxisSpanValue, ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
+                axisSpanValue, ZoomDisplay.MAXIMUM_ZOOM_LEVEL);
     }
 
     /**

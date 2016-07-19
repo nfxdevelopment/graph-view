@@ -9,11 +9,10 @@ public class LinSignalBuffer extends SignalBuffer {
     /**
      * Constructor
      *
-     * @param id           unique id for signal
      * @param sizeOfBuffer size expecting to receive
      */
-    public LinSignalBuffer(int id, int sizeOfBuffer) {
-        super(id, sizeOfBuffer);
+    public LinSignalBuffer(int sizeOfBuffer, float axisSpanValue) {
+        super(sizeOfBuffer, axisSpanValue);
     }
 
     /**

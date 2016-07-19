@@ -19,16 +19,15 @@ public class TestInput extends Input {
     public void initialise() {
         int length = 8000;
         float[] buffer = new float[length];
-        mSignalBuffers.addSignalBuffer(0, length, length, GraphManager.Scale.logarithmic);
-        mGraphSignalInputInterface.setSignalBuffers(mSignalBuffers);
+        mSignalBufferInterface = mGraphSignalInputInterface.addInput(length, length);
 
         for(int i = 0; i < length; i++) {
             buffer[i] = (float) i / (float) length;
         }
 
         //noinspection ConstantConditions
-        if(mGraphSignalInputInterface != null) {
-            mSignalBuffers.getSignalBuffer().get(0).setBuffer(buffer);
+        if(mSignalBufferInterface != null) {
+            mSignalBufferInterface.setBuffer(buffer);
         }
     }
 

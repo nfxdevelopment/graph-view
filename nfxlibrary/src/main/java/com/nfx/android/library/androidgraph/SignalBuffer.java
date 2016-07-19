@@ -11,6 +11,7 @@ import android.util.Log;
  */
 public abstract class SignalBuffer {
     private static final String TAG = "SignalBuffer";
+    protected final float mAxisSpanValue;
     /**
      * Information about the scaling of signal in the y axis
      */
@@ -24,20 +25,14 @@ public abstract class SignalBuffer {
      */
     final float[] mBuffer;
     /**
-     * Unique Id for signal
-     */
-    private final int mId;
-
-    /**
      * Constructor
      *
-     * @param id           unique id for signal
      * @param sizeOfBuffer size expecting to receive
      */
     @SuppressWarnings("WeakerAccess")
-    public SignalBuffer(int id, int sizeOfBuffer) {
-        mId = id;
+    public SignalBuffer(int sizeOfBuffer, float axisSpanValue) {
         mBuffer = new float[sizeOfBuffer];
+        mAxisSpanValue = axisSpanValue;
 
         mXZoomDisplay = new ZoomDisplay(1f, 0f);
         mYZoomDisplay = new ZoomDisplay(1f, 0f);
@@ -70,12 +65,12 @@ public abstract class SignalBuffer {
      */
     public abstract void getScaledBuffer(float[] scaledBuffer);
 
-    public int getId() {
-        return mId;
+    public int getSizeOfBuffer() {
+        return mBuffer.length;
     }
 
-    int getSizeOfBuffer() {
-        return mBuffer.length;
+    public float getAxisSpanValue() {
+        return mAxisSpanValue;
     }
 
     public ZoomDisplay getXZoomDisplay() {

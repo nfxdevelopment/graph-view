@@ -1,7 +1,7 @@
 package com.nfx.android.library.graphbufferinput;
 
 import com.nfx.android.library.androidgraph.GraphManager;
-import com.nfx.android.library.androidgraph.SignalBuffers;
+import com.nfx.android.library.androidgraph.SignalBufferInterface;
 
 /**
  * NFX Development
@@ -9,13 +9,16 @@ import com.nfx.android.library.androidgraph.SignalBuffers;
  */
 public abstract class Input {
     /**
-     * Signal object to send to the graph
-     */
-    final SignalBuffers mSignalBuffers = new SignalBuffers();
-    /**
      * The interface in which to send updates to
      */
     final GraphManager.GraphSignalInputInterface mGraphSignalInputInterface;
+    /**
+     * Interface to update buffer data
+     */
+    SignalBufferInterface mSignalBufferInterface;
+    /**
+     * Used to pause the input
+     */
     boolean mPaused = false;
 
     Input(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
@@ -43,10 +46,6 @@ public abstract class Input {
      */
     @SuppressWarnings({"EmptyMethod", "unused"})
     public abstract void destroy();
-
-    public SignalBuffers getSignalBuffers() {
-        return mSignalBuffers;
-    }
 
     public boolean getPaused() {
         return mPaused;

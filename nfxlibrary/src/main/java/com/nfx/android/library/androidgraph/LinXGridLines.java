@@ -40,10 +40,21 @@ public class LinXGridLines extends LinGridLines {
     @Override
     public void showAxisText(Context context, float minimumValue, float maximumValue) {
         super.showAxisText(context, minimumValue, maximumValue);
+
+        // If we are replacing a previous Axis Text we need to take note of the drawable area
+        DrawableArea drawableArea = null;
+        if(mAxisText != null) {
+            drawableArea = mAxisText.getDrawableArea();
+        }
+
         if(mChildGridLineScale == GraphManager.Scale.logarithmic) {
             mAxisText = new LogXAxisText(context, this, minimumValue, maximumValue);
         } else {
             mAxisText = new XAxisText(context, this, minimumValue, maximumValue);
+        }
+
+        if(drawableArea != null) {
+            mAxisText.getDrawableArea().setDrawableArea(drawableArea);
         }
     }
 
