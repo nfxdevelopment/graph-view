@@ -73,11 +73,11 @@ public abstract class SignalBuffer {
         return mAxisSpanValue;
     }
 
-    public ZoomDisplay getXZoomDisplay() {
+    public synchronized ZoomDisplay getXZoomDisplay() {
         return mXZoomDisplay;
     }
 
-    public ZoomDisplay getYZoomDisplay() {
+    public synchronized ZoomDisplay getYZoomDisplay() {
         return mYZoomDisplay;
     }
 }
