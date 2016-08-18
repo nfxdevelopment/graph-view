@@ -1,5 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 /**
  * NFX Development
  * Created by nick on 28/10/15.
@@ -12,9 +14,9 @@ abstract class LinGridLines extends GridLines {
      *
      * @param axisOrientation either the x or y axis
      */
-    LinGridLines(AxisOrientation axisOrientation) {
-        super(axisOrientation);
-        mChildGridLineScale = GraphManager.Scale.linear;
+    LinGridLines(AxisOrientation axisOrientation, AxisParameters axisParameters) {
+        super(axisOrientation, axisParameters);
+        mChildGridLineScale = Scale.linear;
     }
 
     /**
@@ -29,6 +31,11 @@ abstract class LinGridLines extends GridLines {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        return mGridLinesOffset + getGridLineDrawableWidth() * (float) gridLine;
+        float intersect = mGridLinesOffset + getGridLineDrawableWidth() * (float) gridLine;
+
+        intersect -= getFixedZoomDisplay().getDisplayOffsetPercentage();
+        intersect /= getFixedZoomDisplay().getZoomLevelPercentage();
+
+        return intersect;
     }
 }

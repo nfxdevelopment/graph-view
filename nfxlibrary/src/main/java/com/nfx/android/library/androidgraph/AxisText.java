@@ -4,7 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
+
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 
 /**
  * NFX Development
@@ -14,15 +15,14 @@ import android.util.Log;
  */
 abstract class AxisText extends DrawableObject {
     private static final String TAG = "AxisText";
-
+    /**
+     * graph scale limits
+     */
+    protected final AxisParameters mAxisParameters;
     /**
      * grid lines that text is relating to
      */
     final GridLines mGridLines;
-    /**
-     * paint for the text
-     */
-    final Paint mTextPaint = new Paint();
     /**
      * Store the values in a array as working the value every draw was memory intensive
      */
@@ -32,61 +32,39 @@ abstract class AxisText extends DrawableObject {
      */
     final Rect mBounds = new Rect();
     /**
-     * the span of the values displayed on the axis
-     */
-    float mAxisValueSpan = 1;
-    /**
-     * the lowest number that the axis displays
-     */
-    private float mMinimumAxisValue = 0;
-    /**
-     * the highest number the axis displays
-     */
-    private float mMaximumAxisValue = 0;
-
-    /**
      * Constructor
      *
      * @param context   application context is used for dimension reasons
      * @param gridLines grid lines axis is related to
-     * @param minimumAxisValue the lowest number that the axis displays
-     * @param maximumAxisValue the highest number the axis displays
+     * @param axisParameters the lowest number that the axis displays
      */
-    AxisText(Context context, GridLines gridLines, float minimumAxisValue, float maximumAxisValue) {
-        mGridLines = gridLines;
-
-        // Check to ensure the minimum is less that the maximum
-        if (maximumAxisValue > minimumAxisValue) {
-            mMinimumAxisValue = minimumAxisValue;
-            mMaximumAxisValue = maximumAxisValue;
-            mAxisValueSpan = maximumAxisValue - minimumAxisValue;
-        } else {
-            Log.w(TAG, "Given maximum value is less than minimum value");
-        }
+    AxisText(Context context, GridLines gridLines, AxisParameters axisParameters) {
+        this.mGridLines = gridLines;
+        this.mAxisParameters = axisParameters;
 
         float textScale = context.getResources().getDisplayMetrics().density;
 
-        mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setColor(Color.GRAY);
+        mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        mPaint.setColor(Color.GRAY);
         /*
           text size before scaling for screen has been applied
          */
         int mUnscaledTextSize = 16;
-        mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
-        mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+        mPaint.setTextSize((float) mUnscaledTextSize * textScale);
+        mPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
 
         mGridLineValues = new String[gridLines.getNumberOfGridLines()];
         calculateGridLineValues();
 
         String sMaximumString = "00.00K";
-        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
+        mPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
     }
 
     String displayString(int gridLine) {
         float locationOnGraph = mGridLines.intersect(gridLine);
-        // +1 as we are not labeling the limits here
-        float valueToDisplay = mMinimumAxisValue + (mAxisValueSpan * locationOnGraph);
+
+        float valueToDisplay = mAxisParameters.graphPositionToScaledAxis(locationOnGraph);
         float nonNegativeValue = Math.abs(valueToDisplay);
 
         if(nonNegativeValue < 10f) {
@@ -118,19 +96,7 @@ abstract class AxisText extends DrawableObject {
      * @return text height
      */
     float getRealTextHeight() {
-        return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
-    }
-
-    public float getMinimumAxisValue() {
-        return mMinimumAxisValue;
-    }
-
-    public float getAxisValueSpan() {
-        return mAxisValueSpan;
-    }
-
-    public float getMaximumAxisValue() {
-        return mMaximumAxisValue;
+        return (Math.abs(mPaint.ascent()) + Math.abs(mPaint.descent()));
     }
 
     public void calculateGridLineValues() {

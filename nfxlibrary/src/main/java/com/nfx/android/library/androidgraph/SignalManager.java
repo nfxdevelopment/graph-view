@@ -3,8 +3,12 @@ package com.nfx.android.library.androidgraph;
 import android.graphics.Canvas;
 import android.util.Log;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -16,7 +20,7 @@ public class SignalManager {
     /**
      * parent object
      */
-    private final GraphManager mGraphManager;
+    private final GraphView mGraphView;
 
     /**
      * Array of drawers to display signals
@@ -29,17 +33,24 @@ public class SignalManager {
     private final Map<SignalBufferInterface, SignalBuffer> mSignalBuffers = new
             ConcurrentHashMap<>();
     /**
+     * Handles the drawing of a unlimited amount of Markers
+     **/
+    private List<Marker> mMarkers = new Vector<>();
+    /**
      * Current drawable area
      */
     private DrawableArea mDrawableArea = new DrawableArea(0, 0, 0, 0);
-
     /**
      * Constructor
      *
-     * @param graphManager needed to set the axis zoom levels
+     * @param graphView needed to set the axis zoom levels
      */
-    SignalManager(GraphManager graphManager) {
-        mGraphManager = graphManager;
+    SignalManager(GraphView graphView) {
+        mGraphView = graphView;
+    }
+
+    public List<Marker> getMarkers() {
+        return mMarkers;
     }
 
     /**
@@ -47,34 +58,32 @@ public class SignalManager {
      * signal with the given id and display a warning
      *
      * @param sizeOfBuffer size of the buffer to create
-     * @param signalScale  either linear or logarithmic for use when displaying
      */
-    public SignalBufferInterface addSignalBuffer(int sizeOfBuffer, float axisSpanValue,
-                                                 GraphManager.Scale signalScale) {
-        SignalBuffer signalBuffer;
-        if(signalScale == GraphManager.Scale.linear) {
-            signalBuffer = new LinSignalBuffer(sizeOfBuffer, axisSpanValue);
-        } else if(signalScale == GraphManager.Scale.logarithmic) {
-            signalBuffer = new LogSignalBuffer(sizeOfBuffer, axisSpanValue);
-        } else {
-            Log.e(TAG, "Signal Scale unknown");
-            return null;
-        }
-
+    public SignalBufferInterface addSignalBuffer(int sizeOfBuffer, AxisParameters axisParameters) {
+        SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, axisParameters);
         SignalBufferInterface signalBufferInterface = new SignalBufferInterface(signalBuffer);
 
         if(mSignalBuffers.put(signalBufferInterface, signalBuffer) != null) {
             Log.w(TAG, "signal id exists, overwriting");
         }
 
-        Signal signal = new Signal(signalBufferInterface);
+        Signal signal = new Signal(mGraphView.getGraphParameters(),
+                signalBufferInterface, mGraphView.getXZoomDisplay());
         signal.surfaceChanged(mDrawableArea);
         mSignalDrawers.put(signalBufferInterface, signal);
 
-        mGraphManager.getBackgroundManager().setZoomDisplay(signalBuffer.getXZoomDisplay(),
-                signalBuffer.getYZoomDisplay());
-
         return signalBufferInterface;
+    }
+
+    void addMarker(int colour, SignalBufferInterface signalBufferInterface,
+                   Marker.MarkerUpdateInterface markerUpdateInterface) {
+        Marker marker = new Marker(mGraphView.getGraphSignalInputInterface(),
+                signalBufferInterface, markerUpdateInterface);
+
+        marker.surfaceChanged(mDrawableArea);
+        marker.setColour(colour);
+
+        mMarkers.add(marker);
     }
 
     /**
@@ -85,10 +94,11 @@ public class SignalManager {
     public void removedSignalBuffer(SignalBufferInterface signalBufferInterface) {
         mSignalBuffers.remove(signalBufferInterface);
         mSignalDrawers.remove(signalBufferInterface);
-    }
-
-    public void removeSignal(int id) {
-        mSignalDrawers.remove(id);
+        for(int i = 0; i < mMarkers.size(); i++) {
+            if(signalBufferInterface.equals(mMarkers.get(i).getSignal())) {
+                mMarkers.remove(i);
+            }
+        }
     }
 
     /**
@@ -102,6 +112,9 @@ public class SignalManager {
         for(Signal signal : mSignalDrawers.values()) {
             signal.surfaceChanged(drawableArea);
         }
+        for(Marker marker : mMarkers) {
+            marker.surfaceChanged(drawableArea);
+        }
     }
 
     /**
@@ -113,6 +126,9 @@ public class SignalManager {
         for(Signal signal : mSignalDrawers.values()) {
             signal.doDraw(canvas);
         }
+        for(Marker marker : mMarkers) {
+            marker.doDraw(canvas);
+        }
     }
 
     /**
@@ -122,37 +138,11 @@ public class SignalManager {
         mSignalDrawers.clear();
     }
 
+    public Map<SignalBufferInterface, Signal> getSignalDrawers() {
+        return mSignalDrawers;
+    }
+
     public Map<SignalBufferInterface, SignalBuffer> getSignalBuffers() {
         return mSignalBuffers;
-    }
-
-    public void setXAxisLogarithmic() {
-        for(Map.Entry<SignalBufferInterface, SignalBuffer> signalBuffer : mSignalBuffers.entrySet
-                ()) {
-            SignalBuffer logSignalBuffer = new LogSignalBuffer(signalBuffer.getValue()
-                    .getSizeOfBuffer(),
-                    signalBuffer.getValue().getAxisSpanValue());
-
-            signalBuffer.getKey().setSignalBuffer(logSignalBuffer);
-            signalBuffer.setValue(logSignalBuffer);
-
-            mGraphManager.getBackgroundManager().setZoomDisplay(logSignalBuffer.getXZoomDisplay(),
-                    logSignalBuffer.getYZoomDisplay());
-        }
-    }
-
-    public void setXAxisLinear() {
-        for(Map.Entry<SignalBufferInterface, SignalBuffer> signalBuffer : mSignalBuffers.entrySet
-                ()) {
-            SignalBuffer linSignalBuffer = new LinSignalBuffer(signalBuffer.getValue()
-                    .getSizeOfBuffer(),
-                    signalBuffer.getValue().getAxisSpanValue());
-
-            signalBuffer.getKey().setSignalBuffer(linSignalBuffer);
-            signalBuffer.setValue(linSignalBuffer);
-
-            mGraphManager.getBackgroundManager().setZoomDisplay(linSignalBuffer.getXZoomDisplay(),
-                    linSignalBuffer.getYZoomDisplay());
-        }
     }
 }

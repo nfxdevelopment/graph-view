@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 /**
  * NFX Development
  * Created by nick on 29/10/15.
@@ -16,13 +18,11 @@ public class YAxisText extends AxisText {
      *
      * @param context   application context is used for dimension reasons
      * @param gridLines grid lines axis is related to
-     * @param minimumAxisValue the lowest number that the axis displays
-     * @param maximumAxisValue the highest number the axis displays
+     * @param axisParameters graph limits
      */
-    YAxisText(Context context, GridLines gridLines, float minimumAxisValue,
-              float maximumAxisValue) {
-        super(context, gridLines, minimumAxisValue, maximumAxisValue);
-        mTextPaint.setTextAlign(Paint.Align.RIGHT);
+    YAxisText(Context context, GridLines gridLines, AxisParameters axisParameters) {
+        super(context, gridLines, axisParameters);
+        mPaint.setTextAlign(Paint.Align.RIGHT);
     }
 
     /**
@@ -62,7 +62,7 @@ public class YAxisText extends AxisText {
                     yIntersect - drawLimitText > getRealTextHeight() * 1f) {
                 float y = getDrawableArea().getTop() + yIntersect + (getRealTextHeight() / 2);
 
-                canvas.drawText(displayString, getDrawableArea().getWidth(), y, mTextPaint);
+                canvas.drawText(displayString, getDrawableArea().getWidth(), y, mPaint);
 
                 lastTextDrawn = yIntersect;
             }

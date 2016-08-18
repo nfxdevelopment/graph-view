@@ -1,6 +1,8 @@
 package com.nfx.android.library.graphbufferinput;
 
-import com.nfx.android.library.androidgraph.GraphManager;
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+import com.nfx.android.library.androidgraph.GraphView;
+import com.nfx.android.library.androidgraph.Scale;
 
 import org.jtransforms.fft.FloatFFT_1D;
 
@@ -56,7 +58,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      * @param graphSignalInputInterface interface to send signal data to
      * @param binSize set the bin size of the fft
      */
-    protected MicrophoneFFTInput(GraphManager.GraphSignalInputInterface
+    protected MicrophoneFFTInput(GraphView.GraphSignalInputInterface
                                          graphSignalInputInterface, int binSize) {
         super(graphSignalInputInterface, binSize);
     }
@@ -75,7 +77,8 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
         mGraphSignalInputInterface.removeInput(mSignalBufferInterface);
         mSignalBufferInterface =
-                mGraphSignalInputInterface.addInput(mInputBlockSize / 2, getSampleRate() / 2);
+                mGraphSignalInputInterface.addInput(mInputBlockSize / 2,
+                        new AxisParameters(0, getSampleRate() / 2, Scale.linear));
     }
 
     /**
@@ -102,8 +105,13 @@ public class MicrophoneFFTInput extends MicrophoneInput {
                 mMagnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary) /
                         scale;
 
-                mMagnitudeBuffer[i] = 10f * (float) Math.log10(mMagnitudeBuffer[i]);
-                mMagnitudeBuffer[i] *= -0.01;
+                // Convert the signal into decibels so it is easier to read on screen.
+                // 20*log(value) / scaledToAxisMinimum
+                // Then flip the buffer to allow simple display on screen. (Screens display top to
+                // bottom, graphs show bottom to top)
+                mMagnitudeBuffer[i] = 20f * (float) Math.log10(mMagnitudeBuffer[i]);
+                mMagnitudeBuffer[i] /= mGraphSignalInputInterface.getGraphParameters().
+                        getYAxisParameters().getMinimumValue(); // Scale to negative 140 db
                 mMagnitudeBuffer[i] = 1f - mMagnitudeBuffer[i];
             }
 

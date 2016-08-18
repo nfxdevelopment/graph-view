@@ -1,0 +1,8 @@
+<resources>
+    <declare-styleable name="GraphManager">
+        <attr name="minimum_x_value" format="reference|float" />
+        <attr name="maximum_x_value" format="reference|float" />
+        <attr name="minimum_y_value" format="reference|float" />
+        <attr name="maximum_y_value" format="reference|float" />
+    </declare-styleable>
+</resources>

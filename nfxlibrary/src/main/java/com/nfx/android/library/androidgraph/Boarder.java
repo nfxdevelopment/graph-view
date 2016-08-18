@@ -2,7 +2,6 @@ package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 
 /**
  * NFX Development
@@ -20,10 +19,6 @@ public class Boarder extends DrawableObject {
      * Color of the boarder
      */
     private static final int COLOR = Color.GRAY;
-    /**
-     * Paint to Draw with
-     */
-    private final Paint mPaint = new Paint();
 
     public Boarder() {
         mPaint.setColor(COLOR);

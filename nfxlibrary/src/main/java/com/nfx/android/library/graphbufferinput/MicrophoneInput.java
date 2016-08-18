@@ -5,7 +5,9 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import com.nfx.android.library.androidgraph.GraphManager;
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+import com.nfx.android.library.androidgraph.GraphView;
+import com.nfx.android.library.androidgraph.Scale;
 
 /**
  * NFX Development
@@ -43,7 +45,7 @@ public class MicrophoneInput extends Input {
      * @param graphSignalInputInterface interface to send signal data to
      */
     @SuppressWarnings("WeakerAccess")
-    protected MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
+    protected MicrophoneInput(GraphView.GraphSignalInputInterface graphSignalInputInterface) {
         super(graphSignalInputInterface);
     }
 
@@ -52,7 +54,7 @@ public class MicrophoneInput extends Input {
      *
      * @param graphSignalInputInterface interface to send signal data to
      */
-    protected MicrophoneInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface,
+    protected MicrophoneInput(GraphView.GraphSignalInputInterface graphSignalInputInterface,
                               int inputBlockSize) {
         this(graphSignalInputInterface);
         this.mInputBlockSize = inputBlockSize;
@@ -67,7 +69,8 @@ public class MicrophoneInput extends Input {
             mInputBlockSize = audioBufferSize;
         }
 
-        mSignalBufferInterface = mGraphSignalInputInterface.addInput(mInputBlockSize, sSampleRate);
+        mSignalBufferInterface = mGraphSignalInputInterface.addInput(mInputBlockSize,
+                new AxisParameters(0, sSampleRate, Scale.linear));
     }
 
     @Override

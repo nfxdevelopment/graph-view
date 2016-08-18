@@ -1,6 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 /**
  * Created by nick on 25/10/15.
@@ -8,6 +9,10 @@ import android.graphics.Canvas;
  * An abstract class which can be inherited to implement a widget that can be drawn onto a Canvas
  */
 abstract class DrawableObject {
+    /**
+     * The paint in which to draw with
+     */
+    protected final Paint mPaint = new Paint();
     /**
      * Advises the background in which area it can draw.
      **/
@@ -44,4 +49,7 @@ abstract class DrawableObject {
      */
     protected abstract void calculateRemainingDrawableArea(DrawableArea currentDrawableArea);
 
+    public void setColour(int colour) {
+        mPaint.setColor(colour);
+    }
 }

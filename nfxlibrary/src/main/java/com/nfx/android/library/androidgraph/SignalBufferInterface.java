@@ -1,5 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 /**
  * NFX Development
  * Created by nick on 17/07/16.
@@ -21,7 +23,7 @@ public class SignalBufferInterface {
     /**
      * Update where the display object is pointing to
      *
-     * @param signalBuffer
+     * @param signalBuffer set the buffer listen to
      */
     public void setSignalBuffer(SignalBuffer signalBuffer) {
         this.mSignalBuffer = signalBuffer;
@@ -31,9 +33,33 @@ public class SignalBufferInterface {
      * Get the latest buffer
      *
      * @param scaledBuffer array to pass back data
+     * @param maximumXValue minimum value of scaled buffer
+     * @param minimumXValue maximum value of scaled buffer
+     * @param scaleToParameters target axis
+     * */
+    public void getScaledBuffer(float[] scaledBuffer, float minimumXValue, float maximumXValue,
+                                AxisParameters scaleToParameters) {
+        mSignalBuffer.getScaledBuffer(scaledBuffer, minimumXValue, maximumXValue,
+                scaleToParameters);
+    }
+
+    /**
+     * Get a value from the buffer
+     *
+     * @param position a value between minimumX and maximumX
      */
-    public void getScaledBuffer(float[] scaledBuffer) {
-        mSignalBuffer.getScaledBuffer(scaledBuffer);
+    public float getValueAtPosition(float position) {
+        return mSignalBuffer.getValueAtPosition(position);
+    }
+
+
+    /**
+     * return YAxis Zoom Display
+     *
+     * @return y axis Zoom display
+     */
+    public ZoomDisplay getYZoomDisplay() {
+        return mSignalBuffer.getYZoomDisplay();
     }
 
     /**

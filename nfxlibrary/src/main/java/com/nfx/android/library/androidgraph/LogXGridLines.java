@@ -3,6 +3,8 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 /**
  * NFX Development
  * Created by nick on 27/10/15.
@@ -15,15 +17,15 @@ public class LogXGridLines extends LogGridLines {
     /**
      * Constructor
      */
-    public LogXGridLines(float gridLineMinimumValue, float gridLineMaximumValue,
-                         float axisValueSpan) {
-        super(AxisOrientation.xAxis, gridLineMinimumValue, gridLineMaximumValue, axisValueSpan);
+    public LogXGridLines(AxisParameters axisParameters, float gridLineMinimumValue,
+                         float gridLineMaximumValue) {
+        super(AxisOrientation.xAxis, axisParameters, gridLineMinimumValue, gridLineMaximumValue);
     }
 
     @Override
-    public void showAxisText(Context context, float minimumValue, float maximumValue) {
-        super.showAxisText(context, minimumValue, maximumValue);
-        mAxisText = new LogXAxisText(context, this, minimumValue, maximumValue);
+    public void showAxisText(Context context) {
+        super.showAxisText(context);
+        mAxisText = new XAxisText(context, this, mAxisParameters);
     }
 
     /**

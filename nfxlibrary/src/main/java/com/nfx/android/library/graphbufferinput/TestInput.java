@@ -1,6 +1,8 @@
 package com.nfx.android.library.graphbufferinput;
 
-import com.nfx.android.library.androidgraph.GraphManager;
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+import com.nfx.android.library.androidgraph.GraphView;
+import com.nfx.android.library.androidgraph.Scale;
 
 /**
  * NFX Development
@@ -9,7 +11,7 @@ import com.nfx.android.library.androidgraph.GraphManager;
 @SuppressWarnings("unused")
 public class TestInput extends Input {
 
-    public TestInput(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
+    public TestInput(GraphView.GraphSignalInputInterface graphSignalInputInterface) {
         super(graphSignalInputInterface);
 
         initialise();
@@ -19,7 +21,8 @@ public class TestInput extends Input {
     public void initialise() {
         int length = 8000;
         float[] buffer = new float[length];
-        mSignalBufferInterface = mGraphSignalInputInterface.addInput(length, length);
+        mSignalBufferInterface = mGraphSignalInputInterface.addInput(length,
+                new AxisParameters(0, length, Scale.linear));
 
         for(int i = 0; i < length; i++) {
             buffer[i] = (float) i / (float) length;

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 /**
  * NFX Development
  * Created by nick on 29/10/15.
@@ -16,12 +18,10 @@ public class XAxisText extends AxisText {
      *
      * @param context   application context is used for dimension reasons
      * @param gridLines grid lines axis is related to
-     * @param minimumAxisValue the lowest number that the axis displays
-     * @param maximumAxisValue the highest number the axis displays
+     * @param axisParameters graph limits
      */
-    XAxisText(Context context, GridLines gridLines, float minimumAxisValue,
-              float maximumAxisValue) {
-        super(context, gridLines, minimumAxisValue, maximumAxisValue);
+    XAxisText(Context context, GridLines gridLines, AxisParameters axisParameters) {
+        super(context, gridLines, axisParameters);
     }
 
     /**
@@ -59,7 +59,7 @@ public class XAxisText extends AxisText {
                 // Remember the text is drawn on the baseline
                 canvas.drawText(displayString, x, getDrawableArea()
                         .getTop() +
-                        (int) Math.abs(mTextPaint.ascent()), mTextPaint);
+                        (int) Math.abs(mPaint.ascent()), mPaint);
 
                 lastTextDrawn = xIntersect;
             }
@@ -75,7 +75,7 @@ public class XAxisText extends AxisText {
     public void surfaceChanged(DrawableArea drawableArea) {
         String textString = "0";
         Rect bounds = new Rect();
-        mTextPaint.getTextBounds(textString, 0, textString.length(), bounds);
+        mPaint.getTextBounds(textString, 0, textString.length(), bounds);
         getDrawableArea().setDrawableArea(drawableArea.getLeft(),
                 drawableArea.getHeight() - (int) getRealTextHeight(),
                 drawableArea.getWidth(), (int) getRealTextHeight());

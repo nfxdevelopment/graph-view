@@ -3,7 +3,8 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
+
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,10 +41,6 @@ public abstract class GridLines extends DrawableObject {
      */
     private static final float INITIAL_LINE_STROKE_WIDTH = 4f;
     /**
-     * Paint for the grid lines
-     */
-    final Paint mPaint = new Paint();
-    /**
      * This allows us to know the axis at runtime
      */
     private final AxisOrientation mAxisOrientation;
@@ -51,6 +48,10 @@ public abstract class GridLines extends DrawableObject {
      * Minor GridLines
      */
     private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
+    /**
+     * Graph Scale limits
+     */
+    protected AxisParameters mAxisParameters;
     /**
      * Number of grid lines to display in the area
      */
@@ -63,7 +64,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * scale for child grid lines
      */
-    GraphManager.Scale mChildGridLineScale;
+    Scale mChildGridLineScale;
     /**
      * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
      */
@@ -93,8 +94,10 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param axisOrientation either the x or y axis
      */
-    GridLines(AxisOrientation axisOrientation) {
-        mAxisOrientation = axisOrientation;
+    GridLines(AxisOrientation axisOrientation, AxisParameters axisParameters) {
+        this.mAxisOrientation = axisOrientation;
+        this.mAxisParameters = axisParameters;
+
         mFixedZoomDisplay = new ZoomDisplay(1f, 0f);
         // Set a default zoom Display
         mZoomDisplay = new ZoomDisplay(1f, 0f);
@@ -119,7 +122,7 @@ public abstract class GridLines extends DrawableObject {
         }
     }
 
-    public void showAxisText(Context context, float minimumValue, float maximumValue) {
+    public void showAxisText(Context context) {
         mContext = context;
     }
 
@@ -181,11 +184,9 @@ public abstract class GridLines extends DrawableObject {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        intersect -= mFixedZoomDisplay.getDisplayOffsetPercentage();
-        intersect /= mFixedZoomDisplay.getZoomLevelPercentage();
-
         intersect -= mZoomDisplay.getDisplayOffsetPercentage();
         intersect /= mZoomDisplay.getZoomLevelPercentage();
+
         return intersect;
     }
 
@@ -214,7 +215,7 @@ public abstract class GridLines extends DrawableObject {
     }
 
     @SuppressWarnings("SameParameterValue")
-    public void setChildGridLineScale(GraphManager.Scale scale) {
+    public void setChildGridLineScale(Scale scale) {
         mChildGridLineScale = scale;
     }
 
@@ -250,7 +251,7 @@ public abstract class GridLines extends DrawableObject {
         refreshChildGridLines();
     }
 
-    private ZoomDisplay getZoomDisplay() {
+    ZoomDisplay getZoomDisplay() {
         return mZoomDisplay;
     }
 
@@ -339,64 +340,42 @@ public abstract class GridLines extends DrawableObject {
         int numberOfChildGridLines = 11;
         if (!mChildGridLines.containsKey(majorGridLine)) {
             GridLines minorGridLine;
-            if (mAxisOrientation == AxisOrientation.xAxis) {
-                if(mChildGridLineScale == GraphManager.Scale.linear) {
-                    minorGridLine = new LinXGridLines();
+
+            if(mChildGridLineScale == Scale.linear) {
+                if(mAxisOrientation == AxisOrientation.xAxis) {
+                    minorGridLine = new LinXGridLines(mAxisParameters);
                 } else {
-                    float gridLineMinimumValue = GraphManager.graphPositionToFrequency(
-                            mAxisText.getAxisValueSpan(), intersect(majorGridLine));
-
-                    float gridLineMaximumValue = GraphManager.graphPositionToFrequency(
-                            mAxisText.getAxisValueSpan(), intersect(majorGridLine + 1));
-
-                    // calculates the number of gridLines needed to give a equal whole number
-                    // spacing
-                    float removeTrailingZeros =
-                            Math.round(gridLineMaximumValue - gridLineMinimumValue);
-                    while(removeTrailingZeros % 1 == 0) {
-                        removeTrailingZeros /= 10f;
-                    }
-                    removeTrailingZeros *= 10;
-
-                    for(int i = 9; i > 0; i--) {
-                        if((removeTrailingZeros / (float) i) % 1 > 0) {
-                            numberOfChildGridLines = i + 2;
-                            break;
-                        }
-                    }
-
-                    minorGridLine = new LogXGridLines(gridLineMinimumValue,
-                            gridLineMaximumValue, mAxisText.getAxisValueSpan());
+                    minorGridLine = new LinYGridLines(mAxisParameters);
                 }
             } else {
-                if(mChildGridLineScale == GraphManager.Scale.linear) {
-                    minorGridLine = new LinYGridLines();
+                float gridLineMinimumValue = mAxisParameters.graphPositionToScaledAxis(
+                        intersect(majorGridLine));
+
+                float gridLineMaximumValue = mAxisParameters.graphPositionToScaledAxis(
+                        intersect(majorGridLine + 1));
+
+                // calculates the number of gridLines needed to give a equal whole number
+                // spacing
+                float removeTrailingZeros =
+                        Math.round(gridLineMaximumValue - gridLineMinimumValue);
+                while(removeTrailingZeros % 1 == 0) {
+                    removeTrailingZeros /= 10f;
+                }
+                removeTrailingZeros *= 10;
+
+                for(int i = 9; i > 0; i--) {
+                    if((removeTrailingZeros / (float) i) % 1 > 0) {
+                        numberOfChildGridLines = i + 2;
+                        break;
+                    }
+                }
+
+                if(mAxisOrientation == AxisOrientation.xAxis) {
+                    minorGridLine = new LogXGridLines(mAxisParameters, gridLineMinimumValue,
+                            gridLineMaximumValue);
                 } else {
-                    float gridLineMinimumValue = GraphManager.graphPositionToFrequency(
-                            mAxisText.getAxisValueSpan(), intersect(majorGridLine));
-
-                    float gridLineMaximumValue = GraphManager.graphPositionToFrequency(
-                            mAxisText.getAxisValueSpan(), intersect(majorGridLine + 1));
-
-                    // calculates the number of gridLines needed to give a equal whole number
-                    // spacing
-                    float removeTrailingZeros =
-                            Math.round(gridLineMaximumValue - gridLineMinimumValue);
-                    while(removeTrailingZeros % 1 == 0) {
-                        removeTrailingZeros /= 10f;
-                    }
-                    removeTrailingZeros *= 10;
-
-                    for(int i = 9; i > 0; i--) {
-                        if((removeTrailingZeros / (float) i) % 1 > 0) {
-                            numberOfChildGridLines = i + 2;
-                            break;
-                        }
-                    }
-
-                    minorGridLine = new LogYGridLines(gridLineMinimumValue,
-                            gridLineMaximumValue, mAxisText.getAxisValueSpan());
-
+                    minorGridLine = new LogYGridLines(mAxisParameters, gridLineMinimumValue,
+                            gridLineMaximumValue);
                 }
             }
             minorGridLine.setGridStrokeWidth(2);
@@ -407,8 +386,7 @@ public abstract class GridLines extends DrawableObject {
 
 
             if (mAxisText != null) {
-                minorGridLine.showAxisText(mContext, mAxisText.getMinimumAxisValue(),
-                        mAxisText.getMaximumAxisValue());
+                minorGridLine.showAxisText(mContext);
             }
 
             minorGridLineSurfaceChanged(minorGridLine, majorGridLine);
@@ -428,7 +406,13 @@ public abstract class GridLines extends DrawableObject {
         gridLine.surfaceChanged(parentDrawableArea);
 
         float left = intersect(majorGridLine);
+        // remove fixed zoom offsets to get true relative intersects
+        left *= getFixedZoomDisplay().getZoomLevelPercentage();
+        left -= getFixedZoomDisplay().getDisplayOffsetPercentage();
         float right = intersect(majorGridLine + 1);
+        // remove fixed zoom offsets to get true relative intersects
+        right *= getFixedZoomDisplay().getZoomLevelPercentage();
+        right -= getFixedZoomDisplay().getDisplayOffsetPercentage();
 
         gridLine.surfaceChanged(parentDrawableArea);
 
@@ -466,9 +450,16 @@ public abstract class GridLines extends DrawableObject {
         return mFixedZoomDisplay;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public void setFixedZoomDisplay(ZoomDisplay mFixedZoomDisplay) {
         this.mFixedZoomDisplay = mFixedZoomDisplay;
+    }
+
+    @Override
+    public void setColour(int colour) {
+        super.setColour(colour);
+        if(mAxisText != null) {
+            mAxisText.setColour(colour);
+        }
     }
 
     enum AxisOrientation {

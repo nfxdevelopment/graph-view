@@ -3,6 +3,8 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 /**
  * NFX Development
  * Created by nick on 27/10/15.
@@ -15,9 +17,9 @@ public class LogYGridLines extends LogGridLines {
     /**
      * Constructor
      */
-    public LogYGridLines(float gridLineMinimumValue, float gridLineMaximumValue,
-                         float axisValueSpan) {
-        super(AxisOrientation.yAxis, gridLineMinimumValue, gridLineMaximumValue, axisValueSpan);
+    public LogYGridLines(AxisParameters axisParameters, float gridLineMinimumValue,
+                         float gridLineMaximumValue) {
+        super(AxisOrientation.yAxis, axisParameters, gridLineMinimumValue, gridLineMaximumValue);
     }
 
     /**
@@ -42,9 +44,9 @@ public class LogYGridLines extends LogGridLines {
     }
 
     @Override
-    public void showAxisText(Context context, float minimumValue, float maximumValue) {
-        super.showAxisText(context, minimumValue, maximumValue);
-        mAxisText = new YAxisText(context, this, minimumValue, maximumValue);
+    public void showAxisText(Context context) {
+        super.showAxisText(context);
+        mAxisText = new YAxisText(context, this, mAxisParameters);
     }
 
     @Override

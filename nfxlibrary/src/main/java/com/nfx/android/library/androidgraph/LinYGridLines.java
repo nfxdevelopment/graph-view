@@ -3,6 +3,8 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+
 /**
  * NFX Development
  * Created by nick on 27/10/15.
@@ -13,8 +15,8 @@ public class LinYGridLines extends LinGridLines {
     /**
      * Constructor
      */
-    public LinYGridLines() {
-        super(AxisOrientation.yAxis);
+    public LinYGridLines(AxisParameters axisParameters) {
+        super(AxisOrientation.yAxis, axisParameters);
     }
 
     /**
@@ -40,9 +42,9 @@ public class LinYGridLines extends LinGridLines {
     }
 
     @Override
-    public void showAxisText(Context context, float minimumValue, float maximumValue) {
-        super.showAxisText(context, minimumValue, maximumValue);
-        mAxisText = new YAxisText(context, this, minimumValue, maximumValue);
+    public void showAxisText(Context context) {
+        super.showAxisText(context);
+        mAxisText = new YAxisText(context, this, mAxisParameters);
     }
 
     @Override

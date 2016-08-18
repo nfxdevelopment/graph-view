@@ -2,7 +2,9 @@ package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
+
+import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
 
 /**
  * NFX Development
@@ -19,12 +21,14 @@ public class Signal extends DrawableObject {
      * The buffer which will be drawn by this object
      */
     private final SignalBufferInterface mSignalBufferInterface;
-
     /**
-     * Style of the signal
+     * x axis zoom to scale to
      */
-    private final Paint mSignalPaint;
-
+    ZoomDisplay mXZoomDisplay;
+    /**
+     * Parent graph View
+     */
+    private GraphParameters mGraphParameters;
     /**
      * Drawing buffer
      */
@@ -35,21 +39,17 @@ public class Signal extends DrawableObject {
      *
      * @param signalBufferInterface the buffer to be drawn
      */
-    Signal(SignalBufferInterface signalBufferInterface) {
-        mSignalBufferInterface = signalBufferInterface;
+    Signal(GraphParameters graphParameters, SignalBufferInterface
+            signalBufferInterface, ZoomDisplay xZoomDisplay) {
+        this.mGraphParameters = graphParameters;
+        this.mSignalBufferInterface = signalBufferInterface;
+        this.mXZoomDisplay = xZoomDisplay;
 
-        mSignalPaint = new Paint();
-        /*
-      Default color
-     */
         int mColor = Color.YELLOW;
-        mSignalPaint.setColor(mColor);
-        /*
-      Default stroke width
-     */
+        mPaint.setColor(mColor);
         float mStrokeWidth = 4f;
-        mSignalPaint.setStrokeWidth(mStrokeWidth);
-        mSignalPaint.setAntiAlias(true);
+        mPaint.setStrokeWidth(mStrokeWidth);
+        mPaint.setAntiAlias(true);
     }
 
     /**
@@ -63,13 +63,18 @@ public class Signal extends DrawableObject {
         float screenHeight = (float) getDrawableArea().getHeight();
         float screenWidth = (float) getDrawableArea().getWidth();
         float screenTop = (float) getDrawableArea().getTop();
+        AxisParameters xAxisParameters = mGraphParameters.getXAxisParameters();
 
-        mSignalBufferInterface.getScaledBuffer(mDrawBuffer);
+        float lowerX = xAxisParameters.getMinimumValue() +
+                (xAxisParameters.getAxisSpan() * mXZoomDisplay.getDisplayOffsetPercentage());
+        float higherX = xAxisParameters.getMinimumValue() +
+                (xAxisParameters.getAxisSpan() * mXZoomDisplay.getFarSideOffsetPercentage());
+
+        mSignalBufferInterface.getScaledBuffer(mDrawBuffer, lowerX, higherX, xAxisParameters);
         int drawBufferLength = mDrawBuffer.length;
 
         float spacing = screenWidth / (float) (drawBufferLength - 1);
 
-        // TODO Look at optimising the following
         for(int i = 0; i < (drawBufferLength - 1); i++) {
             float startPosY = mDrawBuffer[i];
             float endPosY = mDrawBuffer[i + 1];
@@ -122,7 +127,7 @@ public class Signal extends DrawableObject {
                 canvas.drawLine(getDrawableArea().checkLimitX(drawStartPosX),
                         getDrawableArea().checkLimitY(drawStartPosY),
                         getDrawableArea().checkLimitX(drawEndPosX),
-                        getDrawableArea().checkLimitY(drawEndPosY), mSignalPaint);
+                        getDrawableArea().checkLimitY(drawEndPosY), mPaint);
             }
         }
     }

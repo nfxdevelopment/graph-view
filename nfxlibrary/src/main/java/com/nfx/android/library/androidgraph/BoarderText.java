@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
+
 /**
  * NFX Development
  * Created by nick on 24/11/15.
@@ -15,20 +17,13 @@ import android.graphics.Rect;
  */
 public class BoarderText extends DrawableObject {
     /**
-     * paint for the text
-     */
-    private final Paint mTextPaint = new Paint();
-    /**
-     * Minimum and the span of the x and y axis
-     */
-    private final float mXMinimum;
-    private final float mYMinimum;
-    private final float mXSpan;
-    private final float mYSpan;
-    /**
      * Maximum Bounds of text
      */
     private final Rect mBounds = new Rect();
+    /**
+     * Graph Limits
+     */
+    private GraphParameters mGraphParameters;
     /**
      * The zoom levels from the x and y Axis
      */
@@ -42,42 +37,32 @@ public class BoarderText extends DrawableObject {
     private String mTopY;
     private String mBottomY;
 
-    private boolean mXAxisIsLogarithmic = false;
-
     /**
      * @param context  needed to work out the text size
-     * @param xMinimum minimum value on the x axis
-     * @param xMaximum maximum value on the x axis
-     * @param yMinimum minimum value on the y axis
-     * @param yMaximum maximum value on the y axis
+     * @param graphParameters An object holding the graph limits
      */
-    public BoarderText(Context context, float xMinimum, float xMaximum, float yMinimum,
-                       float yMaximum) {
+    public BoarderText(Context context, GraphParameters graphParameters) {
 
         // Set a default zoom Display
         mXZoomDisplay = new ZoomDisplay(1f, 0f);
         mYZoomDisplay = new ZoomDisplay(1f, 0f);
 
-        mXMinimum = xMinimum;
-        mYMinimum = yMinimum;
-
-        mXSpan = xMaximum - xMinimum;
-        mYSpan = yMaximum - yMinimum;
+        this.mGraphParameters = graphParameters;
 
         float textScale = context.getResources().getDisplayMetrics().density;
 
-        mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextAlign(Paint.Align.RIGHT);
-        mTextPaint.setColor(Color.GRAY);
+        mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setTextAlign(Paint.Align.RIGHT);
+        mPaint.setColor(Color.GRAY);
         /*
       text size before scaling for screen has been applied
      */
         int mUnscaledTextSize = 16;
-        mTextPaint.setTextSize((float) mUnscaledTextSize * textScale);
-        mTextPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+        mPaint.setTextSize((float) mUnscaledTextSize * textScale);
+        mPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
 
         String sMaximumString = "00.00K";
-        mTextPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
+        mPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
 
         calculateValuesToDisplay();
     }
@@ -85,42 +70,33 @@ public class BoarderText extends DrawableObject {
     @Override
     public void doDraw(Canvas canvas) {
         canvas.drawText(mTopY, getDrawableArea().getLeft() + mBounds.width(),
-                getDrawableArea().getTop() + mBounds.height(), mTextPaint);
+                getDrawableArea().getTop() + mBounds.height(), mPaint);
 
         canvas.drawText(mBottomY, getDrawableArea().getLeft() + mBounds.width(),
-                getDrawableArea().getBottom() - getRealTextHeight(), mTextPaint);
+                getDrawableArea().getBottom() - getRealTextHeight(), mPaint);
 
         canvas.drawText(mLeftX, (getDrawableArea().getLeft() + mBounds.width() + (mBounds.width()
                         / 2)),
-                getDrawableArea().getBottom() - Math.abs(mTextPaint.descent()), mTextPaint);
+                getDrawableArea().getBottom() - Math.abs(mPaint.descent()), mPaint);
 
         canvas.drawText(mRightX, getDrawableArea().getRight(),
-                getDrawableArea().getBottom() - Math.abs(mTextPaint.descent()), mTextPaint);
+                getDrawableArea().getBottom() - Math.abs(mPaint.descent()), mPaint);
     }
 
     /**
      * We calculate the value ahead of time to stop any hold up in doDraw
      */
     private void calculateValuesToDisplay() {
-        mTopY = displayString(mYMinimum +
-                (mYZoomDisplay.getFarSideOffsetPercentage() * mYSpan));
-        mBottomY = displayString(mYMinimum +
-                (mYZoomDisplay.getDisplayOffsetPercentage() * mYSpan));
-
-        if(mXAxisIsLogarithmic) {
-            float logPositionOnScreen =
-                    GraphManager.graphPositionToFrequency(mXSpan, mXZoomDisplay
-                            .getDisplayOffsetPercentage());
-            mLeftX = displayString(mXMinimum + logPositionOnScreen);
-            logPositionOnScreen =
-                    GraphManager.graphPositionToFrequency(mXSpan, mXZoomDisplay.getFarSideOffsetPercentage());
-            mRightX = displayString(mXMinimum + logPositionOnScreen);
-        } else {
-            mLeftX = displayString(mXMinimum +
-                    (mXZoomDisplay.getDisplayOffsetPercentage() * mXSpan));
-            mRightX = displayString(mXMinimum +
-                    (mXZoomDisplay.getFarSideOffsetPercentage() * mXSpan));
-        }
+        mTopY = displayString(mGraphParameters.getYAxisParameters().getMinimumValue() +
+                (mYZoomDisplay.getFarSideOffsetPercentage() * mGraphParameters.getYAxisParameters
+                        ().getAxisSpan()));
+        mBottomY = displayString(mGraphParameters.getYAxisParameters().getMinimumValue() +
+                (mYZoomDisplay.getDisplayOffsetPercentage() * mGraphParameters.getYAxisParameters
+                        ().getAxisSpan()));
+        mLeftX = displayString(mGraphParameters.getXAxisParameters().graphPositionToScaledAxis(
+                mXZoomDisplay.getDisplayOffsetPercentage()));
+        mRightX = displayString(mGraphParameters.getXAxisParameters().graphPositionToScaledAxis(
+                mXZoomDisplay.getFarSideOffsetPercentage()));
     }
 
     private String displayString(float valueToDisplay) {
@@ -153,23 +129,35 @@ public class BoarderText extends DrawableObject {
      * When the user moves the signal around we need to know. This allows us to display a always
      * up to date value on the boards
      *
-     * @param xZoomDisplay the x Zoom levels
-     * @param yZoomDisplay the y Zoom levels
+     * @param zoomDisplay the y Zoom levels
      */
-    public void setZoomDisplay(ZoomDisplay xZoomDisplay, ZoomDisplay yZoomDisplay) {
-        mXZoomDisplay = xZoomDisplay;
-        mYZoomDisplay = yZoomDisplay;
+    public void setYZoomDisplay(ZoomDisplay zoomDisplay) {
+        mYZoomDisplay = zoomDisplay;
 
         /*
             We have to list for changes to the zoom offset to update the shown values
          */
-        mXZoomDisplay.addListener(new ZoomChangedListener() {
+        mYZoomDisplay.addListener(new ZoomChangedListener() {
             @Override
             public void zoomChanged() {
                 calculateValuesToDisplay();
             }
         });
-        mYZoomDisplay.addListener(new ZoomChangedListener() {
+    }
+
+    /**
+     * When the user moves the signal around we need to know. This allows us to display a always
+     * up to date value on the boards
+     *
+     * @param zoomDisplay the y Zoom levels
+     */
+    public void setXZoomDisplay(ZoomDisplay zoomDisplay) {
+        mXZoomDisplay = zoomDisplay;
+
+        /*
+            We have to list for changes to the zoom offset to update the shown values
+         */
+        mXZoomDisplay.addListener(new ZoomChangedListener() {
             @Override
             public void zoomChanged() {
                 calculateValuesToDisplay();
@@ -184,14 +172,6 @@ public class BoarderText extends DrawableObject {
      * @return text height
      */
     private float getRealTextHeight() {
-        return (Math.abs(mTextPaint.ascent()) + Math.abs(mTextPaint.descent()));
-    }
-
-    public void setXAxisIsLogarithmic() {
-        this.mXAxisIsLogarithmic = true;
-    }
-
-    public void setXAxisIsLinear() {
-        this.mXAxisIsLogarithmic = false;
+        return (Math.abs(mPaint.ascent()) + Math.abs(mPaint.descent()));
     }
 }

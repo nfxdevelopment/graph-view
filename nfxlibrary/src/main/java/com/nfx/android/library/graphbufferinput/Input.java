@@ -1,6 +1,6 @@
 package com.nfx.android.library.graphbufferinput;
 
-import com.nfx.android.library.androidgraph.GraphManager;
+import com.nfx.android.library.androidgraph.GraphView;
 import com.nfx.android.library.androidgraph.SignalBufferInterface;
 
 /**
@@ -11,7 +11,7 @@ public abstract class Input {
     /**
      * The interface in which to send updates to
      */
-    final GraphManager.GraphSignalInputInterface mGraphSignalInputInterface;
+    final GraphView.GraphSignalInputInterface mGraphSignalInputInterface;
     /**
      * Interface to update buffer data
      */
@@ -21,7 +21,7 @@ public abstract class Input {
      */
     boolean mPaused = false;
 
-    Input(GraphManager.GraphSignalInputInterface graphSignalInputInterface) {
+    Input(GraphView.GraphSignalInputInterface graphSignalInputInterface) {
         mGraphSignalInputInterface = graphSignalInputInterface;
     }
 

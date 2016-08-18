@@ -3,6 +3,8 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 
+import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
+
 /**
  * NFX Development
  * Created by nick on 28/10/15.
@@ -25,8 +27,8 @@ public class BackgroundManager {
     /**
      * Handles the drawing of all grid lines
      */
-    private final GridLines mYGridLines;
-    private final GridLines mXGridLines;
+    private GridLines mYGridLines;
+    private GridLines mXGridLines;
 
     /**
      * Handles the drawing of all text on axis
@@ -36,27 +38,28 @@ public class BackgroundManager {
      * Set dependant which constructor is called
      */
     private boolean mShowAxisText = false;
+    /**
+     * Graph Limits
+     */
+    private GraphParameters mGraphParameters;
 
 
     /**
      * Constructor for Background Manager, all drawable objects are created here. Call this
      * constructor if you want the axis text to be shown
      *
-     * @param context       application context
-     * @param minimumXValue minimum value graph represents for x
-     * @param maximumXValue maximum value graph represents for x
-     * @param minimumYValue minimum value graph represents for y
-     * @param maximumYValue maximum value graph represents for y
+     * @param context         application context
+     * @param graphParameters An object holding the graph limits
      */
-    public BackgroundManager(Context context, float minimumXValue, float maximumXValue,
-                             float minimumYValue, float maximumYValue) {
-
+    public BackgroundManager(Context context, GraphParameters graphParameters) {
         this();
+        this.mGraphParameters = graphParameters;
         mShowAxisText = true;
-        mBoarderText = new BoarderText(context, minimumXValue, maximumXValue, minimumYValue,
-                maximumYValue);
-        mXGridLines.showAxisText(context, minimumXValue, maximumXValue);
-        mYGridLines.showAxisText(context, minimumYValue, maximumYValue);
+        mBoarderText = new BoarderText(context, graphParameters);
+        mXGridLines = new LinXGridLines(graphParameters.getXAxisParameters());
+        mYGridLines = new LinYGridLines(graphParameters.getYAxisParameters());
+        mXGridLines.showAxisText(context);
+        mYGridLines.showAxisText(context);
     }
 
     /**
@@ -66,9 +69,6 @@ public class BackgroundManager {
     public BackgroundManager() {
         mBackground = new Background();
         mBoarder = new Boarder();
-
-        mXGridLines = new LinXGridLines();
-        mYGridLines = new LinYGridLines();
     }
 
     /**
@@ -120,14 +120,81 @@ public class BackgroundManager {
     /**
      * Sets the zoom Display object for the background objects to use and listen to
      *
-     * @param xZoomDisplay zoom object for the x axis
      * @param yZoomDisplay zoom object for the y axis
      */
-    public void setZoomDisplay(ZoomDisplay xZoomDisplay, ZoomDisplay yZoomDisplay) {
-        mXGridLines.setZoomDisplay(xZoomDisplay);
+    public void setYZoomDisplay(ZoomDisplay yZoomDisplay) {
         mYGridLines.setZoomDisplay(yZoomDisplay);
+        mBoarderText.setYZoomDisplay(yZoomDisplay);
+    }
 
-        mBoarderText.setZoomDisplay(xZoomDisplay, yZoomDisplay);
+    /**
+     * Sets the zoom Display object for the background objects to use and listen to
+     *
+     * @param zoomDisplay zoom object for the x axis
+     */
+    public void setXZoomDisplay(ZoomDisplay zoomDisplay) {
+        mXGridLines.setZoomDisplay(zoomDisplay);
+        mBoarderText.setXZoomDisplay(zoomDisplay);
+    }
+
+    public void setXAxisLogarithmic() {
+        // We want the decades located on the major grid lines but want the max to be 22.05K
+        // therefore we have to do a fudge to make 100K the maximum and zoom to 0 - 22.05K
+        float max = mGraphParameters.getXAxisParameters().getMaximumValue();
+        int i = 0;
+        while(max >= 1) {
+            i++;
+            max /= 10;
+        }
+        float newMax = (float) Math.pow(10, i);
+
+        mXGridLines.setNumberOfGridLines(i);
+        mXGridLines.getFixedZoomDisplay().setZoomLevelPercentage(1f /
+                mGraphParameters.getXAxisParameters().scaledAxisToGraphPosition(newMax));
+
+        // Axis are reset so lets remove all the children
+        mXGridLines.removeAllChildGridLines();
+        mYGridLines.removeAllChildGridLines();
+
+        mXGridLines.setChildGridLineScale(Scale.logarithmic);
+    }
+
+    public void setXAxisLinear() {
+        // This will scale the x axis in a logical fashion. it will round up to a value based on
+        // the iterator. The iterator will grown by a factor of 10 after each 10 iterations rouond
+        // round the loop. results eg. 22500 = 30000 | 0.05 = 0.1
+        float iterator = 1f;
+        float divisor = iterator;
+        int i = 1;
+        while((mGraphParameters.getXAxisParameters().getMaximumValue() / divisor) > 1f) {
+            divisor += iterator;
+            i++;
+            if(divisor >= (iterator * 10)) {
+                iterator *= 10f;
+                divisor = iterator;
+                i = 1;
+            }
+        }
+
+        mXGridLines.getFixedZoomDisplay().setZoomLevelPercentage(
+                mGraphParameters.getXAxisParameters().getMaximumValue() / divisor);
+
+        // Axis are reset so lets remove all the children
+        mXGridLines.removeAllChildGridLines();
+        mYGridLines.removeAllChildGridLines();
+
+        mXGridLines.setChildGridLineScale(Scale.linear);
+    }
+
+    public void setBackgroundColour(int colour) {
+        mBackground.setColour(colour);
+    }
+
+    public void setGridLineColour(int colour) {
+        mXGridLines.setColour(colour);
+        mYGridLines.setColour(colour);
+        mBoarder.setColour(colour);
+        mBoarderText.setColour(colour);
     }
 
     public BoarderText getBoarderText() {

@@ -2,7 +2,6 @@ package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 
 /**
  * NFX Development
@@ -16,8 +15,6 @@ public class Background extends DrawableObject {
      * the doDraw function will take this color and paint the canvas
      **/
     private static final int INITIAL_COLOR = Color.BLACK;
-
-    private final Paint mPaint = new Paint();
 
     public Background() {
         mPaint.setColor(INITIAL_COLOR);
@@ -36,13 +33,5 @@ public class Background extends DrawableObject {
      */
     @Override
     public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
-    }
-
-    /**
-     * Use this to change the color at any point, changes will be seen after doDraw is called
-     **/
-    @SuppressWarnings("unused")
-    public void setBackgroundColor(int color){
-        mPaint.setColor(color);
     }
 }
