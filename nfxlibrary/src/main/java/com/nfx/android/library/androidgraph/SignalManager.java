@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.util.Log;
 
 import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+import com.nfx.android.library.graphbufferinput.InputListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,12 +26,12 @@ public class SignalManager {
     /**
      * Array of drawers to display signals
      */
-    private final Map<SignalBufferInterface, Signal> mSignalDrawers = new HashMap<>();
+    private final Map<Integer, Signal> mSignalDrawers = new HashMap<>();
     /**
      * An object holding the signals to display
      */
 
-    private final Map<SignalBufferInterface, SignalBuffer> mSignalBuffers = new
+    private final Map<Integer, SignalBuffer> mSignalBuffers = new
             ConcurrentHashMap<>();
     /**
      * Handles the drawing of a unlimited amount of Markers
@@ -58,27 +59,36 @@ public class SignalManager {
      * signal with the given id and display a warning
      *
      * @param sizeOfBuffer size of the buffer to create
+     * @param axisParameters scale of buffer x axis
+     * @param color color of signal
      */
-    public SignalBufferInterface addSignalBuffer(int sizeOfBuffer, AxisParameters axisParameters) {
+    public InputListener addSignalBuffer(int id, int sizeOfBuffer, AxisParameters axisParameters,
+                                         int color) {
         SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, axisParameters);
         SignalBufferInterface signalBufferInterface = new SignalBufferInterface(signalBuffer);
 
-        if(mSignalBuffers.put(signalBufferInterface, signalBuffer) != null) {
-            Log.w(TAG, "signal id exists, overwriting");
+        synchronized(this) {
+            if(mSignalBuffers.put(id, signalBuffer) != null) {
+                Log.w(TAG, "signal id exists, overwriting");
+            }
         }
 
         Signal signal = new Signal(mGraphView.getGraphParameters(),
                 signalBufferInterface, mGraphView.getXZoomDisplay());
         signal.surfaceChanged(mDrawableArea);
-        mSignalDrawers.put(signalBufferInterface, signal);
+        signal.setColour(color);
+
+        synchronized(this) {
+            mSignalDrawers.put(id, signal);
+        }
 
         return signalBufferInterface;
     }
 
-    void addMarker(int colour, SignalBufferInterface signalBufferInterface,
-                   Marker.MarkerUpdateInterface markerUpdateInterface) {
-        Marker marker = new Marker(mGraphView.getGraphSignalInputInterface(),
-                signalBufferInterface, markerUpdateInterface);
+    void addMarker(int colour, int id, Marker.MarkerUpdateInterface markerUpdateInterface) {
+        Marker marker = new Marker(id, mGraphView.getGraphSignalInputInterface(),
+                mSignalDrawers.get(id).getSignalBufferInterface(),
+                markerUpdateInterface);
 
         marker.surfaceChanged(mDrawableArea);
         marker.setColour(colour);
@@ -89,13 +99,15 @@ public class SignalManager {
     /**
      * Remove signal with given id from collection
      *
-     * @param signalBufferInterface unique object of the signal
+     * @param id id of the signal to remove
      */
-    public void removedSignalBuffer(SignalBufferInterface signalBufferInterface) {
-        mSignalBuffers.remove(signalBufferInterface);
-        mSignalDrawers.remove(signalBufferInterface);
+    public void removedSignalBuffer(int id) {
+        synchronized(this) {
+            mSignalBuffers.remove(id);
+            mSignalDrawers.remove(id);
+        }
         for(int i = 0; i < mMarkers.size(); i++) {
-            if(signalBufferInterface.equals(mMarkers.get(i).getSignal())) {
+            if(id == mMarkers.get(i).getSignalId()) {
                 mMarkers.remove(i);
             }
         }
@@ -123,11 +135,13 @@ public class SignalManager {
      * @param canvas canvas to draw the objects onto
      */
     public void doDraw(Canvas canvas) {
-        for(Signal signal : mSignalDrawers.values()) {
-            signal.doDraw(canvas);
-        }
-        for(Marker marker : mMarkers) {
-            marker.doDraw(canvas);
+        synchronized(this) {
+            for(Signal signal : mSignalDrawers.values()) {
+                signal.doDraw(canvas);
+            }
+            for(Marker marker : mMarkers) {
+                marker.doDraw(canvas);
+            }
         }
     }
 
@@ -135,14 +149,16 @@ public class SignalManager {
      * Remove signal drawers when stopped
      */
     public void removeSignalDrawers() {
-        mSignalDrawers.clear();
+        synchronized(this) {
+            mSignalDrawers.clear();
+        }
     }
 
-    public Map<SignalBufferInterface, Signal> getSignalDrawers() {
+    public Map<Integer, Signal> getSignalDrawers() {
         return mSignalDrawers;
     }
 
-    public Map<SignalBufferInterface, SignalBuffer> getSignalBuffers() {
+    public Map<Integer, SignalBuffer> getSignalBuffers() {
         return mSignalBuffers;
     }
 }

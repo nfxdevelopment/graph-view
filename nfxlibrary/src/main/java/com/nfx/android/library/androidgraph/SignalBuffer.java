@@ -18,14 +18,13 @@ public class SignalBuffer {
      */
     private final ZoomDisplay mYZoomDisplay;
     /**
-     * buffer of given size which is worked out at runtime. This data is normalized 0-1
-     */
-    private final float[] mBuffer;
-
-    /**
      * The minimum value the buffer holds on the X scale
      */
     private final AxisParameters mXAxisParameters;
+    /**
+     * buffer of given size which is worked out at runtime. This data is normalized 0-1
+     */
+    private float[] mBuffer;
     /**
      * Constructor
      *
@@ -52,7 +51,7 @@ public class SignalBuffer {
             if (mBuffer.length == buffer.length) {
                 System.arraycopy(buffer, 0, mBuffer, 0, mBuffer.length);
             } else {
-                Log.w(TAG, "Buffer passed " + buffer.length +
+                Log.e(TAG, "Buffer passed " + buffer.length +
                         " in does not match size of signal buffer " + mBuffer.length);
             }
         }
@@ -157,25 +156,28 @@ public class SignalBuffer {
         // Determine position in the buffer
         float percentageOffset = (scalePosition - mXAxisParameters.getMinimumValue()) /
                 mXAxisParameters.getAxisSpan();
-        float bufferIndexToRead = percentageOffset * (float) (getSizeOfBuffer() - 1);
 
-        float arrayPosRemainder = bufferIndexToRead % 1;
+        synchronized(this) {
+            float bufferIndexToRead = percentageOffset * (float) (getSizeOfBuffer() - 1);
 
-        if(arrayPosRemainder == 0) {
-            return (mBuffer[(int) bufferIndexToRead]
-                    - mYZoomDisplay.getDisplayOffsetPercentage())
-                    / mYZoomDisplay.getZoomLevelPercentage();
-        } else {
-            int lowerPosition = (int) Math.floor(bufferIndexToRead);
-            int upperPosition = (int) Math.ceil(bufferIndexToRead);
+            float arrayPosRemainder = bufferIndexToRead % 1;
 
-            float lowerValue = mBuffer[lowerPosition];
-            float upperValue = mBuffer[upperPosition];
+            if(arrayPosRemainder == 0) {
+                return (mBuffer[(int) bufferIndexToRead]
+                        - mYZoomDisplay.getDisplayOffsetPercentage())
+                        / mYZoomDisplay.getZoomLevelPercentage();
+            } else {
+                int lowerPosition = (int) Math.floor(bufferIndexToRead);
+                int upperPosition = (int) Math.ceil(bufferIndexToRead);
 
-            return (lowerValue + ((upperValue - lowerValue) *
-                    arrayPosRemainder)
-                    - mYZoomDisplay.getDisplayOffsetPercentage())
-                    / mYZoomDisplay.getZoomLevelPercentage();
+                float lowerValue = mBuffer[lowerPosition];
+                float upperValue = mBuffer[upperPosition];
+
+                return (lowerValue + ((upperValue - lowerValue) *
+                        arrayPosRemainder)
+                        - mYZoomDisplay.getDisplayOffsetPercentage())
+                        / mYZoomDisplay.getZoomLevelPercentage();
+            }
         }
     }
 
@@ -209,6 +211,12 @@ public class SignalBuffer {
 
     public int getSizeOfBuffer() {
         return mBuffer.length;
+    }
+
+    public void setSizeOfBuffer(int sizeOfBuffer) {
+        synchronized(this) {
+            mBuffer = new float[sizeOfBuffer];
+        }
     }
 
     public ZoomDisplay getYZoomDisplay() {

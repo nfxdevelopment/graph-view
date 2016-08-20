@@ -5,9 +5,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.library.androidgraph.GraphView;
-import com.nfx.android.library.androidgraph.Scale;
 
 /**
  * NFX Development
@@ -17,11 +15,11 @@ import com.nfx.android.library.androidgraph.Scale;
  * The touch events are handled by this object to manipulate the microphone input
  */
 public class MicrophoneInput extends Input {
-    private final static String TAG = "MicrophoneInput";
     /**
      * The desired sampling rate for this analyser, in samples/sec.
      */
-    private static final int sSampleRate = 44100;
+    protected static final int sSampleRate = 44100;
+    private final static String TAG = "MicrophoneInput";
     /**
      * Audio input block size, in samples.
      */
@@ -68,9 +66,6 @@ public class MicrophoneInput extends Input {
         if(mInputBlockSize < audioBufferSize) {
             mInputBlockSize = audioBufferSize;
         }
-
-        mSignalBufferInterface = mGraphSignalInputInterface.addInput(mInputBlockSize,
-                new AxisParameters(0, sSampleRate, Scale.linear));
     }
 
     @Override
@@ -116,11 +111,6 @@ public class MicrophoneInput extends Input {
         }
     }
 
-    @Override
-    public void destroy() {
-
-    }
-
     /**
      * Main loop of the audio reader.  This runs in our own thread.
      */
@@ -157,24 +147,50 @@ public class MicrophoneInput extends Input {
      * @param buffer Buffer containing the data.
      */
     void readDone(float[] buffer) {
-        if(mSignalBufferInterface != null) {
-            mSignalBufferInterface.setBuffer(buffer);
+        for(InputListener inputListener : mInputListeners.values()) {
+            inputListener.bufferUpdate(buffer);
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
     public int getSampleRate() {
         return sSampleRate;
     }
 
+    public int getInputBlockSize() {
+        return mInputBlockSize;
+    }
+
     public void setInputBlockSize(int inputBlockSize) {
-        stop();
-        mInputBlockSize = inputBlockSize;
+        boolean running = mRunning;
+
+        final int audioBufferSize = AudioRecord.getMinBufferSize(sSampleRate,
+                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
+
+        if(running) {
+            stop();
+        }
+
+        if(inputBlockSize < audioBufferSize) {
+            mInputBlockSize = audioBufferSize;
+        } else {
+            mInputBlockSize = inputBlockSize;
+        }
 
         // As we need to change the buffer size of the input we have to change reinitialise all the
         // arrays
-        mGraphSignalInputInterface.removeInput(mSignalBufferInterface);
+        for(InputListener inputListener : mInputListeners.values()) {
+            inputListener.inputBlockSizeUpdate(mInputBlockSize);
+        }
+
         initialise();
-        start();
+
+        if(running) {
+            start();
+        }
     }
+
+    public boolean isRunning() {
+        return mRunning;
+    }
+
 }

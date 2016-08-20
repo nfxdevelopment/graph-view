@@ -28,9 +28,11 @@ public class Marker extends DrawableObject {
     private GraphView.GraphSignalInputInterface mGraphInterface;
     private MarkerUpdateInterface mMarkerUpdateInterface;
     private float mMarkerPosition = 0.5f;
+    private int mSignalId;
 
-    public Marker(GraphView.GraphSignalInputInterface graphSignalInputInterface,
+    public Marker(int signalId, GraphView.GraphSignalInputInterface graphSignalInputInterface,
                   SignalBufferInterface signal, MarkerUpdateInterface markerUpdateInterface) {
+        this.mSignalId = signalId;
         this.mGraphInterface = graphSignalInputInterface;
         this.mSignalInterface = signal;
         this.mMarkerUpdateInterface = markerUpdateInterface;
@@ -145,9 +147,14 @@ public class Marker extends DrawableObject {
         return mGraphInterface;
     }
 
+    public int getSignalId() {
+        return mSignalId;
+    }
+
     public interface MarkerUpdateInterface {
         void markerColour(int color);
 
         void markerPositionUpdate(float xValue, float yValue);
     }
+
 }

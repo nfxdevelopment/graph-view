@@ -1,7 +1,9 @@
 package com.nfx.android.library.graphbufferinput;
 
 import com.nfx.android.library.androidgraph.GraphView;
-import com.nfx.android.library.androidgraph.SignalBufferInterface;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * NFX Development
@@ -15,7 +17,7 @@ public abstract class Input {
     /**
      * Interface to update buffer data
      */
-    SignalBufferInterface mSignalBufferInterface;
+    Map<Integer, InputListener> mInputListeners = new HashMap<>();
     /**
      * Used to pause the input
      */
@@ -42,10 +44,33 @@ public abstract class Input {
     public abstract void stop();
 
     /**
+     * Add an object to listen the input
+     *
+     * @param inputListener listener object
+     */
+    public void addInputListener(InputListener inputListener) {
+        mInputListeners.put(inputListener.hashCode(), inputListener);
+    }
+
+    /**
+     * Remove a listening object
+     *
+     * @param inputListener listener object
+     */
+    public void removeInputListener(InputListener inputListener) {
+        mInputListeners.remove(inputListener.hashCode());
+    }
+
+    /**
      * destroy the buffers and listeners getting ready to die
      */
-    @SuppressWarnings({"EmptyMethod", "unused"})
-    public abstract void destroy();
+    public void destroy() {
+        for(InputListener inputListener : mInputListeners.values()) {
+            inputListener.inputRemoved();
+        }
+    }
+
+    ;
 
     public boolean getPaused() {
         return mPaused;

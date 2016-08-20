@@ -16,7 +16,6 @@ import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
 public class Signal extends DrawableObject {
     @SuppressWarnings("unused")
     private static final String TAG = "Signal";
-
     /**
      * The buffer which will be drawn by this object
      */
@@ -151,4 +150,9 @@ public class Signal extends DrawableObject {
     public void calculateRemainingDrawableArea(DrawableArea currentDrawableArea) {
 
     }
+
+    public SignalBufferInterface getSignalBufferInterface() {
+        return mSignalBufferInterface;
+    }
+
 }

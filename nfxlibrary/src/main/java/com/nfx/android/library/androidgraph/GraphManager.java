@@ -1,6 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -70,10 +71,11 @@ public class GraphManager extends RelativeLayout {
                 getContext().getResources().getColor(R.color.gridLines));
     }
 
-    public void setMarkers(boolean isShown) {
+    public void setMarkers(int signalId, boolean isShown) {
         if(isShown) {
-            addMarker(getContext().getResources().getColor(R.color.marker1));
-            addMarker(getContext().getResources().getColor(R.color.marker2));
+            Resources resources = getContext().getResources();
+            addMarker(signalId, resources.getColor(R.color.marker1));
+            addMarker(signalId, resources.getColor(R.color.marker2));
         } else {
             mMarkerList.clear();
         }
@@ -81,15 +83,11 @@ public class GraphManager extends RelativeLayout {
         mMarkerAdapter.notifyDataSetChanged();
     }
 
-    private void addMarker(int colour) {
-        SignalBufferInterface signalBufferInterface =
-                getGraphView().getSignalManager().getSignalBuffers().keySet().iterator().next();
-
+    private void addMarker(int signalId, int colour) {
         MarkerModel markerModel = new MarkerModel(mMarkerAdapter,
                 getGraphView().getGraphSignalInputInterface());
         mMarkerList.add(markerModel);
-        getGraphView().getSignalManager().addMarker(colour, signalBufferInterface,
-                markerModel);
+        getGraphView().getSignalManager().addMarker(colour, signalId, markerModel);
     }
 
     public GraphView getGraphView() {

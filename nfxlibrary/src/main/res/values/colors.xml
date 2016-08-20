@@ -21,6 +21,7 @@
     <color name="background">@color/black</color>
     <color name="gridLines">@color/gray</color>
     <color name="signal">@color/fuchsia</color>
+    <color name="peak_hold_signal">@color/aqua</color>
     <color name="marker1">@color/red</color>
     <color name="marker2">@color/lime</color>
 </resources>

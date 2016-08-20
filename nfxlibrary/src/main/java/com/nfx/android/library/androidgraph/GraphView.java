@@ -10,6 +10,7 @@ import android.view.SurfaceView;
 import com.nfx.android.library.R;
 import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
+import com.nfx.android.library.graphbufferinput.InputListener;
 
 /**
  * NFX Development
@@ -306,13 +307,14 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * graph manager
      */
     public class GraphSignalInputInterface {
-        public SignalBufferInterface addInput(int sizeOfBuffer, AxisParameters axisParameters) {
-            return mSignalManager.addSignalBuffer(sizeOfBuffer, axisParameters);
+        public InputListener addInput(int id, int sizeOfBuffer, AxisParameters axisParameters,
+                                      int color) {
+            return mSignalManager.addSignalBuffer(id, sizeOfBuffer, axisParameters, color);
         }
 
         @SuppressWarnings("SameParameterValue")
-        public void removeInput(SignalBufferInterface signalBufferInterface) {
-            mSignalManager.removedSignalBuffer(signalBufferInterface);
+        public void removeInput(int id) {
+            mSignalManager.removedSignalBuffer(id);
         }
 
         public ZoomDisplay getGraphXZoomDisplay() {

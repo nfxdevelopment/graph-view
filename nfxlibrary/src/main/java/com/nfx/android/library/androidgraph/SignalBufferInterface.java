@@ -1,6 +1,7 @@
 package com.nfx.android.library.androidgraph;
 
 import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
+import com.nfx.android.library.graphbufferinput.InputListener;
 
 /**
  * NFX Development
@@ -8,7 +9,7 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
  * <p/>
  * This is the middle man to communicate to the input or the Signal Buffer to display
  */
-public class SignalBufferInterface {
+public class SignalBufferInterface extends InputListener {
     private SignalBuffer mSignalBuffer = null;
 
     /**
@@ -52,14 +53,9 @@ public class SignalBufferInterface {
         return mSignalBuffer.getValueAtPosition(position);
     }
 
-
-    /**
-     * return YAxis Zoom Display
-     *
-     * @return y axis Zoom display
-     */
-    public ZoomDisplay getYZoomDisplay() {
-        return mSignalBuffer.getYZoomDisplay();
+    @Override
+    public void inputBlockSizeUpdate(int blockSize) {
+        mSignalBuffer.setSizeOfBuffer(blockSize);
     }
 
     /**
@@ -67,9 +63,14 @@ public class SignalBufferInterface {
      *
      * @param buffer new data in which to set
      */
-    public void setBuffer(float[] buffer) {
+    public void bufferUpdate(float[] buffer) {
         if(mSignalBuffer != null) {
             mSignalBuffer.setBuffer(buffer);
         }
+    }
+
+    @Override
+    public void inputRemoved() {
+        // TODO Find a way to remove the signal
     }
 }
