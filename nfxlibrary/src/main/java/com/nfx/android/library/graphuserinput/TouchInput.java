@@ -1,15 +1,10 @@
 package com.nfx.android.library.graphuserinput;
 
-import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;
-import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 
 /**
  * NFX Development
@@ -19,11 +14,7 @@ import android.view.WindowManager;
  * is passed in to listen for touch events and the graph input is passed in to provide information
  * when a touch event occurs
  */
-public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback {
-    /**
-     * Context
-     */
-    private final Context mContext;
+public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeListener {
     /**
      * Handles all scaling gestures
      */
@@ -44,13 +35,11 @@ public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback 
      * @param view  listen to the touch inputs from view
      * @param input pass the touch information onto input
      */
-    public TouchInput(SurfaceView view, TouchListener input) {
+    public TouchInput(View view, TouchListener input) {
         view.setOnTouchListener(this);
-        mContext = view.getContext();
         mTouchListener = input;
 
-        SurfaceHolder holder = view.getHolder();
-        holder.addCallback(this);
+        view.addOnLayoutChangeListener(this);
 
         // Sets up interactions
         /*
@@ -117,23 +106,13 @@ public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback 
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context
-                .WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-
-        mTouchListener.surfaceChanged(metrics);
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-
+    public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                               int leftWas, int topWas, int rightWas, int bottomWas) {
+        int widthWas = rightWas - leftWas; // right exclusive, left inclusive
+        int heightWas = bottomWas - topWas; // bottom exclusive, top inclusive
+        if(v.getWidth() != widthWas || v.getHeight() != heightWas) {
+            mTouchListener.surfaceChanged(v.getWidth(), v.getHeight());
+        }
     }
 
     /**
@@ -141,7 +120,7 @@ public class TouchInput implements View.OnTouchListener, SurfaceHolder.Callback 
      */
     @SuppressWarnings({"SameReturnValue", "UnusedParameters"})
     public interface TouchListener {
-        void surfaceChanged(DisplayMetrics displayMetrics);
+        void surfaceChanged(int width, int height);
 
         boolean onDown(MotionEvent e);
 
