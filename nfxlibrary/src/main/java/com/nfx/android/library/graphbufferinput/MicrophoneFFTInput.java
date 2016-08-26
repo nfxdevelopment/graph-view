@@ -25,25 +25,25 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     // a 1kHz signal at 16,000 samples/sec.
     private static final float FUDGE = 0.63610f;
     /**
-     * Number of historical buffers to store
-     */
-    private int sNumberOfHistoryBuffers = 4;
-    /**
-     * Computes the FFT
-     */
-    private FloatFFT_1D fftCalculations = null;
-    /**
      * Buffer to pass to the fft class
      */
-    private float[] fftBuffer;
-    /**
-     * Buffer with the finished data in
-     */
-    private float[] returnedMagnitudeBuffer;
+    protected float[] mFftBuffer;
     /**
      * Last fft buffer to be converted
      */
-    private float[] mMagnitudeBuffer;
+    protected float[] mMagnitudeBuffer;
+    /**
+     * Number of historical buffers to store
+     */
+    private int mNumberOfHistoryBuffers = 4;
+    /**
+     * Computes the FFT
+     */
+    private FloatFFT_1D mFftCalculations = null;
+    /**
+     * Buffer with the finished data in
+     */
+    private float[] mReturnedMagnitudeBuffer;
     /**
      * Stores a history of the previous buffers
      */
@@ -59,8 +59,8 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      * @param graphSignalInputInterface interface to send signal data to
      * @param binSize set the bin size of the fft
      */
-    protected MicrophoneFFTInput(GraphView.GraphSignalInputInterface
-                                         graphSignalInputInterface, int binSize) {
+    public MicrophoneFFTInput(GraphView.GraphSignalInputInterface
+                                      graphSignalInputInterface, int binSize) {
         super(graphSignalInputInterface, binSize);
     }
 
@@ -68,13 +68,13 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     public void initialise() {
         super.initialise();
 
-        fftCalculations = new FloatFFT_1D(mInputBlockSize);
+        mFftCalculations = new FloatFFT_1D(mInputBlockSize);
 
-        fftBuffer = new float[mInputBlockSize * 2];
+        mFftBuffer = new float[mInputBlockSize * 2];
         mMagnitudeBuffer = new float[mInputBlockSize / 2];
-        returnedMagnitudeBuffer = new float[mInputBlockSize / 2];
+        mReturnedMagnitudeBuffer = new float[mInputBlockSize / 2];
 
-        mHistoryMagnitudeBuffers = new float[sNumberOfHistoryBuffers][mInputBlockSize / 2];
+        mHistoryMagnitudeBuffers = new float[mNumberOfHistoryBuffers][mInputBlockSize / 2];
     }
 
     /**
@@ -85,18 +85,24 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      */
     @Override
     protected void readDone(float[] buffer) {
+        applyMagnitudeConversions(buffer);
+        applyingFFTAveraging();
+        updateListenerBuffers(mReturnedMagnitudeBuffer);
+    }
+
+    protected void applyMagnitudeConversions(float buffer[]) {
         if(mGraphSignalInputInterface != null) {
             applyHanningWindow(buffer);
-            System.arraycopy(buffer, 0, fftBuffer, 0, buffer.length);
-            fftCalculations.realForwardFull(fftBuffer);
+            System.arraycopy(buffer, 0, mFftBuffer, 0, buffer.length);
+            mFftCalculations.realForwardFull(mFftBuffer);
 
             float real, imaginary;
 
             int bufferLength = mMagnitudeBuffer.length;
 
             for(int i = 0; i < bufferLength; ++i) {
-                real = fftBuffer[i * 2];
-                imaginary = fftBuffer[i * 2 + 1];
+                real = mFftBuffer[i * 2];
+                imaginary = mFftBuffer[i * 2 + 1];
                 final float scale = buffer.length * FUDGE;
                 mMagnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary) /
                         scale;
@@ -110,11 +116,6 @@ public class MicrophoneFFTInput extends MicrophoneInput {
                         getYAxisParameters().getMinimumValue(); // Scale to negative 140 db
                 mMagnitudeBuffer[i] = 1f - mMagnitudeBuffer[i];
             }
-
-            mMagnitudeBuffer[0] = mMagnitudeBuffer[1];
-
-            applyingFFTAveraging();
-            super.readDone(returnedMagnitudeBuffer);
         }
     }
 
@@ -137,7 +138,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      */
     private void applyingFFTAveraging() {
         // Update the index.
-        if(++mHistoryIndex >= sNumberOfHistoryBuffers) {
+        if(++mHistoryIndex >= mNumberOfHistoryBuffers) {
             mHistoryIndex = 0;
         }
 
@@ -147,16 +148,16 @@ public class MicrophoneFFTInput extends MicrophoneInput {
                 mMagnitudeBuffer, 0, mHistoryMagnitudeBuffers[mHistoryIndex], 0, bufferLength);
 
         for(int i = 0; i < bufferLength; ++i) {
-            returnedMagnitudeBuffer[i] = 0;
-            for(int g = 0; g < sNumberOfHistoryBuffers; ++g) {
-                returnedMagnitudeBuffer[i] += mHistoryMagnitudeBuffers[g][i];
+            mReturnedMagnitudeBuffer[i] = 0;
+            for(int g = 0; g < mNumberOfHistoryBuffers; ++g) {
+                mReturnedMagnitudeBuffer[i] += mHistoryMagnitudeBuffers[g][i];
             }
-            returnedMagnitudeBuffer[i] /= sNumberOfHistoryBuffers;
+            mReturnedMagnitudeBuffer[i] /= mNumberOfHistoryBuffers;
         }
     }
 
     public void setNumberOfHistoryBuffers(int sNumberOfHistoryBuffers) {
-        this.sNumberOfHistoryBuffers = sNumberOfHistoryBuffers;
+        this.mNumberOfHistoryBuffers = sNumberOfHistoryBuffers;
 
         mHistoryMagnitudeBuffers = new float[sNumberOfHistoryBuffers][mInputBlockSize / 2];
     }

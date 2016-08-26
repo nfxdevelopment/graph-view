@@ -139,6 +139,10 @@ public class Marker extends DrawableObject {
         mMarkerUpdateInterface.markerColour(colour);
     }
 
+    public void setSignalInterface(SignalBufferInterface mSignalInterface) {
+        this.mSignalInterface = mSignalInterface;
+    }
+
     public SignalBufferInterface getSignal() {
         return mSignalInterface;
     }

@@ -77,6 +77,7 @@ public class GraphManager extends RelativeLayout {
             addMarker(signalId, resources.getColor(R.color.marker1));
             addMarker(signalId, resources.getColor(R.color.marker2));
         } else {
+            removeMarker(signalId);
             mMarkerList.clear();
         }
 
@@ -88,6 +89,10 @@ public class GraphManager extends RelativeLayout {
                 getGraphView().getGraphSignalInputInterface());
         mMarkerList.add(markerModel);
         getGraphView().getSignalManager().addMarker(colour, signalId, markerModel);
+    }
+
+    private void removeMarker(int signalId) {
+        getGraphView().getSignalManager().removeMarkers(signalId);
     }
 
     public GraphView getGraphView() {

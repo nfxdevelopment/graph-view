@@ -7,6 +7,7 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.library.graphbufferinput.InputListener;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -80,11 +81,19 @@ public class SignalManager {
 
         synchronized(this) {
             mSignalDrawers.put(id, signal);
+            updateMarkers(id);
         }
 
         return signalBufferInterface;
     }
 
+    /**
+     * Add a marker to the graph on a specific signal
+     *
+     * @param colour                colour of the marker
+     * @param id                    signal id for marker to track
+     * @param markerUpdateInterface interface to the marker
+     */
     void addMarker(int colour, int id, Marker.MarkerUpdateInterface markerUpdateInterface) {
         Marker marker = new Marker(id, mGraphView.getGraphSignalInputInterface(),
                 mSignalDrawers.get(id).getSignalBufferInterface(),
@@ -97,6 +106,33 @@ public class SignalManager {
     }
 
     /**
+     * Update the markers with signal Id to look at the correct signal buffer
+     *
+     * @param signalId signal id
+     */
+    void updateMarkers(int signalId) {
+        for(Marker marker : mMarkers) {
+            if(marker.getSignalId() == signalId) {
+                marker.setSignalInterface(mSignalDrawers.get(signalId).getSignalBufferInterface());
+            }
+        }
+    }
+
+    /**
+     * Remove all markers attached to a specific signal
+     *
+     * @param signalId signal id
+     */
+    void removeMarkers(int signalId) {
+        for(Iterator<Marker> iterator = mMarkers.iterator(); iterator.hasNext(); ) {
+            Marker marker = iterator.next();
+            if(marker.getSignalId() == signalId) {
+                iterator.remove();
+            }
+        }
+    }
+
+    /**
      * Remove signal with given id from collection
      *
      * @param id id of the signal to remove
@@ -106,11 +142,7 @@ public class SignalManager {
             mSignalBuffers.remove(id);
             mSignalDrawers.remove(id);
         }
-        for(int i = 0; i < mMarkers.size(); i++) {
-            if(id == mMarkers.get(i).getSignalId()) {
-                mMarkers.remove(i);
-            }
-        }
+        removeMarkers(id);
     }
 
     /**

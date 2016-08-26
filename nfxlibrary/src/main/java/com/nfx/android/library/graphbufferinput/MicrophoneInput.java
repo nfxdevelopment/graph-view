@@ -14,7 +14,7 @@ import com.nfx.android.library.androidgraph.GraphView;
  * Sets up the microphone for listening, the data taken and sent on to the interface
  * The touch events are handled by this object to manipulate the microphone input
  */
-public class MicrophoneInput extends Input {
+public abstract class MicrophoneInput extends Input {
     /**
      * The desired sampling rate for this analyser, in samples/sec.
      */
@@ -146,7 +146,11 @@ public class MicrophoneInput extends Input {
      *
      * @param buffer Buffer containing the data.
      */
-    void readDone(float[] buffer) {
+    protected void readDone(float[] buffer) {
+        updateListenerBuffers(buffer);
+    }
+
+    protected void updateListenerBuffers(float[] buffer) {
         for(InputListener inputListener : mInputListeners.values()) {
             inputListener.bufferUpdate(buffer);
         }
