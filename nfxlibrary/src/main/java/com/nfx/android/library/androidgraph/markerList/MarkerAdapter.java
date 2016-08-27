@@ -17,10 +17,10 @@ import java.util.List;
  * Created by nick on 5/08/16.
  */
 public class MarkerAdapter extends BaseAdapter {
-    private Context mContext;
-    private List<MarkerModel> mList;
-    private Handler mHandler;
-    private Runnable mRefreshListRun;
+    private final Context mContext;
+    private final List<MarkerModel> mList;
+    private final Handler mHandler;
+    private final Runnable mRefreshListRun;
 
     public MarkerAdapter(Context context, List<MarkerModel> list) {
         mContext = context;
@@ -81,9 +81,9 @@ public class MarkerAdapter extends BaseAdapter {
 }
 
 class MarkerViewHolder {
-    public TextView mXValue;
-    public TextView mYValue;
-    public View mMarkerColour;
+    public final TextView mXValue;
+    public final TextView mYValue;
+    public final View mMarkerColour;
 
     public MarkerViewHolder(View base) {
         mXValue = (TextView) base.findViewById(R.id.marker_x_value);

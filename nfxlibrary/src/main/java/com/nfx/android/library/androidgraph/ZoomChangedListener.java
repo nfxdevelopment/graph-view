@@ -9,7 +9,7 @@ import java.util.Observer;
  * <p/>
  * An interface for subscribes to get information about view zoom level changes
  */
-public abstract class ZoomChangedListener implements Observer {
+abstract class ZoomChangedListener implements Observer {
     abstract void zoomChanged();
 
     public void update(Observable obs, Object obj) {

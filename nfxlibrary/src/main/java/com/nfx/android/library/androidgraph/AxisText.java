@@ -14,11 +14,6 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
  * Base class for drawing axis text onto a canvas
  */
 abstract class AxisText extends DrawableObject {
-    private static final String TAG = "AxisText";
-    /**
-     * graph scale limits
-     */
-    protected final AxisParameters mAxisParameters;
     /**
      * grid lines that text is relating to
      */
@@ -31,6 +26,11 @@ abstract class AxisText extends DrawableObject {
      * The Bounds of the display text
      */
     final Rect mBounds = new Rect();
+    /**
+     * graph scale limits
+     */
+    private final AxisParameters mAxisParameters;
+
     /**
      * Constructor
      *
@@ -61,7 +61,7 @@ abstract class AxisText extends DrawableObject {
         mPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
     }
 
-    String displayString(int gridLine) {
+    private String displayString(int gridLine) {
         float locationOnGraph = mGridLines.intersect(gridLine);
 
         float valueToDisplay = mAxisParameters.graphPositionToScaledAxis(locationOnGraph);

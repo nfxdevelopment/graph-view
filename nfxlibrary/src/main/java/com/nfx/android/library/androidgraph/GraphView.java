@@ -29,13 +29,17 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
     private final GraphSignalInputInterface mGraphSignalInputInterface = new
             GraphSignalInputInterface();
     /**
+     * Reference to the values limit for the shown graph
+     */
+    private final GraphParameters mGraphParameters = new GraphParameters();
+    /**
      * Information about the scaling of signal in the x axis
      */
-    public ZoomDisplay mXZoomDisplay;
+    private ZoomDisplay mXZoomDisplay;
     /**
      * Information about the scaling of signal in the y axis
      */
-    public ZoomDisplay mYZoomDisplay;
+    private ZoomDisplay mYZoomDisplay;
     /**
      * An object to draw all of the background information, including grid lines, axis information
      * and a background color
@@ -49,10 +53,6 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * The thread that updates the surface
      **/
     private GraphManagerThread mGraphManagerThread;
-    /**
-     * Reference to the values limit for the shown graph
-     */
-    private GraphParameters mGraphParameters = new GraphParameters();
 
     /**
      * Constructor for graph manager

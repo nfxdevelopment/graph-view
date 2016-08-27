@@ -23,11 +23,11 @@ public class Signal extends DrawableObject {
     /**
      * x axis zoom to scale to
      */
-    ZoomDisplay mXZoomDisplay;
+    private final ZoomDisplay mXZoomDisplay;
     /**
      * Parent graph View
      */
-    private GraphParameters mGraphParameters;
+    private final GraphParameters mGraphParameters;
     /**
      * Drawing buffer
      */

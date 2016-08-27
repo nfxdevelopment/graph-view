@@ -12,7 +12,7 @@ abstract class DrawableObject {
     /**
      * The paint in which to draw with
      */
-    protected final Paint mPaint = new Paint();
+    final Paint mPaint = new Paint();
     /**
      * Advises the background in which area it can draw.
      **/

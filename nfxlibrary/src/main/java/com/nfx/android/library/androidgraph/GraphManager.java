@@ -1,7 +1,6 @@
 package com.nfx.android.library.androidgraph;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -21,7 +20,6 @@ import java.util.List;
  */
 public class GraphManager extends RelativeLayout {
     private GraphView mGraphView;
-    private ListView mMarkerInformation;
     private List<MarkerModel> mMarkerList;
     private MarkerAdapter mMarkerAdapter;
 
@@ -58,7 +56,7 @@ public class GraphManager extends RelativeLayout {
         }
         FrameLayout graphView = (FrameLayout)findViewById(R.id.graph);
         graphView.addView(mGraphView);
-        mMarkerInformation = (ListView)findViewById(R.id.marker_information);
+        ListView mMarkerInformation = (ListView) findViewById(R.id.marker_information);
 
         mMarkerList = new ArrayList<>();
         mMarkerAdapter = new MarkerAdapter(getContext(), mMarkerList);
@@ -66,16 +64,15 @@ public class GraphManager extends RelativeLayout {
         mMarkerInformation.setAdapter(mMarkerAdapter);
 
         mGraphView.getBackgroundManager().setBackgroundColour(
-                getContext().getResources().getColor(R.color.background));
+                getContext().getColor(R.color.background));
         mGraphView.getBackgroundManager().setGridLineColour(
-                getContext().getResources().getColor(R.color.gridLines));
+                getContext().getColor(R.color.gridLines));
     }
 
     public void setMarkers(int signalId, boolean isShown) {
         if(isShown) {
-            Resources resources = getContext().getResources();
-            addMarker(signalId, resources.getColor(R.color.marker1));
-            addMarker(signalId, resources.getColor(R.color.marker2));
+            addMarker(signalId, getContext().getColor(R.color.marker1));
+            addMarker(signalId, getContext().getColor(R.color.marker2));
         } else {
             removeMarker(signalId);
             mMarkerList.clear();
@@ -99,7 +96,4 @@ public class GraphManager extends RelativeLayout {
         return mGraphView;
     }
 
-    public ListView getMarkerInformation() {
-        return mMarkerInformation;
-    }
 }

@@ -17,7 +17,7 @@ public abstract class Input {
     /**
      * Interface to update buffer data
      */
-    Map<Integer, InputListener> mInputListeners = new HashMap<>();
+    final Map<Integer, InputListener> mInputListeners = new HashMap<>();
     /**
      * Used to pause the input
      */
@@ -69,8 +69,6 @@ public abstract class Input {
             inputListener.inputRemoved();
         }
     }
-
-    ;
 
     public boolean getPaused() {
         return mPaused;

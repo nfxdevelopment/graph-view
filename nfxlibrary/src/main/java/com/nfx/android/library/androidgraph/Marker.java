@@ -19,16 +19,15 @@ public class Marker extends DrawableObject {
      * Use an even number to ensure all grid line strokes look the same
      */
     private static final float INITIAL_LINE_STROKE_WIDTH = 4f;
+    private final GraphView.GraphSignalInputInterface mGraphInterface;
+    private final MarkerUpdateInterface mMarkerUpdateInterface;
+    private final int mSignalId;
     /**
      *
      */
     private float mCircleRadius = 20f;
-
     private SignalBufferInterface mSignalInterface;
-    private GraphView.GraphSignalInputInterface mGraphInterface;
-    private MarkerUpdateInterface mMarkerUpdateInterface;
     private float mMarkerPosition = 0.5f;
-    private int mSignalId;
 
     public Marker(int signalId, GraphView.GraphSignalInputInterface graphSignalInputInterface,
                   SignalBufferInterface signal, MarkerUpdateInterface markerUpdateInterface) {
@@ -122,6 +121,7 @@ public class Marker extends DrawableObject {
         return intersect;
     }
 
+    @SuppressWarnings("unused")
     public void setMarkerPositionInPx(float markerPositionInPx) {
         float markerPosition = markerPositionInPx;
         markerPosition -= getDrawableArea().getLeft();
@@ -141,10 +141,6 @@ public class Marker extends DrawableObject {
 
     public void setSignalInterface(SignalBufferInterface mSignalInterface) {
         this.mSignalInterface = mSignalInterface;
-    }
-
-    public SignalBufferInterface getSignal() {
-        return mSignalInterface;
     }
 
     public GraphView.GraphSignalInputInterface getGraphInterface() {

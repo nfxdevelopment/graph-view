@@ -27,10 +27,12 @@ public abstract class GridLines extends DrawableObject {
     /**
      * Indicates that the grid line is less than the viewable area
      */
+    @SuppressWarnings("unused")
     private static final float LESS_THAN_VIEWABLE_AREA = -1;
     /**
      * Indicates that the grid line is greater than the viewable area
      */
+    @SuppressWarnings("unused")
     private static final float GREATER_THAN_VIEWABLE_AREA = -2;
     /**
      * Color of the grid lines
@@ -41,6 +43,10 @@ public abstract class GridLines extends DrawableObject {
      */
     private static final float INITIAL_LINE_STROKE_WIDTH = 4f;
     /**
+     * Graph Scale limits
+     */
+    final AxisParameters mAxisParameters;
+    /**
      * This allows us to know the axis at runtime
      */
     private final AxisOrientation mAxisOrientation;
@@ -48,10 +54,6 @@ public abstract class GridLines extends DrawableObject {
      * Minor GridLines
      */
     private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
-    /**
-     * Graph Scale limits
-     */
-    protected AxisParameters mAxisParameters;
     /**
      * Number of grid lines to display in the area
      */
@@ -82,7 +84,7 @@ public abstract class GridLines extends DrawableObject {
      * Base Context
      */
     private Context mContext;
-    ZoomChangedListener mZoomChangeListener = new ZoomChangedListener() {
+    private final ZoomChangedListener mZoomChangeListener = new ZoomChangedListener() {
         @Override
         public void zoomChanged() {
             refreshChildGridLines();
@@ -251,7 +253,7 @@ public abstract class GridLines extends DrawableObject {
         refreshChildGridLines();
     }
 
-    ZoomDisplay getZoomDisplay() {
+    private ZoomDisplay getZoomDisplay() {
         return mZoomDisplay;
     }
 
@@ -269,7 +271,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * remove the zoomDisplay, this is done to remove the listener.
      */
-    public void removeZoomDisplay() {
+    private void removeZoomDisplay() {
         mZoomDisplay.removeListener(mZoomChangeListener);
         mZoomDisplay = new ZoomDisplay(1f, 0f);
     }
@@ -450,7 +452,7 @@ public abstract class GridLines extends DrawableObject {
         return mFixedZoomDisplay;
     }
 
-    public void setFixedZoomDisplay(ZoomDisplay mFixedZoomDisplay) {
+    private void setFixedZoomDisplay(ZoomDisplay mFixedZoomDisplay) {
         this.mFixedZoomDisplay = mFixedZoomDisplay;
     }
 

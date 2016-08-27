@@ -10,8 +10,8 @@ import com.nfx.android.library.androidgraph.Marker;
  * Created by nick on 5/08/16.
  */
 public class MarkerModel implements Marker.MarkerUpdateInterface {
-    private MarkerAdapter mParentAdapter;
-    private GraphView.GraphSignalInputInterface mGraphSignalInputInterface;
+    private final MarkerAdapter mParentAdapter;
+    private final GraphView.GraphSignalInputInterface mGraphSignalInputInterface;
     private float xValue = 0;
     private float yValue = 0;
     private int markerColor = Color.BLACK;
@@ -26,24 +26,12 @@ public class MarkerModel implements Marker.MarkerUpdateInterface {
         return xValue;
     }
 
-    public void setXValue(float xValue) {
-        this.xValue = xValue;
-    }
-
     public float getYValue() {
         return yValue;
     }
 
-    public void setYValue(float yValue) {
-        this.yValue = yValue;
-    }
-
     public int getMarkerColor() {
         return markerColor;
-    }
-
-    public void setMarkerColor(int markerColor) {
-        this.markerColor = markerColor;
     }
 
     @Override

@@ -18,7 +18,7 @@ public abstract class MicrophoneInput extends Input {
     /**
      * The desired sampling rate for this analyser, in samples/sec.
      */
-    protected static final int sSampleRate = 44100;
+    static final int sSampleRate = 48000;
     private final static String TAG = "MicrophoneInput";
     /**
      * Audio input block size, in samples.
@@ -52,8 +52,8 @@ public abstract class MicrophoneInput extends Input {
      *
      * @param graphSignalInputInterface interface to send signal data to
      */
-    protected MicrophoneInput(GraphView.GraphSignalInputInterface graphSignalInputInterface,
-                              int inputBlockSize) {
+    MicrophoneInput(GraphView.GraphSignalInputInterface graphSignalInputInterface,
+                    int inputBlockSize) {
         this(graphSignalInputInterface);
         this.mInputBlockSize = inputBlockSize;
     }
@@ -70,7 +70,6 @@ public abstract class MicrophoneInput extends Input {
 
     @Override
     public void start() {
-
         // Set up the audio input.
         AudioFormat audioFormat = new AudioFormat.Builder()
                 .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
@@ -193,6 +192,7 @@ public abstract class MicrophoneInput extends Input {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isRunning() {
         return mRunning;
     }

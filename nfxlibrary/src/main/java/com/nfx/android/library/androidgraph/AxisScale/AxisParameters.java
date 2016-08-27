@@ -10,7 +10,7 @@ public class AxisParameters {
     /**
      * X axis is log or lin
      */
-    protected Scale mAxisScale = Scale.linear;
+    private Scale mAxisScale = Scale.linear;
     private float mMinimumValue = 0;
     private float mMaximumValue = 1;
 

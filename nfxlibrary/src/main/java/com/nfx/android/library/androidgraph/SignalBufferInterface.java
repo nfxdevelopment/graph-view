@@ -22,15 +22,6 @@ public class SignalBufferInterface extends InputListener {
     }
 
     /**
-     * Update where the display object is pointing to
-     *
-     * @param signalBuffer set the buffer listen to
-     */
-    public void setSignalBuffer(SignalBuffer signalBuffer) {
-        this.mSignalBuffer = signalBuffer;
-    }
-
-    /**
      * Get the latest buffer
      *
      * @param scaledBuffer array to pass back data

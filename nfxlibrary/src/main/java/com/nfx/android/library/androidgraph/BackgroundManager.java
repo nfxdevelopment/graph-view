@@ -109,14 +109,6 @@ public class BackgroundManager {
         }
     }
 
-    public GridLines getXGridLines() {
-        return mXGridLines;
-    }
-
-    public GridLines getYGridLines() {
-        return mYGridLines;
-    }
-
     /**
      * Sets the zoom Display object for the background objects to use and listen to
      *
@@ -161,7 +153,7 @@ public class BackgroundManager {
 
     public void setXAxisLinear() {
         // This will scale the x axis in a logical fashion. it will round up to a value based on
-        // the iterator. The iterator will grown by a factor of 10 after each 10 iterations rouond
+        // the iterator. The iterator will grown by a factor of 10 after each 10 iterations round
         // round the loop. results eg. 22500 = 30000 | 0.05 = 0.1
         float iterator = 1f;
         float divisor = iterator;
@@ -195,10 +187,6 @@ public class BackgroundManager {
         mYGridLines.setColour(colour);
         mBoarder.setColour(colour);
         mBoarderText.setColour(colour);
-    }
-
-    public BoarderText getBoarderText() {
-        return mBoarderText;
     }
 
     public void stop() {

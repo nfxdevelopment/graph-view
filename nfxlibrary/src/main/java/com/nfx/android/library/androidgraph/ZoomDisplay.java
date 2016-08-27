@@ -11,14 +11,14 @@ import java.util.Observable;
  */
 public class ZoomDisplay extends Observable {
     /**
-     * Absolute maximum zoom value
-     */
-    public static final float MAXIMUM_ZOOM_LEVEL = 1f;
-    /**
      * Absolute minimum zoom level
      */
     @SuppressWarnings("WeakerAccess")
     public static final float MINIMUM_ZOOM_LEVEL = 0f;
+    /**
+     * Absolute maximum zoom value
+     */
+    private static final float MAXIMUM_ZOOM_LEVEL = 1f;
     @SuppressWarnings("unused")
     private static final String TAG = "ZoomDisplay";
     /**
@@ -152,6 +152,7 @@ public class ZoomDisplay extends Observable {
         notifyObservers();
     }
 
+    @SuppressWarnings("unused")
     public void setZoomLimits(float minimumZoomLevel, float maximumZoomLevel) {
         mMinimumZoomLevel = minimumZoomLevel;
         mMaximumZoomLevel = maximumZoomLevel;

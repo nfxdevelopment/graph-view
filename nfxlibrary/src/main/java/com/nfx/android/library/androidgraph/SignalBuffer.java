@@ -209,7 +209,7 @@ public class SignalBuffer {
         return bufferPercentagePosition * (getSizeOfBuffer() - 1);
     }
 
-    public int getSizeOfBuffer() {
+    private int getSizeOfBuffer() {
         return mBuffer.length;
     }
 
@@ -223,7 +223,4 @@ public class SignalBuffer {
         return mYZoomDisplay;
     }
 
-    public AxisParameters getXAxisParameters() {
-        return mXAxisParameters;
-    }
 }

@@ -23,7 +23,7 @@ public class BoarderText extends DrawableObject {
     /**
      * Graph Limits
      */
-    private GraphParameters mGraphParameters;
+    private final GraphParameters mGraphParameters;
     /**
      * The zoom levels from the x and y Axis
      */

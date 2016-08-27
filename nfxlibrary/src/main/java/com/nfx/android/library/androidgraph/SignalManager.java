@@ -37,7 +37,7 @@ public class SignalManager {
     /**
      * Handles the drawing of a unlimited amount of Markers
      **/
-    private List<Marker> mMarkers = new Vector<>();
+    private final List<Marker> mMarkers = new Vector<>();
     /**
      * Current drawable area
      */
@@ -110,7 +110,7 @@ public class SignalManager {
      *
      * @param signalId signal id
      */
-    void updateMarkers(int signalId) {
+    private void updateMarkers(int signalId) {
         for(Marker marker : mMarkers) {
             if(marker.getSignalId() == signalId) {
                 marker.setSignalInterface(mSignalDrawers.get(signalId).getSignalBufferInterface());
@@ -180,14 +180,11 @@ public class SignalManager {
     /**
      * Remove signal drawers when stopped
      */
+    @SuppressWarnings("unused")
     public void removeSignalDrawers() {
         synchronized(this) {
             mSignalDrawers.clear();
         }
-    }
-
-    public Map<Integer, Signal> getSignalDrawers() {
-        return mSignalDrawers;
     }
 
     public Map<Integer, SignalBuffer> getSignalBuffers() {
