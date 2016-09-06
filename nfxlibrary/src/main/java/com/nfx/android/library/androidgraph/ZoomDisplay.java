@@ -47,7 +47,7 @@ public class ZoomDisplay extends Observable {
      *                                warning is logged and 0f will be assigned
      **/
     @SuppressWarnings("SameParameterValue")
-    ZoomDisplay(float zoomLevelPercentage, float displayOffsetPercentage) {
+    public ZoomDisplay(float zoomLevelPercentage, float displayOffsetPercentage) {
         if(zoomLevelPercentage < mMaximumZoomLevel && zoomLevelPercentage > mMinimumZoomLevel) {
             mZoomLevelPercentage = zoomLevelPercentage;
         }
@@ -158,5 +158,20 @@ public class ZoomDisplay extends Observable {
         mMaximumZoomLevel = maximumZoomLevel;
         setZoomLevelPercentage(maximumZoomLevel - minimumZoomLevel);
         setDisplayOffsetPercentage(minimumZoomLevel);
+    }
+
+    public void setZoomDisplay(ZoomDisplay zoomDisplay) {
+        this.mDisplayOffsetPercentage = zoomDisplay.mDisplayOffsetPercentage;
+        this.mZoomLevelPercentage = zoomDisplay.mZoomLevelPercentage;
+        this.mMinimumZoomLevel = zoomDisplay.mMinimumZoomLevel;
+        this.mMaximumZoomLevel = zoomDisplay.mMaximumZoomLevel;
+    }
+
+    public float getMaximumZoomLevel() {
+        return mMaximumZoomLevel;
+    }
+
+    public float getMinimumZoomLevel() {
+        return mMinimumZoomLevel;
     }
 }

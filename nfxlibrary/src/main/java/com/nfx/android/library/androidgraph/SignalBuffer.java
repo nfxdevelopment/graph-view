@@ -143,6 +143,16 @@ public class SignalBuffer {
     }
 
     /**
+     * Return the raw buffer
+     *
+     * @return float array with raw information
+     */
+    public float[] getUnscaledBuffer() {
+        return mBuffer;
+    }
+
+
+    /**
      * This will return a value for a given position in the buffer.
      *
      * @param scalePosition value between mMinimumX and mMaximumX
@@ -223,4 +233,7 @@ public class SignalBuffer {
         return mYZoomDisplay;
     }
 
+    public AxisParameters getXAxisParameters() {
+        return mXAxisParameters;
+    }
 }

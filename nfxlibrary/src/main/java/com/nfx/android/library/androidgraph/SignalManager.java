@@ -66,8 +66,11 @@ public class SignalManager {
     public InputListener addSignalBuffer(int id, int sizeOfBuffer, AxisParameters axisParameters,
                                          int color) {
         SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, axisParameters);
-        SignalBufferInterface signalBufferInterface = new SignalBufferInterface(signalBuffer);
+        return addSignalBuffer(id, signalBuffer, color);
+    }
 
+    public InputListener addSignalBuffer(int id, SignalBuffer signalBuffer, int color) {
+        SignalBufferInterface signalBufferInterface = new SignalBufferInterface(signalBuffer);
         synchronized(this) {
             if(mSignalBuffers.put(id, signalBuffer) != null) {
                 Log.w(TAG, "signal id exists, overwriting");
