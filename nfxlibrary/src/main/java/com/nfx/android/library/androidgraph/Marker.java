@@ -49,34 +49,49 @@ public class Marker extends DrawableObject {
         float yValue = mSignalInterface.getValueAtPosition(xValue);
         mMarkerUpdateInterface.markerPositionUpdate(xValue, yValue);
 
+        float centreX = 0;
+        float centreY = 0;
+
         if(mMarkerPosition > mGraphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage() &&
                 mMarkerPosition < mGraphInterface.getGraphXZoomDisplay()
                         .getFarSideOffsetPercentage()) {
-
-            float centreX = getMarkerPositionInPx();
-            float centreY = getDrawableArea().getTop() +
+            centreX = getMarkerPositionInPx();
+            centreY = getDrawableArea().getTop() +
                     (1f - mSignalInterface.getValueAtPosition(xValue)) *
                             getDrawableArea().getHeight();
 
-            canvas.drawCircle(
-                    centreX,
-                    centreY,
-                    mCircleRadius,
-                    mPaint
-                    );
-            canvas.drawLine(centreX - mCircleRadius,
-                    centreY,
-                    centreX + mCircleRadius,
-                    centreY,
-                    mPaint
-            );
-            canvas.drawLine(centreX,
-                    centreY - mCircleRadius,
-                    centreX,
-                    centreY + mCircleRadius,
-                    mPaint
-            );
+        } else if(mMarkerPosition <
+                mGraphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
+            centreX = getDrawableArea().getLeft();
+            centreY = getDrawableArea().getTop() +
+                    (1f - mSignalInterface.getValueAtPosition(xValue)) *
+                            getDrawableArea().getHeight();
+        } else if(mMarkerPosition >
+                mGraphInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
+            centreX = getDrawableArea().getRight();
+            centreY = getDrawableArea().getTop() +
+                    (1f - mSignalInterface.getValueAtPosition(xValue)) *
+                            getDrawableArea().getHeight();
         }
+
+        canvas.drawCircle(
+                centreX,
+                centreY,
+                mCircleRadius,
+                mPaint
+        );
+        canvas.drawLine(centreX - mCircleRadius,
+                centreY,
+                centreX + mCircleRadius,
+                centreY,
+                mPaint
+        );
+        canvas.drawLine(centreX,
+                centreY - mCircleRadius,
+                centreX,
+                centreY + mCircleRadius,
+                mPaint
+        );
     }
 
     @Override
@@ -117,6 +132,12 @@ public class Marker extends DrawableObject {
 
         intersect *= getDrawableArea().getWidth();
         intersect += getDrawableArea().getLeft();
+
+        if(intersect < getDrawableArea().getLeft()) {
+            return getDrawableArea().getLeft();
+        } else if(intersect > getDrawableArea().getRight()) {
+            return getDrawableArea().getRight();
+        }
 
         return intersect;
     }
