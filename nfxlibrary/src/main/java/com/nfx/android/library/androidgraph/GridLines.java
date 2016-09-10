@@ -219,6 +219,7 @@ public abstract class GridLines extends DrawableObject {
     @SuppressWarnings("SameParameterValue")
     public void setChildGridLineScale(Scale scale) {
         mChildGridLineScale = scale;
+        refreshChildGridLines();
     }
 
     /**
