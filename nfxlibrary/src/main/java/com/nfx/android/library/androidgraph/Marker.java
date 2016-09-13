@@ -49,29 +49,26 @@ public class Marker extends DrawableObject {
         float yValue = mSignalInterface.getValueAtPosition(xValue);
         mMarkerUpdateInterface.markerPositionUpdate(xValue, yValue);
 
-        float centreX = 0;
-        float centreY = 0;
+        float centreX, centreY;
 
-        if(mMarkerPosition > mGraphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage() &&
-                mMarkerPosition < mGraphInterface.getGraphXZoomDisplay()
-                        .getFarSideOffsetPercentage()) {
-            centreX = getMarkerPositionInPx();
-            centreY = getDrawableArea().getTop() +
-                    (1f - mSignalInterface.getValueAtPosition(xValue)) *
-                            getDrawableArea().getHeight();
-
-        } else if(mMarkerPosition <
+        if(mMarkerPosition <
                 mGraphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
             centreX = getDrawableArea().getLeft();
-            centreY = getDrawableArea().getTop() +
-                    (1f - mSignalInterface.getValueAtPosition(xValue)) *
-                            getDrawableArea().getHeight();
         } else if(mMarkerPosition >
                 mGraphInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
             centreX = getDrawableArea().getRight();
-            centreY = getDrawableArea().getTop() +
-                    (1f - mSignalInterface.getValueAtPosition(xValue)) *
-                            getDrawableArea().getHeight();
+        } else {
+            centreX = getMarkerPositionInPx();
+        }
+
+        float yPosition = (1f - mSignalInterface.getValueAtPosition(xValue));
+
+        if(yPosition < 0) {
+            centreY = getDrawableArea().getTop();
+        } else if(yPosition > 1) {
+            centreY = getDrawableArea().getBottom();
+        } else {
+            centreY = getDrawableArea().getTop() + yPosition * getDrawableArea().getHeight();
         }
 
         canvas.drawCircle(
