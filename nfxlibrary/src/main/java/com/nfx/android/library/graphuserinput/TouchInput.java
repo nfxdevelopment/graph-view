@@ -118,7 +118,6 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
     /**
      * Implement this listener within com.nfx.android.library.graphbufferinput.Input
      */
-    @SuppressWarnings({"SameReturnValue", "UnusedParameters"})
     public interface TouchListener {
         void surfaceChanged(int width, int height);
 
