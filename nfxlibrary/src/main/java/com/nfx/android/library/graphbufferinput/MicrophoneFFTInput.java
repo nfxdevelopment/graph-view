@@ -25,6 +25,10 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     // a 1kHz signal at 16,000 samples/sec.
     private static final float FUDGE = 0.63610f;
     /**
+     * The interface in which to send updates to
+     */
+    private final GraphView.GraphSignalInputInterface mGraphSignalInputInterface;
+    /**
      * Buffer to pass to the fft class
      */
     protected float[] mFftBuffer;
@@ -56,12 +60,13 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     /**
      * Constructor to initialise microphone for listening
      *
-     * @param graphSignalInputInterface interface to send signal data to
+     * @param graphSignalInputInterface interface to graph information
      * @param binSize set the bin size of the fft
      */
-    public MicrophoneFFTInput(GraphView.GraphSignalInputInterface
-                                      graphSignalInputInterface, int binSize) {
-        super(graphSignalInputInterface, binSize);
+    public MicrophoneFFTInput(GraphView.GraphSignalInputInterface graphSignalInputInterface,
+                              int binSize) {
+        super(binSize);
+        this.mGraphSignalInputInterface = graphSignalInputInterface;
     }
 
     @Override
@@ -188,5 +193,4 @@ public class MicrophoneFFTInput extends MicrophoneInput {
             start();
         }
     }
-
 }

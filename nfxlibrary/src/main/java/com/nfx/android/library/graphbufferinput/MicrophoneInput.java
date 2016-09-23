@@ -5,8 +5,6 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import com.nfx.android.library.androidgraph.GraphView;
-
 /**
  * NFX Development
  * Created by nick on 10/11/15.
@@ -38,20 +36,10 @@ public abstract class MicrophoneInput extends Input {
     private Thread mReaderThread = null;
 
     /**
-     * @param graphSignalInputInterface interface to send signal data to
-     */
-    @SuppressWarnings("WeakerAccess")
-    protected MicrophoneInput(GraphView.GraphSignalInputInterface graphSignalInputInterface) {
-        super(graphSignalInputInterface);
-    }
-
-    /**
-     * @param graphSignalInputInterface interface to send signal data to
      * @param inputBlockSize            initial blockSize
      */
-    MicrophoneInput(GraphView.GraphSignalInputInterface graphSignalInputInterface,
-                    int inputBlockSize) {
-        this(graphSignalInputInterface);
+    MicrophoneInput(int inputBlockSize) {
+        super();
         this.mInputBlockSize = inputBlockSize;
     }
 

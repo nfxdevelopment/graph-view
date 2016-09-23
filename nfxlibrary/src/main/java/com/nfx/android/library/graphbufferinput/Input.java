@@ -2,8 +2,6 @@ package com.nfx.android.library.graphbufferinput;
 
 import android.util.SparseArray;
 
-import com.nfx.android.library.androidgraph.GraphView;
-
 /**
  * NFX Development
  * Created by nick on 10/11/15.
@@ -13,10 +11,6 @@ import com.nfx.android.library.androidgraph.GraphView;
  */
 public abstract class Input {
     /**
-     * The interface in which to send updates to
-     */
-    final GraphView.GraphSignalInputInterface mGraphSignalInputInterface;
-    /**
      * Interface to update buffer data
      */
     private final SparseArray<InputListener> mInputListeners = new SparseArray<>();
@@ -24,10 +18,6 @@ public abstract class Input {
      * Used to pause the input
      */
     boolean mPaused = false;
-
-    Input(GraphView.GraphSignalInputInterface graphSignalInputInterface) {
-        mGraphSignalInputInterface = graphSignalInputInterface;
-    }
 
     /**
      * Initialise anything that needs to be setup prior to start
