@@ -2,11 +2,11 @@ package com.nfx.android.library.androidgraph;
 
 import android.graphics.Canvas;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.library.graphbufferinput.InputListener;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * NFX Development
  * Created by nick on 31/10/15.
+ * <p/>
+ * This is the middle man between the graph drawer and the input. All inputs are registered with
+ * this manager and it will ask to create a drawer objects for these
  */
 public class SignalManager {
     private static final String TAG = SignalManager.class.getName();
@@ -27,11 +30,10 @@ public class SignalManager {
     /**
      * Array of drawers to display signals
      */
-    private final Map<Integer, Signal> mSignalDrawers = new HashMap<>();
+    private final SparseArray<Signal> mSignalDrawers = new SparseArray<>();
     /**
      * An object holding the signals to display
      */
-
     private final Map<Integer, SignalBuffer> mSignalBuffers = new
             ConcurrentHashMap<>();
     /**
@@ -63,8 +65,8 @@ public class SignalManager {
      * @param axisParameters scale of buffer x axis
      * @param color color of signal
      */
-    public InputListener addSignalBuffer(int id, int sizeOfBuffer, AxisParameters axisParameters,
-                                         int color) {
+    InputListener addSignalBuffer(int id, int sizeOfBuffer, AxisParameters axisParameters,
+                                  int color) {
         SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, axisParameters);
         return addSignalBuffer(id, signalBuffer, color);
     }
@@ -140,7 +142,7 @@ public class SignalManager {
      *
      * @param id id of the signal to remove
      */
-    public void removedSignalBuffer(int id) {
+    void removedSignalBuffer(int id) {
         synchronized(this) {
             mSignalBuffers.remove(id);
             mSignalDrawers.remove(id);
@@ -156,8 +158,10 @@ public class SignalManager {
      */
     public void surfaceChanged(DrawableArea drawableArea) {
         mDrawableArea = drawableArea;
-        for(Signal signal : mSignalDrawers.values()) {
-            signal.surfaceChanged(drawableArea);
+        final int signalDrawerSize = mSignalDrawers.size();
+        for(int i = 0; i < signalDrawerSize; i++) {
+            int key = mSignalDrawers.keyAt(i);
+            mSignalDrawers.get(key).surfaceChanged(drawableArea);
         }
         for(Marker marker : mMarkers) {
             marker.surfaceChanged(drawableArea);
@@ -171,8 +175,10 @@ public class SignalManager {
      */
     public void doDraw(Canvas canvas) {
         synchronized(this) {
-            for(Signal signal : mSignalDrawers.values()) {
-                signal.doDraw(canvas);
+            final int signalDrawerSize = mSignalDrawers.size();
+            for(int i = 0; i < signalDrawerSize; i++) {
+                int key = mSignalDrawers.keyAt(i);
+                mSignalDrawers.get(key).doDraw(canvas);
             }
             for(Marker marker : mMarkers) {
                 marker.doDraw(canvas);
@@ -190,6 +196,9 @@ public class SignalManager {
         }
     }
 
+    /**
+     * @return signal buffers
+     */
     public Map<Integer, SignalBuffer> getSignalBuffers() {
         return mSignalBuffers;
     }

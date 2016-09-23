@@ -8,6 +8,8 @@ import com.nfx.android.library.androidgraph.Marker;
 /**
  * NFX Development
  * Created by nick on 5/08/16.
+ * <p/>
+ * An object that holds the values to display in the floating widgets.
  */
 public class MarkerModel implements Marker.MarkerUpdateInterface {
     private final MarkerAdapter mParentAdapter;
@@ -22,15 +24,15 @@ public class MarkerModel implements Marker.MarkerUpdateInterface {
         this.mGraphSignalInputInterface = graphSignalInputInterface;
     }
 
-    public float getXValue() {
+    float getXValue() {
         return xValue;
     }
 
-    public float getYValue() {
+    float getYValue() {
         return yValue;
     }
 
-    public int getMarkerColor() {
+    int getMarkerColor() {
         return markerColor;
     }
 

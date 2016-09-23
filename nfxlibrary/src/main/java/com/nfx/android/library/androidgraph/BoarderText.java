@@ -15,7 +15,7 @@ import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
  * As the boarder is draw separately to the axis is separated. This allows us to display a always
  * up to date value on the boarders
  */
-public class BoarderText extends DrawableObject {
+class BoarderText extends DrawableObject {
     /**
      * Maximum Bounds of text
      */
@@ -41,7 +41,7 @@ public class BoarderText extends DrawableObject {
      * @param context  needed to work out the text size
      * @param graphParameters An object holding the graph limits
      */
-    public BoarderText(Context context, GraphParameters graphParameters) {
+    BoarderText(Context context, GraphParameters graphParameters) {
 
         // Set a default zoom Display
         mXZoomDisplay = new ZoomDisplay(1f, 0f);
@@ -84,7 +84,7 @@ public class BoarderText extends DrawableObject {
     }
 
     /**
-     * We calculate the value ahead of time to stop any hold up in doDraw
+     * We calculate the value ahead of time to removeAllChildGridLines any hold up in doDraw
      */
     private void calculateValuesToDisplay() {
         mTopY = displayString(mGraphParameters.getYAxisParameters().getMinimumValue() +
@@ -99,6 +99,13 @@ public class BoarderText extends DrawableObject {
                 mXZoomDisplay.getFarSideOffsetPercentage()));
     }
 
+    /**
+     * Return a string for the given value to display. Trucation will be applied to allow the string
+     * to be displayed correctly on screen
+     *
+     * @param valueToDisplay the number to display
+     * @return display string
+     */
     private String displayString(float valueToDisplay) {
         float nonNegativeValue = Math.abs(valueToDisplay);
 
@@ -131,7 +138,7 @@ public class BoarderText extends DrawableObject {
      *
      * @param zoomDisplay the y Zoom levels
      */
-    public void setYZoomDisplay(ZoomDisplay zoomDisplay) {
+    void setYZoomDisplay(ZoomDisplay zoomDisplay) {
         mYZoomDisplay = zoomDisplay;
 
         /*
@@ -151,7 +158,7 @@ public class BoarderText extends DrawableObject {
      *
      * @param zoomDisplay the y Zoom levels
      */
-    public void setXZoomDisplay(ZoomDisplay zoomDisplay) {
+    void setXZoomDisplay(ZoomDisplay zoomDisplay) {
         mXZoomDisplay = zoomDisplay;
 
         /*

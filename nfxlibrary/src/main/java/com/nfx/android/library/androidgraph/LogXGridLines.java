@@ -12,13 +12,17 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
  * Draws logarithmic style grid lines in the x plane. Call doDraw with the canvas in which to
  * draw on
  */
-public class LogXGridLines extends LogGridLines {
+class LogXGridLines extends LogGridLines {
 
     /**
      * Constructor
+     *
+     * @param axisParameters        parameters of graph shown
+     * @param gridLineMinimumValue  minimum value displayed by these grid lines
+     * @param gridLineMaximumValue  maximum value displayed by these grid lines
      */
-    public LogXGridLines(AxisParameters axisParameters, float gridLineMinimumValue,
-                         float gridLineMaximumValue) {
+    LogXGridLines(AxisParameters axisParameters, float gridLineMinimumValue,
+                  float gridLineMaximumValue) {
         super(AxisOrientation.xAxis, axisParameters, gridLineMinimumValue, gridLineMaximumValue);
     }
 

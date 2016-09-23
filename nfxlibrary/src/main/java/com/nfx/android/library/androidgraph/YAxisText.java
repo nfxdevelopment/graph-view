@@ -9,16 +9,16 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 /**
  * NFX Development
  * Created by nick on 29/10/15.
- *
+ * <p/>
  * Used to draw text onto a canvas to display the values of grid lines in the Y axis
  */
-public class YAxisText extends AxisText {
+class YAxisText extends AxisText {
     /**
      * Constructor
      *
-     * @param context   application context is used for dimension reasons
-     * @param gridLines grid lines axis is related to
-     * @param axisParameters graph limits
+     * @param context           application context is used for dimension reasons
+     * @param gridLines         grid lines axis is related to
+     * @param axisParameters    graph limits
      */
     YAxisText(Context context, GridLines gridLines, AxisParameters axisParameters) {
         super(context, gridLines, axisParameters);

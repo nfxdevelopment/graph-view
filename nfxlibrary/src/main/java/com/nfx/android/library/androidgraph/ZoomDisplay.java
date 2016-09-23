@@ -1,11 +1,13 @@
 package com.nfx.android.library.androidgraph;
 
+import android.support.annotation.NonNull;
+
 import java.util.Observable;
 
 /**
  * NFX Development
  * Created by nick on 27/10/15.
- *
+ * <p/>
  * A helper class which will hold the zoom values of a given view. A listener can get updates
  * when the surface size has changed.
  */
@@ -13,14 +15,11 @@ public class ZoomDisplay extends Observable {
     /**
      * Absolute minimum zoom level
      */
-    @SuppressWarnings("WeakerAccess")
-    public static final float MINIMUM_ZOOM_LEVEL = 0f;
+    private static final float MINIMUM_ZOOM_LEVEL = 0f;
     /**
      * Absolute maximum zoom value
      */
     private static final float MAXIMUM_ZOOM_LEVEL = 1f;
-    @SuppressWarnings("unused")
-    private static final String TAG = "ZoomDisplay";
     /**
      * Maximum zoom level
      */
@@ -40,13 +39,11 @@ public class ZoomDisplay extends Observable {
 
 
     /**
-     * Initial values of the zoom level
      * @param zoomLevelPercentage     a float referenced as 0% = 0 100% = 1 if outside this value a
      *                                warning is logged and 1 will be assigned
      * @param displayOffsetPercentage a float referenced as 0% = 0 100% = 1 if outside this value a
      *                                warning is logged and 0f will be assigned
      **/
-    @SuppressWarnings("SameParameterValue")
     public ZoomDisplay(float zoomLevelPercentage, float displayOffsetPercentage) {
         if(zoomLevelPercentage < mMaximumZoomLevel && zoomLevelPercentage > mMinimumZoomLevel) {
             mZoomLevelPercentage = zoomLevelPercentage;
@@ -66,7 +63,7 @@ public class ZoomDisplay extends Observable {
      * register a listener for zoom changed reports
      * @param listener register listener
      */
-    public void addListener(ZoomChangedListener listener) {
+    void addListener(ZoomChangedListener listener) {
         addObserver(listener);
     }
 
@@ -75,7 +72,7 @@ public class ZoomDisplay extends Observable {
      *
      * @param listener remove from listener
      */
-    public void removeListener(ZoomChangedListener listener) {
+    void removeListener(ZoomChangedListener listener) {
         deleteObserver(listener);
     }
 
@@ -152,7 +149,12 @@ public class ZoomDisplay extends Observable {
         notifyObservers();
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Used to ensure zoom does not stray outside a set limit
+     *
+     * @param minimumZoomLevel minimum zoom possible
+     * @param maximumZoomLevel maximum zoom possible
+     */
     public void setZoomLimits(float minimumZoomLevel, float maximumZoomLevel) {
         mMinimumZoomLevel = minimumZoomLevel;
         mMaximumZoomLevel = maximumZoomLevel;
@@ -160,17 +162,28 @@ public class ZoomDisplay extends Observable {
         setDisplayOffsetPercentage(minimumZoomLevel);
     }
 
-    public void setZoomDisplay(ZoomDisplay zoomDisplay) {
+    /**
+     * copy across all value from another zoom display object
+     *
+     * @param zoomDisplay Object to copy values from
+     */
+    public void setZoomDisplay(@NonNull ZoomDisplay zoomDisplay) {
         this.mDisplayOffsetPercentage = zoomDisplay.mDisplayOffsetPercentage;
         this.mZoomLevelPercentage = zoomDisplay.mZoomLevelPercentage;
         this.mMinimumZoomLevel = zoomDisplay.mMinimumZoomLevel;
         this.mMaximumZoomLevel = zoomDisplay.mMaximumZoomLevel;
     }
 
+    /**
+     * @return maximum zoom level possible by this object
+     */
     public float getMaximumZoomLevel() {
         return mMaximumZoomLevel;
     }
 
+    /**
+     * @return minimum zoom level possible by this object
+     */
     public float getMinimumZoomLevel() {
         return mMinimumZoomLevel;
     }

@@ -49,6 +49,11 @@ abstract class DrawableObject {
      */
     protected abstract void calculateRemainingDrawableArea(DrawableArea currentDrawableArea);
 
+    /**
+     * Set the colour on the default paint
+     *
+     * @param colour colour to set
+     */
     public void setColour(int colour) {
         mPaint.setColor(colour);
     }

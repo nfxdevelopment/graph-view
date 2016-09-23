@@ -3,10 +3,10 @@ package com.nfx.android.library.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.SparseBooleanArray;
 
 import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Extend from this class to create a drawable lines representing graph lines. This will draw a
  * single axis for the given number of lines.
  */
-public abstract class GridLines extends DrawableObject {
+abstract class GridLines extends DrawableObject {
 
     /**
      * When a using asks for a grid line which is not present in this object
@@ -62,6 +62,9 @@ public abstract class GridLines extends DrawableObject {
      * The axis text to be displayed if needed
      */
     AxisText mAxisText;
+    /**
+     * An offset in relation to drawable area 0-1
+     */
     float mGridLinesOffset = 0;
     /**
      * scale for child grid lines
@@ -95,6 +98,7 @@ public abstract class GridLines extends DrawableObject {
      * Constructor of GridLines
      *
      * @param axisOrientation either the x or y axis
+     * @param axisParameters  parameters of graph shown
      */
     GridLines(AxisOrientation axisOrientation, AxisParameters axisParameters) {
         this.mAxisOrientation = axisOrientation;
@@ -124,6 +128,11 @@ public abstract class GridLines extends DrawableObject {
         }
     }
 
+    /**
+     * If axis text is to be show then the context is needed
+     *
+     * @param context application context
+     */
     public void showAxisText(Context context) {
         mContext = context;
     }
@@ -133,7 +142,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @return current number of grid lines
      */
-    public int getNumberOfGridLines() {
+    int getNumberOfGridLines() {
         return mNumberOfGridLines;
     }
 
@@ -142,7 +151,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param numberOfGridLines amount of grid lines
      */
-    public void setNumberOfGridLines(int numberOfGridLines) {
+    void setNumberOfGridLines(int numberOfGridLines) {
         mNumberOfGridLines = numberOfGridLines;
     }
 
@@ -162,16 +171,24 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param color new color value
      */
-    @SuppressWarnings("SameParameterValue")
-    private void setColor(int color) {
+    private void setColor(@SuppressWarnings("SameParameterValue") int color) {
         mPaint.setColor(color);
     }
 
+    /**
+     * @return width between grid lines
+     */
     float getGridLineDrawableWidth() {
         // -1 as we want the first grid line to be at 0 and the last at the width of the graph
         return mGridLinesSize / (float) (mNumberOfGridLines - 1);
     }
 
+    /**
+     * to be overridden by implementation specific code
+     *
+     * @param gridLine a value between 0 and number of grid lines
+     * @return the intersect between 0 - 1
+     */
     abstract float intersect(int gridLine);
 
     /**
@@ -180,7 +197,7 @@ public abstract class GridLines extends DrawableObject {
      * @param gridLine        grid line to find, base 0
      * @return the x Intersect
      */
-    public float intersectZoomCompensated(int gridLine) {
+    float intersectZoomCompensated(int gridLine) {
         float intersect = intersect(gridLine);
         if(intersect == GRID_LINE_OUT_OF_RANGE) {
             return GRID_LINE_OUT_OF_RANGE;
@@ -212,12 +229,21 @@ public abstract class GridLines extends DrawableObject {
         mGridLinesSize = gridLinesSize;
     }
 
+    /**
+     * An offset applied to this set of grid lines
+     *
+     * @param graphOffset a value between 0 - 1
+     */
     void setGridLinesOffset(float graphOffset) {
         mGridLinesOffset = graphOffset;
     }
 
-    @SuppressWarnings("SameParameterValue")
-    public void setChildGridLineScale(Scale scale) {
+    /**
+     * Set child grid lines to log or lin
+     *
+     * @param scale log or lin
+     */
+    void setChildGridLineScale(Scale scale) {
         mChildGridLineScale = scale;
         refreshChildGridLines();
     }
@@ -229,7 +255,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param drawableArea the drawable area available
      */
-    public void notifyAxisTextOfSurfaceChange(DrawableArea drawableArea) {
+    void notifyAxisTextOfSurfaceChange(DrawableArea drawableArea) {
         if (mAxisText != null) {
             mAxisText.surfaceChanged(drawableArea);
         }
@@ -254,6 +280,9 @@ public abstract class GridLines extends DrawableObject {
         refreshChildGridLines();
     }
 
+    /**
+     * @return the zoom object attached to these grid lines
+     */
     private ZoomDisplay getZoomDisplay() {
         return mZoomDisplay;
     }
@@ -263,7 +292,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param zoomDisplay zoomDisplay to set
      */
-    public void setZoomDisplay(ZoomDisplay zoomDisplay) {
+    void setZoomDisplay(ZoomDisplay zoomDisplay) {
         mZoomDisplay = zoomDisplay;
 
         zoomDisplay.addListener(mZoomChangeListener);
@@ -281,17 +310,18 @@ public abstract class GridLines extends DrawableObject {
      * Checks to see if there is still space for child grid lines and add/removes them where needed
      */
     private void refreshChildGridLines() {
-        Map<Integer, Boolean> minorXGridLinesToDisplay =
-                adequateSpaceForMinorGridLines();
+        SparseBooleanArray minorXGridLinesToDisplay = adequateSpaceForMinorGridLines();
 
-        for(Map.Entry<Integer, Boolean> majorGridLine : minorXGridLinesToDisplay
-                .entrySet()) {
-            if(majorGridLine.getValue()) {
-                if(!mChildGridLines.containsKey(majorGridLine.getKey())) {
-                    addMinorGridLine(majorGridLine.getKey());
+        final int arraySize = minorXGridLinesToDisplay.size();
+
+        for(int i = 0; i < arraySize; i++) {
+            int key = minorXGridLinesToDisplay.keyAt(i);
+            if(minorXGridLinesToDisplay.get(key)) {
+                if(!mChildGridLines.containsKey(key)) {
+                    addMinorGridLine(key);
                 }
             } else {
-                GridLines childGridLine = mChildGridLines.remove(majorGridLine.getKey());
+                GridLines childGridLine = mChildGridLines.remove(key);
                 // We must ensure the observer is removed
                 if(childGridLine != null) {
                     childGridLine.removeZoomDisplay();
@@ -306,8 +336,8 @@ public abstract class GridLines extends DrawableObject {
      * @return a key pair that gives a boolean to show if there is enough space between the grid
      * lines
      */
-    private Map<Integer, Boolean> adequateSpaceForMinorGridLines() {
-        Map<Integer, Boolean> adequateSpaceList = new HashMap<>();
+    private SparseBooleanArray adequateSpaceForMinorGridLines() {
+        SparseBooleanArray adequateSpaceList = new SparseBooleanArray();
         final float mPlaceMinorGridLinesSize = 500f;
 
         for (int i = 0; i < getNumberOfGridLines() - 1; ++i) {
@@ -429,6 +459,9 @@ public abstract class GridLines extends DrawableObject {
         }
     }
 
+    /**
+     * Remove all the child grid lines from this object
+     */
     void removeAllChildGridLines() {
         for(Iterator<Map.Entry<Integer, GridLines>> it = mChildGridLines.entrySet().iterator();
             it.hasNext(); ) {
@@ -445,16 +478,27 @@ public abstract class GridLines extends DrawableObject {
      */
     abstract float getDimensionLength();
 
+    /**
+     * @return axis text displayed which could be null
+     */
     private AxisText getAxisText() {
         return mAxisText;
     }
 
-    public ZoomDisplay getFixedZoomDisplay() {
+    /**
+     * @return the fixed zoom display applied to these grid lines
+     */
+    ZoomDisplay getFixedZoomDisplay() {
         return mFixedZoomDisplay;
     }
 
-    private void setFixedZoomDisplay(ZoomDisplay mFixedZoomDisplay) {
-        this.mFixedZoomDisplay = mFixedZoomDisplay;
+    /**
+     * Set a zoom level which is fixed this and all child grid lines
+     *
+     * @param zoomDisplay zoom display object with fixed values
+     */
+    private void setFixedZoomDisplay(ZoomDisplay zoomDisplay) {
+        this.mFixedZoomDisplay = zoomDisplay;
     }
 
     @Override

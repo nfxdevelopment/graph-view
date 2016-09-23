@@ -17,19 +17,18 @@ import com.nfx.android.library.graphbufferinput.InputListener;
  * Created by nick on 25/10/15.
  * <p/>
  * The GraphManager handles or instructs the drawing of the graph. It will start displaying when
- * the surface is created and will only stop when the surface is destroyed. It has the ability to
+ * the surface is created and will only removeAllChildGridLines when the surface is destroyed. It
+ * has the ability to
  * handle a resize at runtime.
  */
 public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
-    @SuppressWarnings("unused")
-    private static final String TAG = "GraphManager";
     /**
      * An interface to update the signal data
      */
     private final GraphSignalInputInterface mGraphSignalInputInterface = new
             GraphSignalInputInterface();
     /**
-     * Reference to the values limit for the shown graph
+     * Parameter limits for the graph shown
      */
     private final GraphParameters mGraphParameters = new GraphParameters();
     /**
@@ -64,16 +63,30 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         initialise();
     }
 
+    /**
+     * @param context application context
+     * @param attrs   attributes to be applied
+     */
     public GraphView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialise(attrs);
     }
 
+    /**
+     * @param context      application context
+     * @param attrs        attributes to be applied
+     * @param defStyleAttr style attributes
+     */
     public GraphView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialise(attrs);
     }
 
+    /**
+     * Generalized initialise method called only by the constructors where there is attributes to be
+     * applied
+     * @param attrs attributes to be applied
+     */
     private void initialise(AttributeSet attrs) {
         TypedArray a = getContext().getTheme().obtainStyledAttributes(
                 attrs,
@@ -95,6 +108,9 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         initialise();
     }
 
+    /**
+     * Local object setup
+     */
     private void initialise() {
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
@@ -128,6 +144,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
     /**
      * The graphManager thread is started in here which will cause the surface view to start
      * displaying
+     *
      * @param holder the current surface holder
      */
     @Override
@@ -173,7 +190,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * Stop updating the screen and remove signal listeners
      */
     public void stop() {
-        mBackgroundManager.stop();
+        mBackgroundManager.removeAllChildGridLines();
 
         boolean retry = true;
         if (mGraphManagerThread != null) {
@@ -201,11 +218,16 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         mSignalManager.doDraw(canvas);
     }
 
+    /**
+     * @return the manager for background drawing
+     */
     public BackgroundManager getBackgroundManager() {
         return mBackgroundManager;
     }
 
-    @SuppressWarnings("WeakerAccess")
+    /**
+     * @return the manager for drawing signals
+     */
     public SignalManager getSignalManager() {
         return mSignalManager;
     }
@@ -228,14 +250,23 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         mBackgroundManager.setXAxisLinear();
     }
 
+    /**
+     * @return parameters and limits of the current graph
+     */
     public GraphParameters getGraphParameters() {
         return mGraphParameters;
     }
 
+    /**
+     * @return the zoom scaling for the x axis
+     */
     public ZoomDisplay getXZoomDisplay() {
         return mXZoomDisplay;
     }
 
+    /**
+     * @return the zoom scaling for the y axis
+     */
     public ZoomDisplay getYZoomDisplay() {
         return mYZoomDisplay;
     }
@@ -253,7 +284,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
          */
         private boolean mRun = false;
 
-        public GraphManagerThread() {
+        GraphManagerThread() {
             setFocusable(true);
         }
 
@@ -296,7 +327,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
          *
          * @param run true to run, false to shut down
          */
-        public void setRun(boolean run) {
+        void setRun(boolean run) {
             mRun = run;
         }
 
@@ -312,7 +343,6 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
             return mSignalManager.addSignalBuffer(id, sizeOfBuffer, axisParameters, color);
         }
 
-        @SuppressWarnings("SameParameterValue")
         public void removeInput(int id) {
             mSignalManager.removedSignalBuffer(id);
         }

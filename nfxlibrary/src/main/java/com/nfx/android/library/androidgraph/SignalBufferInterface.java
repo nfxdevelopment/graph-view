@@ -7,9 +7,9 @@ import com.nfx.android.library.graphbufferinput.InputListener;
  * NFX Development
  * Created by nick on 17/07/16.
  * <p/>
- * This is the middle man to communicate to the input or the Signal Buffer to display
+ * An interface to communicate to the input or the Signal Buffer to display
  */
-public class SignalBufferInterface extends InputListener {
+class SignalBufferInterface extends InputListener {
     private SignalBuffer mSignalBuffer = null;
 
     /**
@@ -17,7 +17,7 @@ public class SignalBufferInterface extends InputListener {
      *
      * @param signalBuffer the display object
      */
-    public SignalBufferInterface(SignalBuffer signalBuffer) {
+    SignalBufferInterface(SignalBuffer signalBuffer) {
         this.mSignalBuffer = signalBuffer;
     }
 
@@ -29,8 +29,8 @@ public class SignalBufferInterface extends InputListener {
      * @param minimumXValue maximum value of scaled buffer
      * @param scaleToParameters target axis
      * */
-    public void getScaledBuffer(float[] scaledBuffer, float minimumXValue, float maximumXValue,
-                                AxisParameters scaleToParameters) {
+    void getScaledBuffer(float[] scaledBuffer, float minimumXValue, float maximumXValue,
+                         AxisParameters scaleToParameters) {
         mSignalBuffer.getScaledBuffer(scaledBuffer, minimumXValue, maximumXValue,
                 scaleToParameters);
     }
@@ -40,7 +40,7 @@ public class SignalBufferInterface extends InputListener {
      *
      * @param position a value between minimumX and maximumX
      */
-    public float getValueAtPosition(float position) {
+    float getValueAtPosition(float position) {
         return mSignalBuffer.getValueAtPosition(position);
     }
 
@@ -62,6 +62,6 @@ public class SignalBufferInterface extends InputListener {
 
     @Override
     public void inputRemoved() {
-        // TODO Find a way to remove the signal
+        // TODO Look at a way to automate the removal of a signal
     }
 }

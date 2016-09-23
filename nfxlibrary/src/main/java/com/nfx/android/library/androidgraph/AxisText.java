@@ -10,7 +10,7 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 /**
  * NFX Development
  * Created by nick on 29/10/15.
- *
+ * <p/>
  * Base class for drawing axis text onto a canvas
  */
 abstract class AxisText extends DrawableObject {
@@ -61,6 +61,12 @@ abstract class AxisText extends DrawableObject {
         mPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
     }
 
+    /**
+     * Return the string to display for the given grid line
+     *
+     * @param gridLine grid line number between 0 and max number of grid lines
+     * @return string to display
+     */
     private String displayString(int gridLine) {
         float locationOnGraph = mGridLines.intersect(gridLine);
 
@@ -99,7 +105,11 @@ abstract class AxisText extends DrawableObject {
         return (Math.abs(mPaint.ascent()) + Math.abs(mPaint.descent()));
     }
 
-    public void calculateGridLineValues() {
+    /**
+     * Calculate and completed the array of displayed strings. Call when there is a change in graph
+     * display
+     */
+    void calculateGridLineValues() {
         for (int i = 0; i < mGridLineValues.length; ++i) {
             mGridLineValues[i] = displayString(i);
         }

@@ -11,11 +11,13 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
  *
  * Draws linear style grid lines in the y plane. Call doDraw with the canvas in which to draw on
  */
-public class LinYGridLines extends LinGridLines {
+class LinYGridLines extends LinGridLines {
     /**
      * Constructor
+     *
+     * @param axisParameters        parameters of graph shown
      */
-    public LinYGridLines(AxisParameters axisParameters) {
+    LinYGridLines(AxisParameters axisParameters) {
         super(AxisOrientation.yAxis, axisParameters);
     }
 

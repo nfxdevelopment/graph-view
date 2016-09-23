@@ -15,6 +15,8 @@ import java.util.List;
 /**
  * NFX Development
  * Created by nick on 5/08/16.
+ * <p/>
+ * An adaptor to display all the marker details in a floating widget
  */
 public class MarkerAdapter extends BaseAdapter {
     private final Context mContext;
@@ -75,17 +77,17 @@ public class MarkerAdapter extends BaseAdapter {
         return v;
     }
 
-    public void refreshList() {
+    void refreshList() {
         mHandler.post(mRefreshListRun);
     }
 }
 
 class MarkerViewHolder {
-    public final TextView mXValue;
-    public final TextView mYValue;
-    public final View mMarkerColour;
+    final TextView mXValue;
+    final TextView mYValue;
+    final View mMarkerColour;
 
-    public MarkerViewHolder(View base) {
+    MarkerViewHolder(View base) {
         mXValue = (TextView) base.findViewById(R.id.marker_x_value);
         mYValue = (TextView) base.findViewById(R.id.marker_y_value);
         mMarkerColour = base.findViewById(R.id.marker_colour);

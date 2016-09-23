@@ -13,6 +13,7 @@ abstract class LinGridLines extends GridLines {
      * Constructor which passes straight through
      *
      * @param axisOrientation either the x or y axis
+     * @param axisParameters  parameters of graph shown
      */
     LinGridLines(AxisOrientation axisOrientation, AxisParameters axisParameters) {
         super(axisOrientation, axisParameters);

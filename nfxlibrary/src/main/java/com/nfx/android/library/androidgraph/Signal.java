@@ -9,13 +9,11 @@ import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
- *
+ * <p/>
  * This object will draw a signal on screen. The object has the ability to draw either in a
  * logarithmic or linear fashion at runtime
  */
-public class Signal extends DrawableObject {
-    @SuppressWarnings("unused")
-    private static final String TAG = "Signal";
+class Signal extends DrawableObject {
     /**
      * The buffer which will be drawn by this object
      */
@@ -37,6 +35,8 @@ public class Signal extends DrawableObject {
      * Constructor
      *
      * @param signalBufferInterface the buffer to be drawn
+     * @param graphParameters       axis parameters of the current graph
+     * @param xZoomDisplay          zoom object for the x axis
      */
     Signal(GraphParameters graphParameters, SignalBufferInterface
             signalBufferInterface, ZoomDisplay xZoomDisplay) {
@@ -151,7 +151,10 @@ public class Signal extends DrawableObject {
 
     }
 
-    public SignalBufferInterface getSignalBufferInterface() {
+    /**
+     * @return the interface to the signal buffer
+     */
+    SignalBufferInterface getSignalBufferInterface() {
         return mSignalBufferInterface;
     }
 

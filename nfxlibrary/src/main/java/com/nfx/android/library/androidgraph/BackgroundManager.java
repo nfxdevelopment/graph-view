@@ -8,14 +8,12 @@ import com.nfx.android.library.androidgraph.AxisScale.GraphParameters;
 /**
  * NFX Development
  * Created by nick on 28/10/15.
- *
+ * <p/>
  * The background manager holders many drawable objects which are considered background objects
  * It makes batch calls to DoDraw functions of all it's members and individual sizing options
  * are possible by overriding surfaceChanged
  */
-public class BackgroundManager {
-    @SuppressWarnings("unused")
-    private static final String TAG = "BackgroundManager";
+class BackgroundManager {
     /**
      * An object which draws onto the canvas
      **/
@@ -51,7 +49,7 @@ public class BackgroundManager {
      * @param context         application context
      * @param graphParameters An object holding the graph limits
      */
-    public BackgroundManager(Context context, GraphParameters graphParameters) {
+    BackgroundManager(Context context, GraphParameters graphParameters) {
         this();
         this.mGraphParameters = graphParameters;
         mShowAxisText = true;
@@ -114,7 +112,7 @@ public class BackgroundManager {
      *
      * @param yZoomDisplay zoom object for the y axis
      */
-    public void setYZoomDisplay(ZoomDisplay yZoomDisplay) {
+    void setYZoomDisplay(ZoomDisplay yZoomDisplay) {
         mYGridLines.setZoomDisplay(yZoomDisplay);
         mBoarderText.setYZoomDisplay(yZoomDisplay);
     }
@@ -124,12 +122,15 @@ public class BackgroundManager {
      *
      * @param zoomDisplay zoom object for the x axis
      */
-    public void setXZoomDisplay(ZoomDisplay zoomDisplay) {
+    void setXZoomDisplay(ZoomDisplay zoomDisplay) {
         mXGridLines.setZoomDisplay(zoomDisplay);
         mBoarderText.setXZoomDisplay(zoomDisplay);
     }
 
-    public void setXAxisLogarithmic() {
+    /**
+     * Handle changes to display the x axis as a logarithmic scale
+     */
+    void setXAxisLogarithmic() {
         // We want the decades located on the major grid lines but want the max to be 22.05K
         // therefore we have to do a fudge to make 100K the maximum and zoom to 0 - 22.05K
         float max = mGraphParameters.getXAxisParameters().getMaximumValue();
@@ -151,7 +152,10 @@ public class BackgroundManager {
         mXGridLines.setChildGridLineScale(Scale.logarithmic);
     }
 
-    public void setXAxisLinear() {
+    /**
+     * Handle changes to display the x axis as a linear scale
+     */
+    void setXAxisLinear() {
         // This will scale the x axis in a logical fashion. it will round up to a value based on
         // the iterator. The iterator will grown by a factor of 10 after each 10 iterations round
         // round the loop. results eg. 22500 = 30000 | 0.05 = 0.1
@@ -178,18 +182,31 @@ public class BackgroundManager {
         mXGridLines.setChildGridLineScale(Scale.linear);
     }
 
-    public void setBackgroundColour(int colour) {
+    /**
+     * Set the colour of the background
+     *
+     * @param colour colour to set
+     */
+    void setBackgroundColour(int colour) {
         mBackground.setColour(colour);
     }
 
-    public void setGridLineColour(int colour) {
+    /**
+     * Set the colour of the grid lines
+     *
+     * @param colour colour to set
+     */
+    void setGridLineColour(int colour) {
         mXGridLines.setColour(colour);
         mYGridLines.setColour(colour);
         mBoarder.setColour(colour);
         mBoarderText.setColour(colour);
     }
 
-    public void stop() {
+    /**
+     * Remove child grid lines for x and y axis
+     */
+    void removeAllChildGridLines() {
         mXGridLines.removeAllChildGridLines();
         mYGridLines.removeAllChildGridLines();
     }

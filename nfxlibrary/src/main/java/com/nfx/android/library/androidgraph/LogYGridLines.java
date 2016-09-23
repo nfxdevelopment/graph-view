@@ -8,17 +8,21 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
 /**
  * NFX Development
  * Created by nick on 27/10/15.
- *
+ * </p>
  * Draws logarithmic style grid lines in the y plane. Call doDraw with the canvas in which to
  * draw on
  */
-public class LogYGridLines extends LogGridLines {
+class LogYGridLines extends LogGridLines {
 
     /**
      * Constructor
+     *
+     * @param axisParameters        parameters of graph shown
+     * @param gridLineMinimumValue  minimum value displayed by these grid lines
+     * @param gridLineMaximumValue  maximum value displayed by these grid lines
      */
-    public LogYGridLines(AxisParameters axisParameters, float gridLineMinimumValue,
-                         float gridLineMaximumValue) {
+    LogYGridLines(AxisParameters axisParameters, float gridLineMinimumValue,
+                  float gridLineMaximumValue) {
         super(AxisOrientation.yAxis, axisParameters, gridLineMinimumValue, gridLineMaximumValue);
     }
 

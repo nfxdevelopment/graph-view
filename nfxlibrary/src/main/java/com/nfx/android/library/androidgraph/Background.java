@@ -6,17 +6,17 @@ import android.graphics.Color;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
- *
+ * <p/>
  * Fills the given drawableArea with a color. The default is Black
  */
-public class Background extends DrawableObject {
+class Background extends DrawableObject {
 
     /**
      * the doDraw function will take this color and paint the canvas
      **/
     private static final int INITIAL_COLOR = Color.BLACK;
 
-    public Background() {
+    Background() {
         mPaint.setColor(INITIAL_COLOR);
     }
 

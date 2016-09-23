@@ -9,13 +9,22 @@ import com.nfx.android.library.androidgraph.AxisScale.AxisParameters;
  * To be extend by a axis specific class.
  */
 abstract class LogGridLines extends GridLines {
+    /**
+     * minimum value displayed by these grid lines
+     */
     private final float mGridLineMinimumValue;
+    /**
+     * span of these gridlines
+     */
     private final float mGridLineSpanValue;
 
     /**
-     * Constructor which passes straight through
-     *]
-     * @param axisOrientation either the x or y axis
+     * Constructor
+     *
+     * @param axisOrientation       either the x or y axis
+     * @param axisParameters        parameters of graph shown
+     * @param gridLineMinimumValue  minimum value displayed by these grid lines
+     * @param gridLineMaximumValue  maximum value displayed by these grid lines
      */
     LogGridLines(AxisOrientation axisOrientation, AxisParameters axisParameters,
                  float gridLineMinimumValue, float gridLineMaximumValue) {
