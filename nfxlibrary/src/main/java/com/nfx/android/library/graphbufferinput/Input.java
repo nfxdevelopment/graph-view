@@ -1,13 +1,15 @@
 package com.nfx.android.library.graphbufferinput;
 
-import com.nfx.android.library.androidgraph.GraphView;
+import android.util.SparseArray;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.nfx.android.library.androidgraph.GraphView;
 
 /**
  * NFX Development
  * Created by nick on 10/11/15.
+ * <p/>
+ * This is the bare bones of an buffer input. Other objects can subscribe to buffer and settings
+ * updates. Inherit from this class and implement the input type
  */
 public abstract class Input {
     /**
@@ -17,7 +19,7 @@ public abstract class Input {
     /**
      * Interface to update buffer data
      */
-    final Map<Integer, InputListener> mInputListeners = new HashMap<>();
+    private final SparseArray<InputListener> mInputListeners = new SparseArray<>();
     /**
      * Used to pause the input
      */
@@ -30,7 +32,6 @@ public abstract class Input {
     /**
      * Initialise anything that needs to be setup prior to start
      */
-    @SuppressWarnings("unused")
     public abstract void initialise();
 
     /**
@@ -44,7 +45,7 @@ public abstract class Input {
     public abstract void stop();
 
     /**
-     * Add an object to listen the input
+     * Add a listening object
      *
      * @param inputListener listener object
      */
@@ -62,18 +63,54 @@ public abstract class Input {
     }
 
     /**
-     * destroy the buffers and listeners getting ready to die
+     * Call when block size is changed
+     *
+     * @param blockSize the new input block size
      */
-    public void destroy() {
-        for(InputListener inputListener : mInputListeners.values()) {
-            inputListener.inputRemoved();
+    void notifyListenersOfInputBlockSizeChange(int blockSize) {
+        final int listenersSize = mInputListeners.size();
+        for(int i = 0; i < listenersSize; i++) {
+            int key = mInputListeners.keyAt(i);
+            mInputListeners.get(key).inputBlockSizeUpdate(blockSize);
         }
     }
 
+    /**
+     * Call when there is a buffer update
+     *
+     * @param buffer the new buffer
+     */
+    protected void notifyListenersOfBufferChange(float[] buffer) {
+        final int listenersSize = mInputListeners.size();
+        for(int i = 0; i < listenersSize; i++) {
+            int key = mInputListeners.keyAt(i);
+            mInputListeners.get(key).bufferUpdate(buffer);
+        }
+    }
+
+    /**
+     * destroy the buffers and listeners getting ready to die
+     */
+    public void destroy() {
+        final int listenersSize = mInputListeners.size();
+        for(int i = 0; i < listenersSize; i++) {
+            int key = mInputListeners.keyAt(i);
+            mInputListeners.get(key).inputRemoved();
+        }
+    }
+
+    /**
+     * @return if the input is paused
+     */
     public boolean getPaused() {
         return mPaused;
     }
 
+    /**
+     * Set the input to pause/start
+     *
+     * @param paused set true to pause
+     */
     public void setPaused(boolean paused) {
         mPaused = paused;
     }

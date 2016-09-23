@@ -10,7 +10,7 @@ import org.jtransforms.fft.FloatFFT_1D;
 /**
  * NFX Development
  * Created by nick on 30/11/15.
- *
+ * <p/>
  * This class takes the microphone input and computes the fft of signal. In addition to this the
  * final buffer is logarithmic
  */
@@ -87,7 +87,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     protected void readDone(float[] buffer) {
         applyMagnitudeConversions(buffer);
         applyingFFTAveraging();
-        updateListenerBuffers(mReturnedMagnitudeBuffer);
+        notifyListenersOfBufferChange(mReturnedMagnitudeBuffer);
     }
 
     protected void applyMagnitudeConversions(float buffer[]) {
@@ -166,7 +166,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     public void setInputBlockSize(int inputBlockSize) {
         boolean running = isRunning();
 
-        final int audioBufferSize = AudioRecord.getMinBufferSize(sSampleRate,
+        final int audioBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
 
         if(running) {
@@ -181,9 +181,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
         // As we need to change the buffer size of the input we have to change reinitialise all the
         // arrays
-        for(InputListener inputListener : mInputListeners.values()) {
-            inputListener.inputBlockSizeUpdate(mInputBlockSize / 2);
-        }
+        notifyListenersOfInputBlockSizeChange(mInputBlockSize / 2);
 
         initialise();
         if(running) {

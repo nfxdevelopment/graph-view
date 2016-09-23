@@ -18,7 +18,7 @@ public abstract class MicrophoneInput extends Input {
     /**
      * The desired sampling rate for this analyser, in samples/sec.
      */
-    static final int sSampleRate = 48000;
+    static final int SAMPLE_RATE = 48000;
     private final static String TAG = "MicrophoneInput";
     /**
      * Audio input block size, in samples.
@@ -38,8 +38,6 @@ public abstract class MicrophoneInput extends Input {
     private Thread mReaderThread = null;
 
     /**
-     * Constructor to initialise microphone for listening
-     *
      * @param graphSignalInputInterface interface to send signal data to
      */
     @SuppressWarnings("WeakerAccess")
@@ -48,9 +46,8 @@ public abstract class MicrophoneInput extends Input {
     }
 
     /**
-     * Constructor to initialise microphone for listening
-     *
      * @param graphSignalInputInterface interface to send signal data to
+     * @param inputBlockSize            initial blockSize
      */
     MicrophoneInput(GraphView.GraphSignalInputInterface graphSignalInputInterface,
                     int inputBlockSize) {
@@ -60,7 +57,7 @@ public abstract class MicrophoneInput extends Input {
 
     @Override
     public void initialise() {
-        final int audioBufferSize = AudioRecord.getMinBufferSize(sSampleRate,
+        final int audioBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
 
         if(mInputBlockSize < audioBufferSize) {
@@ -73,7 +70,7 @@ public abstract class MicrophoneInput extends Input {
         // Set up the audio input.
         AudioFormat audioFormat = new AudioFormat.Builder()
                 .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
-                .setSampleRate(sSampleRate)
+                .setSampleRate(SAMPLE_RATE)
                 .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
                 .build();
         mAudioInput = new AudioRecord.Builder()
@@ -116,28 +113,26 @@ public abstract class MicrophoneInput extends Input {
     private void readerRun() {
         float[] buffer = new float[mInputBlockSize];
 
-        try {
-            Log.i(TAG, "Reader: Start Recording");
-            mAudioInput.startRecording();
-            while(mRunning) {
+        Log.i(TAG, "Reader: Start Recording");
+        mAudioInput.startRecording();
+        while(mRunning) {
 
-                int bytesRead = mAudioInput.read(buffer, 0, mInputBlockSize, AudioRecord
-                        .READ_BLOCKING);
+            int bytesRead = mAudioInput.read(buffer, 0, mInputBlockSize, AudioRecord
+                    .READ_BLOCKING);
 
-                if (bytesRead < 0) {
-                    Log.e(TAG, "Audio read failed: error " + bytesRead);
-                    mRunning = false;
-                    break;
-                }
-
-                if (!mPaused) {
-                    readDone(buffer);
-                }
+            if(bytesRead < 0) {
+                Log.e(TAG, "Audio read failed: error " + bytesRead);
+                mRunning = false;
+                break;
             }
-        } finally {
-            if(mAudioInput.getState() == AudioRecord.RECORDSTATE_RECORDING)
-                mAudioInput.stop();
+
+            if(!mPaused) {
+                readDone(buffer);
+            }
         }
+
+        if(mAudioInput.getState() == AudioRecord.RECORDSTATE_RECORDING)
+            mAudioInput.stop();
     }
 
     /**
@@ -146,27 +141,33 @@ public abstract class MicrophoneInput extends Input {
      * @param buffer Buffer containing the data.
      */
     protected void readDone(float[] buffer) {
-        updateListenerBuffers(buffer);
+        notifyListenersOfBufferChange(buffer);
     }
 
-    protected void updateListenerBuffers(float[] buffer) {
-        for(InputListener inputListener : mInputListeners.values()) {
-            inputListener.bufferUpdate(buffer);
-        }
-    }
-
+    /**
+     * @return current sample rate
+     */
     public int getSampleRate() {
-        return sSampleRate;
+        return SAMPLE_RATE;
     }
 
+    /**
+     * @return current input block size
+     */
     public int getInputBlockSize() {
         return mInputBlockSize;
     }
 
+    /**
+     * Set the block size for the audio input. The audio stream will be restarted if running.
+     * If the block size is set lower than is possible by the device. The minimum block size is used
+     *
+     * @param inputBlockSize block size to set to
+     */
     public void setInputBlockSize(int inputBlockSize) {
         boolean running = mRunning;
 
-        final int audioBufferSize = AudioRecord.getMinBufferSize(sSampleRate,
+        final int audioBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
 
         if(running) {
@@ -179,11 +180,7 @@ public abstract class MicrophoneInput extends Input {
             mInputBlockSize = inputBlockSize;
         }
 
-        // As we need to change the buffer size of the input we have to change reinitialise all the
-        // arrays
-        for(InputListener inputListener : mInputListeners.values()) {
-            inputListener.inputBlockSizeUpdate(mInputBlockSize);
-        }
+        notifyListenersOfInputBlockSizeChange(mInputBlockSize);
 
         initialise();
 
@@ -192,6 +189,9 @@ public abstract class MicrophoneInput extends Input {
         }
     }
 
+    /**
+     * @return is the audio capture thread running
+     */
     @SuppressWarnings("WeakerAccess")
     public boolean isRunning() {
         return mRunning;

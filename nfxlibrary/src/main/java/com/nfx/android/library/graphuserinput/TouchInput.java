@@ -10,9 +10,8 @@ import android.view.View;
  * NFX Development
  * Created by nick on 23/11/15.
  * <p/>
- * Implements touch listeners which are needed to scale and move signals on a graph. the Graphview
- * is passed in to listen for touch events and the graph input is passed in to provide information
- * when a touch event occurs
+ * Merges the use of ScaleGestureDetector and GestureDetectorCompat so all touch interactions are
+ * passed to the listener through medium
  */
 public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeListener {
     /**
@@ -29,7 +28,7 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
     private final TouchListener mTouchListener;
 
     /**
-     * Pass in the view in which to listen for touch inputs from and the input that wants to be
+     * Pass in the view in which to listen for touch inputs from and the object that wants to be
      * informed of the touch inputs
      *
      * @param view  listen to the touch inputs from view
@@ -42,9 +41,7 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
         view.addOnLayoutChangeListener(this);
 
         // Sets up interactions
-        /*
-      The scale listener, used for handling multi-finger scale gestures.
-     */
+        // The scale listener, used for handling multi-finger scale gestures
         ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener = new
                 ScaleGestureDetector.SimpleOnScaleGestureListener() {
                     @Override
@@ -58,6 +55,7 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
                     }
                 };
         mScaleGestureDetector = new ScaleGestureDetector(view.getContext(), mScaleGestureListener);
+
         GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector
                 .SimpleOnGestureListener() {
             @Override
@@ -105,6 +103,9 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
         return retVal || v.onTouchEvent(event);
     }
 
+    /**
+     * Pass on layout change information only when things have changed
+     */
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                int leftWas, int topWas, int rightWas, int bottomWas) {
@@ -116,7 +117,7 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
     }
 
     /**
-     * Implement this listener within com.nfx.android.library.graphbufferinput.Input
+     * All events will be passed onto this listener
      */
     public interface TouchListener {
         void surfaceChanged(int width, int height);

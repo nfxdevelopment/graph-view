@@ -24,10 +24,7 @@ public class TestInput extends Input {
             buffer[i] = (float) i / (float) length;
         }
 
-        //noinspection ConstantConditions
-        for(InputListener inputListener : mInputListeners.values()) {
-            inputListener.bufferUpdate(buffer);
-        }
+        notifyListenersOfBufferChange(buffer);
     }
 
     @Override
