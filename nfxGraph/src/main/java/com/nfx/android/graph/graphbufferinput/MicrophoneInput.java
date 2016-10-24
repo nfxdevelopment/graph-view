@@ -3,6 +3,7 @@ package com.nfx.android.graph.graphbufferinput;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Log;
 
 /**
@@ -16,7 +17,7 @@ public abstract class MicrophoneInput extends Input {
     /**
      * The desired sampling rate for this analyser, in samples/sec.
      */
-    static final int SAMPLE_RATE = 48000;
+    private static final int SAMPLE_RATE = 48000;
     private final static String TAG = "MicrophoneInput";
     /**
      * Audio input block size, in samples.
@@ -34,6 +35,10 @@ public abstract class MicrophoneInput extends Input {
      * The thread, if any, which is currently reading.  Null if not mRunning
      */
     private Thread mReaderThread = null;
+    private int mAudioFormat = AudioFormat.ENCODING_PCM_16BIT;
+    @SuppressWarnings("FieldCanBeLocal")
+    private int mChannelConfig = AudioFormat.CHANNEL_IN_MONO;
+    private int mBufferSizeInBytes = 0;
 
     /**
      * @param inputBlockSize            initial blockSize
@@ -41,31 +46,47 @@ public abstract class MicrophoneInput extends Input {
     MicrophoneInput(int inputBlockSize) {
         super();
         this.mInputBlockSize = inputBlockSize;
-    }
 
-    @Override
-    public void initialise() {
-        final int audioBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
-
-        if(mInputBlockSize < audioBufferSize) {
-            mInputBlockSize = audioBufferSize;
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            mAudioFormat = AudioFormat.ENCODING_PCM_FLOAT;
+        } else {
+            mAudioFormat = AudioFormat.ENCODING_PCM_16BIT;
         }
     }
 
     @Override
+    public void initialise() {
+    }
+
+    @Override
     public void start() {
+        final int audioBufferSizeInBytes = AudioRecord.getMinBufferSize(SAMPLE_RATE, mChannelConfig,
+                mAudioFormat);
+
+        if(mAudioFormat == AudioFormat.ENCODING_PCM_FLOAT) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mInputBlockSize = Math.max(mInputBlockSize, audioBufferSizeInBytes / 4);
+                mBufferSizeInBytes = mInputBlockSize * 4;
+            } else {
+                throw new RuntimeException("ENCODING_PCM_FLOAT is not supported below Android" +
+                        " Version 6.0");
+            }
+        } else if(mAudioFormat == AudioFormat.ENCODING_PCM_16BIT) {
+            mInputBlockSize = Math.max(mInputBlockSize, audioBufferSizeInBytes / 2);
+            mBufferSizeInBytes = mInputBlockSize * 2;
+        } else if(mAudioFormat == AudioFormat.ENCODING_PCM_8BIT) {
+            mInputBlockSize = Math.max(mInputBlockSize, audioBufferSizeInBytes);
+            mBufferSizeInBytes = mInputBlockSize;
+        } else {
+            throw new RuntimeException("Unrecognized Encoding format only ENCODING_PCM_FLOAT," +
+                    " ENCODING_PCM_16BIT , ENCODING_PCM_8BIT is supported");
+        }
+
+        notifyListenersOfInputBlockSizeChange(mInputBlockSize);
+
         // Set up the audio input.
-        AudioFormat audioFormat = new AudioFormat.Builder()
-                .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
-                .setSampleRate(SAMPLE_RATE)
-                .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-                .build();
-        mAudioInput = new AudioRecord.Builder()
-                .setAudioSource(MediaRecorder.AudioSource.MIC)
-                .setAudioFormat(audioFormat)
-                .setBufferSizeInBytes(mInputBlockSize)
-                .build();
+        mAudioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, mChannelConfig,
+                mAudioFormat, mBufferSizeInBytes);
 
         mRunning = true;
         mReaderThread = new Thread(new Runnable() {
@@ -99,14 +120,37 @@ public abstract class MicrophoneInput extends Input {
      * Main loop of the audio reader.  This runs in our own thread.
      */
     private void readerRun() {
-        float[] buffer = new float[mInputBlockSize];
+        float[] bufferFloat = new float[mInputBlockSize];
+        short[] bufferShort = new short[mInputBlockSize];
+        byte[] bufferByte = new byte[mInputBlockSize];
 
         Log.i(TAG, "Reader: Start Recording");
         mAudioInput.startRecording();
         while(mRunning) {
 
-            int bytesRead = mAudioInput.read(buffer, 0, mInputBlockSize, AudioRecord
-                    .READ_BLOCKING);
+            int bytesRead;
+            if(mAudioInput.getAudioFormat() == AudioFormat.ENCODING_PCM_FLOAT) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    bytesRead = mAudioInput.read(bufferFloat, 0, mInputBlockSize, AudioRecord
+                            .READ_BLOCKING);
+                } else {
+                    throw new RuntimeException("ENCODING_PCM_FLOAT is not supported below Android" +
+                            " Version 6.0");
+                }
+            } else if(mAudioInput.getAudioFormat() == AudioFormat.ENCODING_PCM_16BIT) {
+                bytesRead = mAudioInput.read(bufferShort, 0, mInputBlockSize);
+                for(int i = 0; i < mInputBlockSize; i++) {
+                    bufferFloat[i] = (float) bufferShort[i] / (float) Short.MAX_VALUE;
+                }
+            } else if(mAudioInput.getAudioFormat() == AudioFormat.ENCODING_PCM_8BIT) {
+                bytesRead = mAudioInput.read(bufferByte, 0, mInputBlockSize);
+                for(int i = 0; i < mInputBlockSize; i++) {
+                    bufferFloat[i] = (float) bufferByte[i] / (float) Byte.MAX_VALUE;
+                }
+            } else {
+                throw new RuntimeException("Unrecognized Encoding format only ENCODING_PCM_FLOAT," +
+                        " ENCODING_PCM_16BIT , ENCODING_PCM_8BIT is supported");
+            }
 
             if(bytesRead < 0) {
                 Log.e(TAG, "Audio read failed: error " + bytesRead);
@@ -115,7 +159,7 @@ public abstract class MicrophoneInput extends Input {
             }
 
             if(!mPaused) {
-                readDone(buffer);
+                readDone(bufferFloat);
             }
         }
 
@@ -155,20 +199,9 @@ public abstract class MicrophoneInput extends Input {
     public void setInputBlockSize(int inputBlockSize) {
         boolean running = mRunning;
 
-        final int audioBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
-
         if(running) {
             stop();
         }
-
-        if(inputBlockSize < audioBufferSize) {
-            mInputBlockSize = audioBufferSize;
-        } else {
-            mInputBlockSize = inputBlockSize;
-        }
-
-        notifyListenersOfInputBlockSizeChange(mInputBlockSize);
 
         initialise();
 

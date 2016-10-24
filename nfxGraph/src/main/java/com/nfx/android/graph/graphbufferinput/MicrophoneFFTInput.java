@@ -1,8 +1,5 @@
 package com.nfx.android.graph.graphbufferinput;
 
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-
 import com.nfx.android.graph.androidgraph.GraphView;
 
 import org.jtransforms.fft.FloatFFT_1D;
@@ -70,8 +67,8 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     }
 
     @Override
-    public void initialise() {
-        super.initialise();
+    public void start() {
+        super.start();
 
         mFftCalculations = new FloatFFT_1D(mInputBlockSize);
 
@@ -80,6 +77,9 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         mReturnedMagnitudeBuffer = new float[mInputBlockSize / 2];
 
         mHistoryMagnitudeBuffers = new float[mNumberOfHistoryBuffers][mInputBlockSize / 2];
+
+        notifyListenersOfInputBlockSizeChange(mInputBlockSize / 2);
+
     }
 
     /**
@@ -171,22 +171,11 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     public void setInputBlockSize(int inputBlockSize) {
         boolean running = isRunning();
 
-        final int audioBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_FLOAT);
-
         if(running) {
             stop();
         }
 
-        if(inputBlockSize < audioBufferSize) {
-            mInputBlockSize = audioBufferSize;
-        } else {
-            mInputBlockSize = inputBlockSize;
-        }
-
-        // As we need to change the buffer size of the input we have to change reinitialise all the
-        // arrays
-        notifyListenersOfInputBlockSizeChange(mInputBlockSize / 2);
+        mInputBlockSize = inputBlockSize;
 
         initialise();
         if(running) {
