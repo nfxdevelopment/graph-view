@@ -4,6 +4,7 @@ package com.nfx.android.graph.graphbufferinput;
  * NFX Development
  * Created by nick on 14/12/15.
  */
+@SuppressWarnings("unused")
 class TestInput extends Input {
 
     private float[] mBuffer;

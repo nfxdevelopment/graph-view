@@ -100,7 +100,8 @@ class BoarderText extends DrawableObject {
     }
 
     /**
-     * Return a string for the given value to display. Trucation will be applied to allow the string
+     * Return a string for the given value to display. Truncation will be applied to allow the
+     * string
      * to be displayed correctly on screen
      *
      * @param valueToDisplay the number to display

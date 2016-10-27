@@ -1,6 +1,7 @@
 package com.nfx.android.graph.androidgraph;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -96,11 +97,10 @@ public class GraphManager extends RelativeLayout {
         mMarkerAdapter = new MarkerAdapter(getContext(), mMarkerList);
 
         mMarkerInformation.setAdapter(mMarkerAdapter);
-
         mGraphView.getBackgroundManager().setBackgroundColour(
-                getContext().getColor(R.color.background));
+                ContextCompat.getColor(getContext(), R.color.background));
         mGraphView.getBackgroundManager().setGridLineColour(
-                getContext().getColor(R.color.gridLines));
+                ContextCompat.getColor(getContext(), R.color.gridLines));
     }
 
     /**
@@ -111,8 +111,8 @@ public class GraphManager extends RelativeLayout {
      */
     public void setMarkers(int signalId, boolean isShown) {
         if(isShown) {
-            addMarker(signalId, getContext().getColor(R.color.marker1));
-            addMarker(signalId, getContext().getColor(R.color.marker2));
+            addMarker(signalId, ContextCompat.getColor(getContext(), R.color.marker1));
+            addMarker(signalId, ContextCompat.getColor(getContext(), R.color.marker2));
         } else {
             removeMarker(signalId);
             mMarkerList.clear();

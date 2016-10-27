@@ -19,6 +19,8 @@ public abstract class MicrophoneInput extends Input {
      */
     private static final int SAMPLE_RATE = 48000;
     private final static String TAG = "MicrophoneInput";
+    @SuppressWarnings("FieldCanBeLocal")
+    private final int mChannelConfig = AudioFormat.CHANNEL_IN_MONO;
     /**
      * Audio input block size, in samples.
      */
@@ -37,7 +39,6 @@ public abstract class MicrophoneInput extends Input {
     private Thread mReaderThread = null;
     private int mAudioFormat = AudioFormat.ENCODING_PCM_16BIT;
     @SuppressWarnings("FieldCanBeLocal")
-    private int mChannelConfig = AudioFormat.CHANNEL_IN_MONO;
     private int mBufferSizeInBytes = 0;
 
     /**

@@ -4,7 +4,6 @@ import android.os.Build;
 
 import com.nfx.android.graph.BuildConfig;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,14 +18,15 @@ import static org.junit.Assert.assertThat;
  * NFX Development
  * Created by nick on 23/09/16.
  */
+@SuppressWarnings("unused")
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.LOLLIPOP, constants = BuildConfig.class)
 public class InputTest {
-    private TestInput testInput = new TestInput();
-    private TestListener testListener = new TestListener();
+    private final TestInput testInput = new TestInput();
+    private final TestListener testListener = new TestListener();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testInput.addInputListener(testListener);
         testInput.initialise();
         testInput.start();
@@ -55,11 +55,6 @@ public class InputTest {
 
         assertThat("Buffers are not equal. Listener not working", testInput.getBuffer(),
                 not(equalTo(testListener.getBuffer())));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
     }
 
 }
