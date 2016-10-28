@@ -102,10 +102,15 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
                     a.getFloat(R.styleable.GraphManager_minimum_y_value, 0));
             mGraphParameters.getYAxisParameters().setMaximumValue(
                     a.getFloat(R.styleable.GraphManager_maximum_y_value, 1));
+
+            initialise();
+
+            mBackgroundManager.setShowAxisText(
+                    a.getBoolean(R.styleable.GraphManager_show_axis_text, true));
+
         } finally {
             a.recycle();
         }
-        initialise();
     }
 
     /**

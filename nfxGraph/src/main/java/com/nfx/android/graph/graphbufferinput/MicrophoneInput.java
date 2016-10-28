@@ -24,7 +24,7 @@ public abstract class MicrophoneInput extends Input {
     /**
      * Audio input block size, in samples.
      */
-    int mInputBlockSize = 2048;
+    protected int mInputBlockSize = 2048;
     /**
      * Audio input device
      */
@@ -44,7 +44,7 @@ public abstract class MicrophoneInput extends Input {
     /**
      * @param inputBlockSize            initial blockSize
      */
-    MicrophoneInput(int inputBlockSize) {
+    public MicrophoneInput(int inputBlockSize) {
         super();
         this.mInputBlockSize = inputBlockSize;
 

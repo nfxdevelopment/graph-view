@@ -40,6 +40,10 @@ class BackgroundManager {
      * Graph Limits
      */
     private GraphParameters mGraphParameters;
+    /**
+     * App Context
+     */
+    private Context mContext;
 
 
     /**
@@ -52,12 +56,10 @@ class BackgroundManager {
     BackgroundManager(Context context, GraphParameters graphParameters) {
         this();
         this.mGraphParameters = graphParameters;
-        mShowAxisText = true;
+        this.mContext = context;
         mBoarderText = new BoarderText(context, graphParameters);
         mXGridLines = new LinXGridLines(graphParameters.getXAxisParameters());
         mYGridLines = new LinYGridLines(graphParameters.getYAxisParameters());
-        mXGridLines.showAxisText(context);
-        mYGridLines.showAxisText(context);
     }
 
     /**
@@ -210,4 +212,13 @@ class BackgroundManager {
         mXGridLines.removeAllChildGridLines();
         mYGridLines.removeAllChildGridLines();
     }
+
+
+    void setShowAxisText(boolean showAxisText) {
+        this.mShowAxisText = showAxisText;
+
+        mXGridLines.showAxisText(mContext);
+        mYGridLines.showAxisText(mContext);
+    }
+
 }
