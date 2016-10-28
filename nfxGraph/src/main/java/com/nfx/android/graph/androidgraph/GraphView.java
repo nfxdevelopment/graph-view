@@ -108,6 +108,11 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
             mBackgroundManager.setShowAxisText(
                     a.getBoolean(R.styleable.GraphManager_show_axis_text, true));
 
+            if(!a.getBoolean(R.styleable.GraphManager_disable_background_scrolling, false)) {
+                mBackgroundManager.setXZoomDisplay(mXZoomDisplay);
+                mBackgroundManager.setYZoomDisplay(mYZoomDisplay);
+            }
+
         } finally {
             a.recycle();
         }
@@ -132,9 +137,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         mXZoomDisplay = new ZoomDisplay(1f, 0f);
-        mBackgroundManager.setXZoomDisplay(mXZoomDisplay);
         mYZoomDisplay = new ZoomDisplay(1f, 0f);
-        mBackgroundManager.setYZoomDisplay(mYZoomDisplay);
     }
 
     /**
