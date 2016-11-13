@@ -57,7 +57,8 @@ public abstract class Input {
      *
      * @param blockSize the new input block size
      */
-    void notifyListenersOfInputBlockSizeChange(int blockSize) {
+    @SuppressWarnings("WeakerAccess")
+    protected void notifyListenersOfInputBlockSizeChange(int blockSize) {
         final int listenersSize = mInputListeners.size();
         for(int i = 0; i < listenersSize; i++) {
             int key = mInputListeners.keyAt(i);
