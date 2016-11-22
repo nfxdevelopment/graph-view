@@ -98,6 +98,7 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
      */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        mTouchListener.onTouch(event);
         boolean retVal = mScaleGestureDetector.onTouchEvent(event);
         retVal = mGestureDetector.onTouchEvent(event) || retVal;
         return retVal || v.onTouchEvent(event);
@@ -120,6 +121,8 @@ public class TouchInput implements View.OnTouchListener, View.OnLayoutChangeList
      * All events will be passed onto this listener
      */
     public interface TouchListener {
+        void onTouch(MotionEvent event);
+
         void surfaceChanged(int width, int height);
 
         boolean onDown(MotionEvent e);
