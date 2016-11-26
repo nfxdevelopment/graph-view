@@ -19,15 +19,21 @@ public class AxisParameters {
      * Maximum value of the axis
      */
     private float mMaximumValue = 1;
+    /**
+     * 0 intersect
+     */
+    private float mZeroIntercect = 0;
 
     /**
      * @param minimumValue initial minimum value of the axis
      * @param maximumValue initial maximum value of the axis
      * @param axisScale    which scale is the axis
      */
-    public AxisParameters(float minimumValue, float maximumValue, Scale axisScale) {
+    public AxisParameters(float minimumValue, float maximumValue, float mZeroIntercect,
+                          Scale axisScale) {
         this.mMinimumValue = minimumValue;
         this.mMaximumValue = maximumValue;
+        this.mZeroIntercect = mZeroIntercect;
         this.mAxisScale = axisScale;
     }
 
@@ -128,5 +134,21 @@ public class AxisParameters {
      */
     public float getAxisSpan() {
         return mMaximumValue - mMinimumValue;
+    }
+
+    /**
+     * @return 0 crossing point
+     */
+    public float getZeroIntercect() {
+        return mZeroIntercect;
+    }
+
+    /**
+     * Set the zero crossing point
+     *
+     * @param zeroIntercept value to set
+     */
+    public void setZeroIntercept(float zeroIntercept) {
+        this.mZeroIntercect = zeroIntercept;
     }
 }

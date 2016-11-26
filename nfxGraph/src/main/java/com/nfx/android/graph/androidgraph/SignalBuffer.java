@@ -18,9 +18,10 @@ public class SignalBuffer {
      */
     private final ZoomDisplay mYZoomDisplay;
     /**
-     * The minimum value the buffer holds on the X scale
+     * The Parameters of the axis'
      */
     private final AxisParameters mXAxisParameters;
+    private final AxisParameters mYAxisParameters;
     /**
      * buffer of given size which is worked out at runtime. This data is normalized 0-1
      */
@@ -29,10 +30,14 @@ public class SignalBuffer {
      * Constructor
      *
      * @param sizeOfBuffer size expecting to receive
+     * @param xAxisParameters parameters of x axis
+     * @param yAxisParameters parameters of Y axis
      */
     @SuppressWarnings("WeakerAccess")
-    public SignalBuffer(int sizeOfBuffer, AxisParameters xAxisParameters) {
+    public SignalBuffer(int sizeOfBuffer, AxisParameters xAxisParameters, AxisParameters
+            yAxisParameters) {
         this.mXAxisParameters = xAxisParameters;
+        this.mYAxisParameters = yAxisParameters;
 
         mBuffer = new float[sizeOfBuffer];
 
@@ -125,16 +130,10 @@ public class SignalBuffer {
                         roundedHighBound = (mBuffer.length - 1);
                     }
 
-                    int roundedDifference = roundedHighBound - roundedLowBound + 1;
+                    float displayValue = maximumValueForGivenRange(roundedLowBound,
+                            roundedHighBound);
 
-                    float average = 0;
-                    for(int g = roundedLowBound; g <= roundedHighBound; ++g) {
-                        average += mBuffer[g];
-                    }
-
-                    average /= (float) roundedDifference;
-
-                    scaledBuffer[i] = (average - mYZoomDisplay.getDisplayOffsetPercentage())
+                    scaledBuffer[i] = (displayValue - mYZoomDisplay.getDisplayOffsetPercentage())
                             / mYZoomDisplay.getZoomLevelPercentage();
 
                 }
@@ -217,6 +216,47 @@ public class SignalBuffer {
                 mXAxisParameters.getAxisSpan();
 
         return bufferPercentagePosition * (getSizeOfBuffer() - 1);
+    }
+
+    /**
+     * Average value for a given range within mBuffer
+     *
+     * @param minimumArrayPosition first position in array
+     * @param maxArrayPosition     last position in array
+     * @return average value
+     */
+    @SuppressWarnings("unused")
+    private float averageValueForGivenRange(int minimumArrayPosition, int maxArrayPosition) {
+        float displayValue = 0;
+        int positionDifference = minimumArrayPosition - maxArrayPosition + 1;
+
+        for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
+            displayValue += mBuffer[g];
+        }
+
+        displayValue /= (float) positionDifference;
+
+        return displayValue;
+    }
+
+    /**
+     * Find the maximum value for a given range within mBuffer
+     *
+     * @param minimumArrayPosition first position in array
+     * @param maxArrayPosition     last position in array
+     * @return maximum value
+     */
+    private float maximumValueForGivenRange(int minimumArrayPosition, int maxArrayPosition) {
+        float displayValue = mYAxisParameters.getZeroIntercect();
+
+        for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
+            if(Math.abs(mBuffer[g] - mYAxisParameters.getZeroIntercect()) >
+                    Math.abs(displayValue - mYAxisParameters.getZeroIntercect())) {
+                displayValue = mBuffer[g];
+            }
+        }
+
+        return displayValue;
     }
 
     private int getSizeOfBuffer() {

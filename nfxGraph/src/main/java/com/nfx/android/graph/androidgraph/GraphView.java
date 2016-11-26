@@ -102,6 +102,8 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
                     a.getFloat(R.styleable.GraphManager_minimum_y_value, 0));
             mGraphParameters.getYAxisParameters().setMaximumValue(
                     a.getFloat(R.styleable.GraphManager_maximum_y_value, 1));
+            mGraphParameters.getYAxisParameters().setZeroIntercept(
+                    a.getFloat(R.styleable.GraphManager_maximum_y_value, 0));
 
             initialise();
 
@@ -346,9 +348,10 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * graph manager
      */
     public class GraphSignalInputInterface {
-        public InputListener addInput(int id, int sizeOfBuffer, AxisParameters axisParameters,
-                                      int color) {
-            return mSignalManager.addSignalBuffer(id, sizeOfBuffer, axisParameters, color);
+        public InputListener addInput(int id, int sizeOfBuffer, AxisParameters xAxisParameters,
+                                      AxisParameters yAxisParameters, int color) {
+            return mSignalManager.addSignalBuffer(id, sizeOfBuffer, xAxisParameters,
+                    yAxisParameters, color);
         }
 
         public void removeInput(int id) {
