@@ -21,7 +21,6 @@ public class SignalBuffer {
      * The Parameters of the axis'
      */
     private final AxisParameters mXAxisParameters;
-    private final AxisParameters mYAxisParameters;
     /**
      * buffer of given size which is worked out at runtime. This data is normalized 0-1
      */
@@ -31,13 +30,10 @@ public class SignalBuffer {
      *
      * @param sizeOfBuffer size expecting to receive
      * @param xAxisParameters parameters of x axis
-     * @param yAxisParameters parameters of Y axis
      */
     @SuppressWarnings("WeakerAccess")
-    public SignalBuffer(int sizeOfBuffer, AxisParameters xAxisParameters, AxisParameters
-            yAxisParameters) {
+    public SignalBuffer(int sizeOfBuffer, AxisParameters xAxisParameters) {
         this.mXAxisParameters = xAxisParameters;
-        this.mYAxisParameters = yAxisParameters;
 
         mBuffer = new float[sizeOfBuffer];
 
@@ -64,9 +60,103 @@ public class SignalBuffer {
 
     /**
      * This will return a buffer with the desired {@code numberOfPoints} size. It will
-     * logarithmically scale the buffer so the receiving buffer can plot in a linear fashion
-     * The algorithm works out each new point separately. More often than not the new sample will
-     * fall between to of buffer points therefore we have to do some aliasing
+     * logarithmically scale (if required)  the buffer so the receiving buffer can plot in a linear
+     * fashion The algorithm works out each new point separately. More often than not the new sample
+     * will fall between to of buffer points therefore we have to do some aliasing
+     *
+     * @param minimumValuesBuffer minimum values of the block form
+     * @param maximumValuesBuffer maximum values of the block form
+     * @param maximumXValue minimum value of scaled buffer
+     * @param minimumXValue maximum value of scaled buffer
+     * @param scaleToParameters target axis
+     * */
+    void getScaledMinimumMaximumBuffers(float[] minimumValuesBuffer, float[]
+            maximumValuesBuffer,
+                                        float minimumXValue, float maximumXValue,
+                                        AxisParameters scaleToParameters) {
+        if(minimumValuesBuffer.length != maximumValuesBuffer.length) {
+            Log.e(TAG, "Block Form buffers are not of equal length");
+        }
+
+        int numberOfPoints = minimumValuesBuffer.length;
+
+        synchronized(this) {
+            for(int i = 0; i < numberOfPoints; i++) {
+                // Calculate the array index to read from
+                float centreOffset = scaledIndexBufferIndex(i, minimumXValue, maximumXValue,
+                        scaleToParameters, numberOfPoints);
+                float averageFromLowerIndex = scaledIndexBufferIndex(i - 1, minimumXValue,
+                        maximumXValue, scaleToParameters,
+                        numberOfPoints);
+                float averageFromHigherIndex = scaledIndexBufferIndex(i + 1, minimumXValue,
+                        maximumXValue, scaleToParameters,
+                        numberOfPoints);
+
+                // Work out the point falling between the centre and next offset and also the centre
+                // and last offset
+                float lowBound = centreOffset + ((averageFromLowerIndex - centreOffset) / 2f);
+                float highBound = centreOffset + ((averageFromHigherIndex - centreOffset) / 2f);
+
+                // If the point falls between 2 array indexes and the band is displaying less than
+                // two array points, then calculate the gradient for the crossing point at the
+                // current position. This smooths out the lower frequencies
+                if(centreOffset - lowBound < 2f && highBound - centreOffset < 2f) {
+                    float arrayPosRemainder = centreOffset % 1;
+
+                    if(arrayPosRemainder == 0) {
+                        maximumValuesBuffer[i] = minimumValuesBuffer[i] =
+                                (mBuffer[(int) centreOffset]
+                                        - mYZoomDisplay.getDisplayOffsetPercentage())
+                                        / mYZoomDisplay.getZoomLevelPercentage();
+                    } else {
+                        int lowerPosition = (int) Math.floor(centreOffset);
+                        int upperPosition = (int) Math.ceil(centreOffset);
+
+                        float lowerValue = mBuffer[lowerPosition];
+                        float upperValue = mBuffer[upperPosition];
+
+                        maximumValuesBuffer[i] = minimumValuesBuffer[i] =
+                                (lowerValue + ((upperValue - lowerValue) * arrayPosRemainder)
+                                        - mYZoomDisplay.getDisplayOffsetPercentage())
+                                        / mYZoomDisplay.getZoomLevelPercentage();
+                    }
+                } else { // If we are displaying more than 2 frequencies at a given point then
+                    // display the average
+                    int roundedLowBound = Math.round(lowBound);
+                    int roundedHighBound = Math.round(highBound);
+                    if(roundedLowBound < 0) {
+                        roundedLowBound = 0;
+                    }
+                    if(roundedHighBound > (mBuffer.length - 1)) {
+                        roundedHighBound = (mBuffer.length - 1);
+                    }
+
+                    // Get the minimum value
+                    float displayValue = minimumValueForGivenRange(roundedLowBound,
+                            roundedHighBound);
+
+                    minimumValuesBuffer[i] = (displayValue - mYZoomDisplay
+                            .getDisplayOffsetPercentage())
+                            / mYZoomDisplay.getZoomLevelPercentage();
+
+                    // Get the maximum value
+                    displayValue = maximumValueForGivenRange(roundedLowBound, roundedHighBound);
+
+                    maximumValuesBuffer[i] = (displayValue - mYZoomDisplay
+                            .getDisplayOffsetPercentage())
+                            / mYZoomDisplay.getZoomLevelPercentage();
+
+                }
+            }
+        }
+
+    }
+
+    /**
+     * This will return a buffer with the desired {@code numberOfPoints} size. It will
+     * logarithmically scale (if required)  the buffer so the receiving buffer can plot in a linear
+     * fashion The algorithm works out each new point separately. More often than not the new sample
+     * will fall between to of buffer points therefore we have to do some aliasing
      *
      * @param scaledBuffer buffer to fill
      * @param scaleToParameters  fill buffer with values within these parameters
@@ -247,11 +337,29 @@ public class SignalBuffer {
      * @return maximum value
      */
     private float maximumValueForGivenRange(int minimumArrayPosition, int maxArrayPosition) {
-        float displayValue = mYAxisParameters.getZeroIntercect();
+        float displayValue = 0;
 
         for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
-            if(Math.abs(mBuffer[g] - mYAxisParameters.getZeroIntercect()) >
-                    Math.abs(displayValue - mYAxisParameters.getZeroIntercect())) {
+            if(mBuffer[g] > displayValue) {
+                displayValue = mBuffer[g];
+            }
+        }
+
+        return displayValue;
+    }
+
+    /**
+     * Find the minimum value for a given range within mBuffer
+     *
+     * @param minimumArrayPosition first position in array
+     * @param maxArrayPosition     last position in array
+     * @return maximum value
+     */
+    private float minimumValueForGivenRange(int minimumArrayPosition, int maxArrayPosition) {
+        float displayValue = 1;
+
+        for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
+            if(mBuffer[g] < displayValue) {
                 displayValue = mBuffer[g];
             }
         }

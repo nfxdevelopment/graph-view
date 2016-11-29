@@ -62,17 +62,16 @@ public class SignalManager {
      * signal with the given id and display a warning
      *  @param sizeOfBuffer size of the buffer to create
      * @param xAxisParameters scale of buffer x axis
-     * @param yAxisParameters scale of buffer Y axis
      * @param color color of signal
      */
     InputListener addSignalBuffer(int id, int sizeOfBuffer, AxisParameters xAxisParameters,
-                                  AxisParameters yAxisParameters, int color) {
-        SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, xAxisParameters,
-                yAxisParameters);
+                                  int color) {
+        SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, xAxisParameters);
         return addSignalBuffer(id, signalBuffer, color);
     }
 
-    private InputListener addSignalBuffer(int id, SignalBuffer signalBuffer, int color) {
+    @SuppressWarnings("WeakerAccess")
+    public InputListener addSignalBuffer(int id, SignalBuffer signalBuffer, int color) {
         SignalBufferInterface signalBufferInterface = new SignalBufferInterface(signalBuffer);
         synchronized(this) {
             if(mSignalBuffers.put(id, signalBuffer) != null) {

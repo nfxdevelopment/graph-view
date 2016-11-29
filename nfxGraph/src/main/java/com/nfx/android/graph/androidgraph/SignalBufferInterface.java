@@ -22,17 +22,21 @@ class SignalBufferInterface extends InputListener {
     }
 
     /**
-     * Get the latest buffer
+     * Get the latest buffer information from signal. Minimum and maximum values for a given
+     * position are available. If there is only one value at the position minimum and maximum are
+     * equal
      *
-     * @param scaledBuffer array to pass back data
-     * @param maximumXValue minimum value of scaled buffer
-     * @param minimumXValue maximum value of scaled buffer
-     * @param scaleToParameters target axis
+     * @param minimumValuesBuffer representation of the minimum values of the signal
+     * @param maximumValuesBuffer representation of the maximum values of the signal
+     * @param maximumXValue return buffer from this start X position
+     * @param minimumXValue return buffer to this end X position
+     * @param xAxisParameters x axis parameters
      * */
-    void getScaledBuffer(float[] scaledBuffer, float minimumXValue, float maximumXValue,
-                         AxisParameters scaleToParameters) {
-        mSignalBuffer.getScaledBuffer(scaledBuffer, minimumXValue, maximumXValue,
-                scaleToParameters);
+    void getScaledMinimumMaximumBuffers(float[] minimumValuesBuffer, float[] maximumValuesBuffer,
+                                        float minimumXValue, float maximumXValue,
+                                        AxisParameters xAxisParameters) {
+        mSignalBuffer.getScaledMinimumMaximumBuffers(minimumValuesBuffer, maximumValuesBuffer,
+                minimumXValue, maximumXValue, xAxisParameters);
     }
 
     /**
