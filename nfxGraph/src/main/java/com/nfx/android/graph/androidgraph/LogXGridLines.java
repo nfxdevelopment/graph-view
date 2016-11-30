@@ -29,7 +29,7 @@ class LogXGridLines extends LogGridLines {
     @Override
     public void showAxisText(Context context) {
         super.showAxisText(context);
-        mAxisText = new XAxisText(context, this, mAxisParameters);
+        axisText = new XAxisText(context, this, axisParameters);
     }
 
     /**
@@ -41,13 +41,13 @@ class LogXGridLines extends LogGridLines {
     public void doDraw(Canvas canvas) {
         super.doDraw(canvas);
         float xIntersect;
-        for (int i = 0; i < mNumberOfGridLines; ++i) {
+        for(int i = 0; i < numberOfGridLines; ++i) {
             xIntersect = intersectZoomCompensated(i) * getDrawableArea().getWidth();
             if(xIntersect >= 0 && xIntersect < getDimensionLength()) {
                 canvas.drawLine(getDrawableArea().getLeft() + xIntersect,
                         getDrawableArea().getTop(),
                         getDrawableArea().getLeft() + xIntersect, getDrawableArea().getBottom(),
-                        mPaint);
+                        paint);
 
             }
         }

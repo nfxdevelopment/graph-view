@@ -10,7 +10,7 @@ import com.nfx.android.graph.graphbufferinput.InputListener;
  * An interface to communicate to the input or the Signal Buffer to display
  */
 class SignalBufferInterface extends InputListener {
-    private SignalBuffer mSignalBuffer = null;
+    private SignalBuffer signalBuffer = null;
 
     /**
      * Constructor
@@ -18,7 +18,7 @@ class SignalBufferInterface extends InputListener {
      * @param signalBuffer the display object
      */
     SignalBufferInterface(SignalBuffer signalBuffer) {
-        this.mSignalBuffer = signalBuffer;
+        this.signalBuffer = signalBuffer;
     }
 
     /**
@@ -35,7 +35,7 @@ class SignalBufferInterface extends InputListener {
     void getScaledMinimumMaximumBuffers(float[] minimumValuesBuffer, float[] maximumValuesBuffer,
                                         float minimumXValue, float maximumXValue,
                                         AxisParameters xAxisParameters) {
-        mSignalBuffer.getScaledMinimumMaximumBuffers(minimumValuesBuffer, maximumValuesBuffer,
+        signalBuffer.getScaledMinimumMaximumBuffers(minimumValuesBuffer, maximumValuesBuffer,
                 minimumXValue, maximumXValue, xAxisParameters);
     }
 
@@ -45,12 +45,12 @@ class SignalBufferInterface extends InputListener {
      * @param position a value between minimumX and maximumX
      */
     float getValueAtPosition(float position) {
-        return mSignalBuffer.getValueAtPosition(position);
+        return signalBuffer.getValueAtPosition(position);
     }
 
     @Override
     public void inputBlockSizeUpdate(int blockSize) {
-        mSignalBuffer.setSizeOfBuffer(blockSize);
+        signalBuffer.setSizeOfBuffer(blockSize);
     }
 
     /**
@@ -59,8 +59,8 @@ class SignalBufferInterface extends InputListener {
      * @param buffer new data in which to set
      */
     public void bufferUpdate(float[] buffer) {
-        if(mSignalBuffer != null) {
-            mSignalBuffer.setBuffer(buffer);
+        if(signalBuffer != null) {
+            signalBuffer.setBuffer(buffer);
         }
     }
 

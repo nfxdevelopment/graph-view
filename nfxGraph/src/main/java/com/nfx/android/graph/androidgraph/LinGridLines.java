@@ -17,7 +17,7 @@ abstract class LinGridLines extends GridLines {
      */
     LinGridLines(AxisOrientation axisOrientation, AxisParameters axisParameters) {
         super(axisOrientation, axisParameters);
-        mChildGridLineScale = Scale.linear;
+        childGridLineScale = Scale.linear;
     }
 
     /**
@@ -28,11 +28,11 @@ abstract class LinGridLines extends GridLines {
      */
     @Override
     float intersect(int gridLine) {
-        if(gridLine >= mNumberOfGridLines || gridLine < 0) {
+        if(gridLine >= numberOfGridLines || gridLine < 0) {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        float intersect = mGridLinesOffset + getGridLineDrawableWidth() * (float) gridLine;
+        float intersect = gridLinesOffset + getGridLineDrawableWidth() * (float) gridLine;
 
         intersect -= getFixedZoomDisplay().getDisplayOffsetPercentage();
         intersect /= getFixedZoomDisplay().getZoomLevelPercentage();

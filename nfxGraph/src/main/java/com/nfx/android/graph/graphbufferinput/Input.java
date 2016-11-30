@@ -13,11 +13,11 @@ public abstract class Input {
     /**
      * Interface to update buffer data
      */
-    private final SparseArray<InputListener> mInputListeners = new SparseArray<>();
+    private final SparseArray<InputListener> inputListeners = new SparseArray<>();
     /**
      * Used to pause the input
      */
-    boolean mPaused = false;
+    boolean paused = false;
 
     /**
      * Initialise anything that needs to be setup prior to start
@@ -40,7 +40,7 @@ public abstract class Input {
      * @param inputListener listener object
      */
     public void addInputListener(InputListener inputListener) {
-        mInputListeners.put(inputListener.hashCode(), inputListener);
+        inputListeners.put(inputListener.hashCode(), inputListener);
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class Input {
      * @param inputListener listener object
      */
     public void removeInputListener(InputListener inputListener) {
-        mInputListeners.remove(inputListener.hashCode());
+        inputListeners.remove(inputListener.hashCode());
     }
 
     /**
@@ -59,10 +59,10 @@ public abstract class Input {
      */
     @SuppressWarnings("WeakerAccess")
     protected void notifyListenersOfInputBlockSizeChange(int blockSize) {
-        final int listenersSize = mInputListeners.size();
+        final int listenersSize = inputListeners.size();
         for(int i = 0; i < listenersSize; i++) {
-            int key = mInputListeners.keyAt(i);
-            mInputListeners.get(key).inputBlockSizeUpdate(blockSize);
+            int key = inputListeners.keyAt(i);
+            inputListeners.get(key).inputBlockSizeUpdate(blockSize);
         }
     }
 
@@ -72,10 +72,10 @@ public abstract class Input {
      * @param buffer the new buffer
      */
     protected void notifyListenersOfBufferChange(float[] buffer) {
-        final int listenersSize = mInputListeners.size();
+        final int listenersSize = inputListeners.size();
         for(int i = 0; i < listenersSize; i++) {
-            int key = mInputListeners.keyAt(i);
-            mInputListeners.get(key).bufferUpdate(buffer);
+            int key = inputListeners.keyAt(i);
+            inputListeners.get(key).bufferUpdate(buffer);
         }
     }
 
@@ -83,10 +83,10 @@ public abstract class Input {
      * destroy the buffers and listeners getting ready to die
      */
     public void destroy() {
-        final int listenersSize = mInputListeners.size();
+        final int listenersSize = inputListeners.size();
         for(int i = 0; i < listenersSize; i++) {
-            int key = mInputListeners.keyAt(i);
-            mInputListeners.get(key).inputRemoved();
+            int key = inputListeners.keyAt(i);
+            inputListeners.get(key).inputRemoved();
         }
     }
 
@@ -94,7 +94,7 @@ public abstract class Input {
      * @return if the input is paused
      */
     public boolean getPaused() {
-        return mPaused;
+        return paused;
     }
 
     /**
@@ -103,6 +103,6 @@ public abstract class Input {
      * @param paused set true to pause
      */
     public void setPaused(boolean paused) {
-        mPaused = paused;
+        this.paused = paused;
     }
 }

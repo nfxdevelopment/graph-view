@@ -30,14 +30,14 @@ class LinYGridLines extends LinGridLines {
     public void doDraw(Canvas canvas) {
         super.doDraw(canvas);
 
-        for (int i = 0; i < mNumberOfGridLines; ++i) {
+        for(int i = 0; i < numberOfGridLines; ++i) {
             float yIntersect = getDrawableArea().getHeight() - (intersectZoomCompensated(i) *
                     getDrawableArea().getHeight());
             if(yIntersect >= 0 && yIntersect < getDimensionLength()) {
                 canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() +
                         yIntersect,
                         getDrawableArea().getRight(), getDrawableArea().getTop() + yIntersect,
-                        mPaint);
+                        paint);
 
             }
         }
@@ -46,7 +46,7 @@ class LinYGridLines extends LinGridLines {
     @Override
     public void showAxisText(Context context) {
         super.showAxisText(context);
-        mAxisText = new YAxisText(context, this, mAxisParameters);
+        axisText = new YAxisText(context, this, axisParameters);
     }
 
     @Override

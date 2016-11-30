@@ -22,7 +22,7 @@ class YAxisText extends AxisText {
      */
     YAxisText(Context context, GridLines gridLines, AxisParameters axisParameters) {
         super(context, gridLines, axisParameters);
-        mPaint.setTextAlign(Paint.Align.RIGHT);
+        paint.setTextAlign(Paint.Align.RIGHT);
     }
 
     /**
@@ -33,36 +33,36 @@ class YAxisText extends AxisText {
     @Override
     public void doDraw(Canvas canvas) {
 
-        float lastTextDrawn = mGridLines.getDrawableArea().getHeight() -
-                mGridLines.intersectZoomCompensated(0) *
-                        mGridLines.getDrawableArea().getHeight();
-        if(lastTextDrawn > mGridLines.getDrawableArea().getHeight()) {
-            lastTextDrawn = mGridLines.getDrawableArea().getHeight();
+        float lastTextDrawn = gridLines.getDrawableArea().getHeight() -
+                gridLines.intersectZoomCompensated(0) *
+                        gridLines.getDrawableArea().getHeight();
+        if(lastTextDrawn > gridLines.getDrawableArea().getHeight()) {
+            lastTextDrawn = gridLines.getDrawableArea().getHeight();
         }
-        final int lastGridLine = mGridLines.getNumberOfGridLines() - 1;
-        float drawLimitText = mGridLines.getDrawableArea().getHeight() -
-                mGridLines.intersectZoomCompensated(lastGridLine) *
-                        mGridLines.getDrawableArea().getHeight();
-        if(drawLimitText > mGridLines.getDrawableArea().getHeight()) {
-            drawLimitText = mGridLines.getDrawableArea().getHeight();
+        final int lastGridLine = gridLines.getNumberOfGridLines() - 1;
+        float drawLimitText = gridLines.getDrawableArea().getHeight() -
+                gridLines.intersectZoomCompensated(lastGridLine) *
+                        gridLines.getDrawableArea().getHeight();
+        if(drawLimitText > gridLines.getDrawableArea().getHeight()) {
+            drawLimitText = gridLines.getDrawableArea().getHeight();
         } else if(drawLimitText < 0) {
             drawLimitText = 0;
         }
 
         // Our limits are over laps with other grid lines, hence starting from 1 and -1
         for(int i = 1; i < lastGridLine; ++i) {
-            String displayString = mGridLineValues[i];
+            String displayString = gridLineValues[i];
 
-            float yIntersect = mGridLines.getDrawableArea().getHeight() -
-                    mGridLines.intersectZoomCompensated(i) *
-                            mGridLines.getDrawableArea().getHeight();
+            float yIntersect = gridLines.getDrawableArea().getHeight() -
+                    gridLines.intersectZoomCompensated(i) *
+                            gridLines.getDrawableArea().getHeight();
             // Ensure the grid line is on screen
-            if(yIntersect < mGridLines.getDrawableArea().getHeight() &&
+            if(yIntersect < gridLines.getDrawableArea().getHeight() &&
                     lastTextDrawn - yIntersect > getRealTextHeight() * 1f &&
                     yIntersect - drawLimitText > getRealTextHeight() * 1f) {
                 float y = getDrawableArea().getTop() + yIntersect + (getRealTextHeight() / 2);
 
-                canvas.drawText(displayString, getDrawableArea().getWidth(), y, mPaint);
+                canvas.drawText(displayString, getDrawableArea().getWidth(), y, paint);
 
                 lastTextDrawn = yIntersect;
             }

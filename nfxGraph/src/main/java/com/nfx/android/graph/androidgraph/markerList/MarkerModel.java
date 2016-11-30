@@ -12,16 +12,16 @@ import com.nfx.android.graph.androidgraph.Marker;
  * An object that holds the values to display in the floating widgets.
  */
 public class MarkerModel implements Marker.MarkerUpdateInterface {
-    private final MarkerAdapter mParentAdapter;
-    private final GraphView.GraphSignalInputInterface mGraphSignalInputInterface;
+    private final MarkerAdapter parentAdapter;
+    private final GraphView.GraphSignalInputInterface graphSignalInputInterface;
     private float xValue = 0;
     private float yValue = 0;
     private int markerColor = Color.BLACK;
 
     public MarkerModel(MarkerAdapter parentAdapter,
                        GraphView.GraphSignalInputInterface graphSignalInputInterface) {
-        this.mParentAdapter = parentAdapter;
-        this.mGraphSignalInputInterface = graphSignalInputInterface;
+        this.parentAdapter = parentAdapter;
+        this.graphSignalInputInterface = graphSignalInputInterface;
     }
 
     float getXValue() {
@@ -39,7 +39,7 @@ public class MarkerModel implements Marker.MarkerUpdateInterface {
     @Override
     public void markerColour(int color) {
         this.markerColor = color;
-        mParentAdapter.refreshList();
+        parentAdapter.refreshList();
     }
 
     @Override
@@ -47,10 +47,10 @@ public class MarkerModel implements Marker.MarkerUpdateInterface {
         // The buffer has been converted to decibels, flipped, then scaled to the minimum value.
         // So we need to reverse this, retrieve and convert back to the decibel value
         this.xValue = xValue;
-        yValue *= mGraphSignalInputInterface.getGraphYZoomDisplay().getZoomLevelPercentage();
-        yValue += mGraphSignalInputInterface.getGraphYZoomDisplay().getDisplayOffsetPercentage();
-        this.yValue = (1f - yValue) * mGraphSignalInputInterface.getGraphParameters().
+        yValue *= graphSignalInputInterface.getGraphYZoomDisplay().getZoomLevelPercentage();
+        yValue += graphSignalInputInterface.getGraphYZoomDisplay().getDisplayOffsetPercentage();
+        this.yValue = (1f - yValue) * graphSignalInputInterface.getGraphParameters().
                 getYAxisParameters().getMinimumValue();
-        mParentAdapter.refreshList();
+        parentAdapter.refreshList();
     }
 }

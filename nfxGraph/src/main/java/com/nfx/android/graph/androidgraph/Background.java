@@ -17,12 +17,12 @@ class Background extends DrawableObject {
     private static final int INITIAL_COLOR = Color.BLACK;
 
     Background() {
-        mPaint.setColor(INITIAL_COLOR);
+        paint.setColor(INITIAL_COLOR);
     }
 
     @Override
     public void doDraw(Canvas canvas) {
-        canvas.drawRect(getDrawableArea().getRect(), mPaint);
+        canvas.drawRect(getDrawableArea().getRect(), paint);
     }
 
     /**

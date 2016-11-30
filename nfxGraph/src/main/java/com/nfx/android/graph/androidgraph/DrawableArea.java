@@ -10,10 +10,10 @@ import android.graphics.Rect;
 class DrawableArea {
 
     private final Rect rect;
-    private int mXOffset = 0;
-    private int mYOffset = 0;
-    private int mHeight = 0;
-    private int mWidth = 0;
+    private int xOffset = 0;
+    private int yOffset = 0;
+    private int height = 0;
+    private int width = 0;
 
     /**
      * Initial values can be set in the constructor
@@ -25,10 +25,10 @@ class DrawableArea {
      */
     @SuppressWarnings("SameParameterValue")
     public DrawableArea(int xOffset, int yOffset, int width, int height) {
-        mXOffset = xOffset;
-        mYOffset = yOffset;
-        mHeight = height;
-        mWidth = width;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        this.height = height;
+        this.width = width;
 
         rect = new Rect(xOffset, yOffset, xOffset + width, yOffset + height);
     }
@@ -42,10 +42,10 @@ class DrawableArea {
      * @param height  height dimension
      */
     void setDrawableArea(int xOffset, int yOffset, int width, int height) {
-        mXOffset = xOffset;
-        mYOffset = yOffset;
-        mHeight = height;
-        mWidth = width;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
+        this.height = height;
+        this.width = width;
 
         rect.set(xOffset, yOffset, xOffset + width, yOffset + height);
     }
@@ -56,12 +56,12 @@ class DrawableArea {
      * @param drawableArea drawable area to copy from
      */
     public void setDrawableArea(DrawableArea drawableArea) {
-        mXOffset = drawableArea.mXOffset;
-        mYOffset = drawableArea.mYOffset;
-        mHeight = drawableArea.mHeight;
-        mWidth = drawableArea.mWidth;
+        xOffset = drawableArea.xOffset;
+        yOffset = drawableArea.yOffset;
+        height = drawableArea.height;
+        width = drawableArea.width;
 
-        rect.set(mXOffset, mYOffset, mXOffset + mWidth, mYOffset + mHeight);
+        rect.set(xOffset, yOffset, xOffset + width, yOffset + height);
     }
 
     /**
@@ -94,23 +94,27 @@ class DrawableArea {
         return rect;
     }
 
-    public int getLeft() { return mXOffset; }
+    public int getLeft() {
+        return xOffset;
+    }
 
-    public int getTop() { return mYOffset; }
+    public int getTop() {
+        return yOffset;
+    }
 
     public int getRight() {
-        return mXOffset + mWidth;
+        return xOffset + width;
     }
 
     public int getBottom() {
-        return mYOffset + mHeight;
+        return yOffset + height;
     }
 
     public int getHeight() {
-        return mHeight;
+        return height;
     }
 
     public int getWidth() {
-        return mWidth;
+        return width;
     }
 }

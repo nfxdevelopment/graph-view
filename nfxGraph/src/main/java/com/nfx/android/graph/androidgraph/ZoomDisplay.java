@@ -23,19 +23,19 @@ public class ZoomDisplay extends Observable {
     /**
      * Maximum zoom level
      */
-    private float mMaximumZoomLevel = 1f;
+    private float maximumZoomLevel = 1f;
     /**
      * Minimum zoom level
      */
-    private float mMinimumZoomLevel = 0f;
+    private float minimumZoomLevel = 0f;
     /**
      * percentage of view to display in given area
      */
-    private float mZoomLevelPercentage = 1f;
+    private float zoomLevelPercentage = 1f;
     /**
      * offset in given plane where to display from
      */
-    private float mDisplayOffsetPercentage = 0f;
+    private float displayOffsetPercentage = 0f;
 
 
     /**
@@ -45,16 +45,16 @@ public class ZoomDisplay extends Observable {
      *                                warning is logged and 0f will be assigned
      **/
     public ZoomDisplay(float zoomLevelPercentage, float displayOffsetPercentage) {
-        if(zoomLevelPercentage < mMaximumZoomLevel && zoomLevelPercentage > mMinimumZoomLevel) {
-            mZoomLevelPercentage = zoomLevelPercentage;
+        if(zoomLevelPercentage < maximumZoomLevel && zoomLevelPercentage > minimumZoomLevel) {
+            this.zoomLevelPercentage = zoomLevelPercentage;
         }
-        if(displayOffsetPercentage < mMaximumZoomLevel && displayOffsetPercentage >
-                mMinimumZoomLevel) {
+        if(displayOffsetPercentage < maximumZoomLevel && displayOffsetPercentage >
+                minimumZoomLevel) {
             // Ensure that the zoom level will be within the bounds of the screen
-            if((displayOffsetPercentage + mZoomLevelPercentage) > mMaximumZoomLevel) {
-                mDisplayOffsetPercentage = mMaximumZoomLevel - mZoomLevelPercentage;
+            if((displayOffsetPercentage + this.zoomLevelPercentage) > maximumZoomLevel) {
+                this.displayOffsetPercentage = maximumZoomLevel - this.zoomLevelPercentage;
             } else {
-                mDisplayOffsetPercentage = displayOffsetPercentage;
+                this.displayOffsetPercentage = displayOffsetPercentage;
             }
         }
     }
@@ -77,10 +77,10 @@ public class ZoomDisplay extends Observable {
     }
 
     /**
-     * @return the value of mDisplayOffsetPercentage
+     * @return the value of displayOffsetPercentage
      */
     public float getDisplayOffsetPercentage() {
-        return mDisplayOffsetPercentage;
+        return displayOffsetPercentage;
     }
 
     /**
@@ -91,17 +91,17 @@ public class ZoomDisplay extends Observable {
      *                                nothing happens
      */
     public void setDisplayOffsetPercentage(float displayOffsetPercentage) {
-        if(displayOffsetPercentage < mMinimumZoomLevel) {
-            displayOffsetPercentage = mMinimumZoomLevel;
+        if(displayOffsetPercentage < minimumZoomLevel) {
+            displayOffsetPercentage = minimumZoomLevel;
         } else if(displayOffsetPercentage > MAXIMUM_ZOOM_LEVEL) {
             displayOffsetPercentage = MAXIMUM_ZOOM_LEVEL;
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
-        if((displayOffsetPercentage + mZoomLevelPercentage) > mMaximumZoomLevel) {
-            mDisplayOffsetPercentage = mMaximumZoomLevel - mZoomLevelPercentage;
+        if((displayOffsetPercentage + zoomLevelPercentage) > maximumZoomLevel) {
+            this.displayOffsetPercentage = maximumZoomLevel - zoomLevelPercentage;
         } else {
-            mDisplayOffsetPercentage = displayOffsetPercentage;
+            this.displayOffsetPercentage = displayOffsetPercentage;
         }
 
         setChanged();
@@ -109,17 +109,17 @@ public class ZoomDisplay extends Observable {
     }
 
     /**
-     * @return the value of mDisplayOffsetPercentage + size currently being displayed
+     * @return the value of displayOffsetPercentage + size currently being displayed
      */
     public float getFarSideOffsetPercentage() {
-        return mDisplayOffsetPercentage + mZoomLevelPercentage;
+        return displayOffsetPercentage + zoomLevelPercentage;
     }
 
     /**
-     * @return the value of mZoomLevelPercentage
+     * @return the value of zoomLevelPercentage
      */
     public float getZoomLevelPercentage() {
-        return mZoomLevelPercentage;
+        return zoomLevelPercentage;
     }
 
     /**
@@ -135,15 +135,15 @@ public class ZoomDisplay extends Observable {
         }
 
         // Ensure that the zoom level will be within the bounds of the screen
-        if((zoomLevelPercentage + mDisplayOffsetPercentage) > mMaximumZoomLevel) {
-            mDisplayOffsetPercentage = mMaximumZoomLevel - zoomLevelPercentage;
+        if((zoomLevelPercentage + displayOffsetPercentage) > maximumZoomLevel) {
+            displayOffsetPercentage = maximumZoomLevel - zoomLevelPercentage;
         }
-        if((mMaximumZoomLevel - zoomLevelPercentage) < mMinimumZoomLevel) {
-            mDisplayOffsetPercentage = mMinimumZoomLevel;
-            zoomLevelPercentage = mMaximumZoomLevel - mMinimumZoomLevel;
+        if((maximumZoomLevel - zoomLevelPercentage) < minimumZoomLevel) {
+            displayOffsetPercentage = minimumZoomLevel;
+            zoomLevelPercentage = maximumZoomLevel - minimumZoomLevel;
         }
 
-        mZoomLevelPercentage = zoomLevelPercentage;
+        this.zoomLevelPercentage = zoomLevelPercentage;
 
         setChanged();
         notifyObservers();
@@ -156,8 +156,8 @@ public class ZoomDisplay extends Observable {
      * @param maximumZoomLevel maximum zoom possible
      */
     public void setZoomLimits(float minimumZoomLevel, float maximumZoomLevel) {
-        mMinimumZoomLevel = minimumZoomLevel;
-        mMaximumZoomLevel = maximumZoomLevel;
+        this.minimumZoomLevel = minimumZoomLevel;
+        this.maximumZoomLevel = maximumZoomLevel;
         setZoomLevelPercentage(maximumZoomLevel - minimumZoomLevel);
         setDisplayOffsetPercentage(minimumZoomLevel);
     }
@@ -168,23 +168,23 @@ public class ZoomDisplay extends Observable {
      * @param zoomDisplay Object to copy values from
      */
     public void setZoomDisplay(@NonNull ZoomDisplay zoomDisplay) {
-        this.mDisplayOffsetPercentage = zoomDisplay.mDisplayOffsetPercentage;
-        this.mZoomLevelPercentage = zoomDisplay.mZoomLevelPercentage;
-        this.mMinimumZoomLevel = zoomDisplay.mMinimumZoomLevel;
-        this.mMaximumZoomLevel = zoomDisplay.mMaximumZoomLevel;
+        this.displayOffsetPercentage = zoomDisplay.displayOffsetPercentage;
+        this.zoomLevelPercentage = zoomDisplay.zoomLevelPercentage;
+        this.minimumZoomLevel = zoomDisplay.minimumZoomLevel;
+        this.maximumZoomLevel = zoomDisplay.maximumZoomLevel;
     }
 
     /**
      * @return maximum zoom level possible by this object
      */
     public float getMaximumZoomLevel() {
-        return mMaximumZoomLevel;
+        return maximumZoomLevel;
     }
 
     /**
      * @return minimum zoom level possible by this object
      */
     public float getMinimumZoomLevel() {
-        return mMinimumZoomLevel;
+        return minimumZoomLevel;
     }
 }

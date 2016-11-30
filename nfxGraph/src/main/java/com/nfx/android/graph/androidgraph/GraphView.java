@@ -25,33 +25,33 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
     /**
      * An interface to update the signal data
      */
-    private final GraphSignalInputInterface mGraphSignalInputInterface = new
+    private final GraphSignalInputInterface graphSignalInputInterface = new
             GraphSignalInputInterface();
     /**
      * Parameter limits for the graph shown
      */
-    private final GraphParameters mGraphParameters = new GraphParameters();
+    private final GraphParameters graphParameters = new GraphParameters();
     /**
      * Information about the scaling of signal in the x axis
      */
-    private ZoomDisplay mXZoomDisplay;
+    private ZoomDisplay xZoomDisplay;
     /**
      * Information about the scaling of signal in the y axis
      */
-    private ZoomDisplay mYZoomDisplay;
+    private ZoomDisplay yZoomDisplay;
     /**
      * An object to draw all of the background information, including grid lines, axis information
      * and a background color
      */
-    private BackgroundManager mBackgroundManager;
+    private BackgroundManager backgroundManager;
     /**
      * Handles the drawing of a unlimited amount of Signals
      **/
-    private SignalManager mSignalManager;
+    private SignalManager signalManager;
     /**
      * The thread that updates the surface
      **/
-    private GraphManagerThread mGraphManagerThread;
+    private GraphManagerThread graphManagerThread;
 
     /**
      * Constructor for graph manager
@@ -94,23 +94,23 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
                 0, 0);
 
         try {
-            mGraphParameters.getXAxisParameters().setMinimumValue(
+            graphParameters.getXAxisParameters().setMinimumValue(
                     a.getFloat(R.styleable.GraphManager_minimum_x_value, 0));
-            mGraphParameters.getXAxisParameters().setMaximumValue(
+            graphParameters.getXAxisParameters().setMaximumValue(
                     a.getFloat(R.styleable.GraphManager_maximum_x_value, 1));
-            mGraphParameters.getYAxisParameters().setMinimumValue(
+            graphParameters.getYAxisParameters().setMinimumValue(
                     a.getFloat(R.styleable.GraphManager_minimum_y_value, 0));
-            mGraphParameters.getYAxisParameters().setMaximumValue(
+            graphParameters.getYAxisParameters().setMaximumValue(
                     a.getFloat(R.styleable.GraphManager_maximum_y_value, 1));
 
             initialise();
 
-            mBackgroundManager.setShowAxisText(
+            backgroundManager.setShowAxisText(
                     a.getBoolean(R.styleable.GraphManager_show_axis_text, true));
 
             if(!a.getBoolean(R.styleable.GraphManager_disable_background_scrolling, false)) {
-                mBackgroundManager.setXZoomDisplay(mXZoomDisplay);
-                mBackgroundManager.setYZoomDisplay(mYZoomDisplay);
+                backgroundManager.setXZoomDisplay(xZoomDisplay);
+                backgroundManager.setYZoomDisplay(yZoomDisplay);
             }
 
         } finally {
@@ -125,19 +125,19 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
 
-        mGraphManagerThread = new GraphManagerThread();
-        mBackgroundManager = new BackgroundManager(getContext(), mGraphParameters);
-        mSignalManager = new SignalManager(this);
+        graphManagerThread = new GraphManagerThread();
+        backgroundManager = new BackgroundManager(getContext(), graphParameters);
+        signalManager = new SignalManager(this);
 
 
-        if(mGraphParameters.getXAxisParameters().getAxisScale() == Scale.logarithmic) {
+        if(graphParameters.getXAxisParameters().getAxisScale() == Scale.logarithmic) {
             setXAxisLogarithmic();
         } else {
             setXAxisLinear();
         }
 
-        mXZoomDisplay = new ZoomDisplay(1f, 0f);
-        mYZoomDisplay = new ZoomDisplay(1f, 0f);
+        xZoomDisplay = new ZoomDisplay(1f, 0f);
+        yZoomDisplay = new ZoomDisplay(1f, 0f);
     }
 
     /**
@@ -146,7 +146,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * @return GraphSignalInputInterface object
      */
     public GraphSignalInputInterface getGraphSignalInputInterface() {
-        return mGraphSignalInputInterface;
+        return graphSignalInputInterface;
     }
 
     /**
@@ -171,8 +171,8 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         DrawableArea drawableArea = new DrawableArea(0, 0, width, height);
-        mBackgroundManager.surfaceChanged(drawableArea);
-        mSignalManager.surfaceChanged(drawableArea);
+        backgroundManager.surfaceChanged(drawableArea);
+        signalManager.surfaceChanged(drawableArea);
     }
 
     /**
@@ -189,30 +189,30 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * Start displaying the graph output on screen
      */
     public void start() {
-        mGraphManagerThread = new GraphManagerThread();
-        mGraphManagerThread.setRun(true);
-        mGraphManagerThread.start();
+        graphManagerThread = new GraphManagerThread();
+        graphManagerThread.setRun(true);
+        graphManagerThread.start();
     }
 
     /**
      * Stop updating the screen and remove signal listeners
      */
     public void stop() {
-        mBackgroundManager.removeAllChildGridLines();
+        backgroundManager.removeAllChildGridLines();
 
         boolean retry = true;
-        if (mGraphManagerThread != null) {
-            mGraphManagerThread.setRun(false);
+        if(graphManagerThread != null) {
+            graphManagerThread.setRun(false);
             while (retry) {
                 try {
-                    mGraphManagerThread.join();
+                    graphManagerThread.join();
                     retry = false;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            mGraphManagerThread = null;
+            graphManagerThread = null;
         }
     }
 
@@ -222,61 +222,61 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * @param canvas canvas to draw on
      */
     private void doDraw(Canvas canvas) {
-        mBackgroundManager.doDraw(canvas);
-        mSignalManager.doDraw(canvas);
+        backgroundManager.doDraw(canvas);
+        signalManager.doDraw(canvas);
     }
 
     /**
      * @return the manager for background drawing
      */
     public BackgroundManager getBackgroundManager() {
-        return mBackgroundManager;
+        return backgroundManager;
     }
 
     /**
      * @return the manager for drawing signals
      */
     public SignalManager getSignalManager() {
-        return mSignalManager;
+        return signalManager;
     }
 
     /**
      * Change the graphView to display a Logarithmic X axis
      */
     public void setXAxisLogarithmic() {
-        mGraphParameters.getXAxisParameters().setAxisScale(Scale.logarithmic);
+        graphParameters.getXAxisParameters().setAxisScale(Scale.logarithmic);
 
-        mBackgroundManager.setXAxisLogarithmic();
+        backgroundManager.setXAxisLogarithmic();
     }
 
     /**
      * Change the graphView to display a Linear X axis
      */
     public void setXAxisLinear() {
-        mGraphParameters.getXAxisParameters().setAxisScale(Scale.linear);
+        graphParameters.getXAxisParameters().setAxisScale(Scale.linear);
 
-        mBackgroundManager.setXAxisLinear();
+        backgroundManager.setXAxisLinear();
     }
 
     /**
      * @return parameters and limits of the current graph
      */
     public GraphParameters getGraphParameters() {
-        return mGraphParameters;
+        return graphParameters;
     }
 
     /**
      * @return the zoom scaling for the x axis
      */
     public ZoomDisplay getXZoomDisplay() {
-        return mXZoomDisplay;
+        return xZoomDisplay;
     }
 
     /**
      * @return the zoom scaling for the y axis
      */
     public ZoomDisplay getYZoomDisplay() {
-        return mYZoomDisplay;
+        return yZoomDisplay;
     }
 
     /**
@@ -286,11 +286,11 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         /**
          * Screen refresh Rate in milliseconds
          */
-        private final static long sScreenRefreshRate = 17;
+        private final static long SCREEN_REFRESH_RATE = 17;
         /**
          * Indicate whether the surface has been created & is ready to draw
          */
-        private boolean mRun = false;
+        private boolean run = false;
 
         GraphManagerThread() {
             setFocusable(true);
@@ -298,7 +298,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
 
         @Override
         public void run() {
-            while (mRun) {
+            while(run) {
                 long startTime = (System.currentTimeMillis());
                 Canvas canvas = null;
                 final SurfaceHolder surfaceHolder = getHolder();
@@ -316,7 +316,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
                     }
                 }
                 long endTime = System.currentTimeMillis();
-                long sleepTime = sScreenRefreshRate - (endTime - startTime);
+                long sleepTime = SCREEN_REFRESH_RATE - (endTime - startTime);
                 if(sleepTime < 0) {
                     sleepTime = 1;
                 }
@@ -336,7 +336,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
          * @param run true to run, false to shut down
          */
         void setRun(boolean run) {
-            mRun = run;
+            this.run = run;
         }
 
     }
@@ -348,11 +348,11 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
     public class GraphSignalInputInterface {
         public InputListener addInput(int id, int sizeOfBuffer, AxisParameters xAxisParameters,
                                       int color) {
-            return mSignalManager.addSignalBuffer(id, sizeOfBuffer, xAxisParameters, color);
+            return signalManager.addSignalBuffer(id, sizeOfBuffer, xAxisParameters, color);
         }
 
         public void removeInput(int id) {
-            mSignalManager.removedSignalBuffer(id);
+            signalManager.removedSignalBuffer(id);
         }
 
         public ZoomDisplay getGraphXZoomDisplay() {
@@ -364,7 +364,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         public GraphParameters getGraphParameters() {
-            return mGraphParameters;
+            return graphParameters;
         }
     }
 }

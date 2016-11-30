@@ -10,15 +10,15 @@ public class AxisParameters {
     /**
      * X axis is log or lin
      */
-    private Scale mAxisScale = Scale.linear;
+    private Scale axisScale = Scale.linear;
     /**
      * Minimum value of the axis
      */
-    private float mMinimumValue = 0;
+    private float minimumValue = 0;
     /**
      * Maximum value of the axis
      */
-    private float mMaximumValue = 1;
+    private float maximumValue = 1;
 
     /**
      * @param minimumValue initial minimum value of the axis
@@ -26,9 +26,9 @@ public class AxisParameters {
      * @param axisScale    which scale is the axis
      */
     public AxisParameters(float minimumValue, float maximumValue, Scale axisScale) {
-        this.mMinimumValue = minimumValue;
-        this.mMaximumValue = maximumValue;
-        this.mAxisScale = axisScale;
+        this.minimumValue = minimumValue;
+        this.maximumValue = maximumValue;
+        this.axisScale = axisScale;
     }
 
     /**
@@ -38,9 +38,9 @@ public class AxisParameters {
      * @return scaled value of the x axis
      */
     public float graphPositionToScaledAxis(float graphPosition) {
-        if(mAxisScale == Scale.logarithmic) {
-            double minimumValue = mMinimumValue > 0 ? mMinimumValue : 1;
-            double maximumValue = Math.log(mMaximumValue / minimumValue) / Math.log(2);
+        if(axisScale == Scale.logarithmic) {
+            double minimumValue = this.minimumValue > 0 ? this.minimumValue : 1;
+            double maximumValue = Math.log(this.maximumValue / minimumValue) / Math.log(2);
             graphPosition *= maximumValue;
 
             double frequency = minimumValue * Math.pow(2, graphPosition);
@@ -51,7 +51,7 @@ public class AxisParameters {
                 return (float) frequency;
             }
         } else {
-            return mMinimumValue + (getAxisSpan() * graphPosition);
+            return minimumValue + (getAxisSpan() * graphPosition);
         }
     }
 
@@ -62,16 +62,16 @@ public class AxisParameters {
      * @return graph position the scaled value is portraying
      */
     public float scaledAxisToGraphPosition(float scaleAxisValue) {
-        if(mAxisScale == Scale.logarithmic) {
-            double minimumValue = mMinimumValue > 0 ? mMinimumValue : 1;
-            double maximumValue = Math.log(mMaximumValue / minimumValue) / Math.log(2);
+        if(axisScale == Scale.logarithmic) {
+            double minimumValue = this.minimumValue > 0 ? this.minimumValue : 1;
+            double maximumValue = Math.log(this.maximumValue / minimumValue) / Math.log(2);
             double result = Math.log(scaleAxisValue / minimumValue) / Math.log(2);
 
             result /= maximumValue;
 
             return (float) result;
         } else {
-            return (scaleAxisValue - mMinimumValue) / getAxisSpan();
+            return (scaleAxisValue - minimumValue) / getAxisSpan();
         }
     }
 
@@ -79,7 +79,7 @@ public class AxisParameters {
      * @return minimum value of the axis
      */
     public float getMinimumValue() {
-        return mMinimumValue;
+        return minimumValue;
     }
 
     /**
@@ -88,14 +88,14 @@ public class AxisParameters {
      * @param mMinimumValue minimum value
      */
     public void setMinimumValue(float mMinimumValue) {
-        this.mMinimumValue = mMinimumValue;
+        this.minimumValue = mMinimumValue;
     }
 
     /**
      * @return maximum value of the axis
      */
     public float getMaximumValue() {
-        return mMaximumValue;
+        return maximumValue;
     }
 
     /**
@@ -104,14 +104,14 @@ public class AxisParameters {
      * @param mMaximumValue minimum value
      */
     public void setMaximumValue(float mMaximumValue) {
-        this.mMaximumValue = mMaximumValue;
+        this.maximumValue = mMaximumValue;
     }
 
     /**
      * @return the scale of the axis
      */
     public Scale getAxisScale() {
-        return mAxisScale;
+        return axisScale;
     }
 
     /**
@@ -120,13 +120,13 @@ public class AxisParameters {
      * @param mAxisScale axis scale
      */
     public void setAxisScale(Scale mAxisScale) {
-        this.mAxisScale = mAxisScale;
+        this.axisScale = mAxisScale;
     }
 
     /**
      * @return the span between minimum and maximum
      */
     public float getAxisSpan() {
-        return mMaximumValue - mMinimumValue;
+        return maximumValue - minimumValue;
     }
 }

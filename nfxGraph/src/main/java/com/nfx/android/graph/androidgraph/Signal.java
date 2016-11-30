@@ -17,24 +17,24 @@ class Signal extends DrawableObject {
     /**
      * The buffer which will be drawn by this object
      */
-    private final SignalBufferInterface mSignalBufferInterface;
+    private final SignalBufferInterface signalBufferInterface;
     /**
      * x axis zoom to scale to
      */
-    private final ZoomDisplay mXZoomDisplay;
+    private final ZoomDisplay xZoomDisplay;
     /**
      * Parent graph View
      */
-    private final GraphParameters mGraphParameters;
-    /**
-     * As more than one point can represent multiple values a minimum and maximum buffer is used
-     */
-    private float[] mDrawBufferMinimumValues;
-    private float[] mDrawBufferMaximumValues;
+    private final GraphParameters graphParameters;
     /**
      * Stroke width of line
      */
-    private float mStrokeWidth = 4f;
+    private final float strokeWidth = 4f;
+    /**
+     * As more than one point can represent multiple values a minimum and maximum buffer is used
+     */
+    private float[] drawBufferMinimumValues;
+    private float[] drawBufferMaximumValues;
 
     /**
      * Constructor
@@ -45,14 +45,14 @@ class Signal extends DrawableObject {
      */
     Signal(GraphParameters graphParameters, SignalBufferInterface
             signalBufferInterface, ZoomDisplay xZoomDisplay) {
-        this.mGraphParameters = graphParameters;
-        this.mSignalBufferInterface = signalBufferInterface;
-        this.mXZoomDisplay = xZoomDisplay;
+        this.graphParameters = graphParameters;
+        this.signalBufferInterface = signalBufferInterface;
+        this.xZoomDisplay = xZoomDisplay;
 
         int mColor = Color.YELLOW;
-        mPaint.setColor(mColor);
-        mPaint.setStrokeWidth(mStrokeWidth);
-        mPaint.setAntiAlias(true);
+        paint.setColor(mColor);
+        paint.setStrokeWidth(strokeWidth);
+        paint.setAntiAlias(true);
     }
 
     /**
@@ -62,23 +62,23 @@ class Signal extends DrawableObject {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        AxisParameters xAxisParameters = mGraphParameters.getXAxisParameters();
+        AxisParameters xAxisParameters = graphParameters.getXAxisParameters();
 
         float lowerX = xAxisParameters.getMinimumValue() +
-                (xAxisParameters.getAxisSpan() * mXZoomDisplay.getDisplayOffsetPercentage());
+                (xAxisParameters.getAxisSpan() * xZoomDisplay.getDisplayOffsetPercentage());
         float higherX = xAxisParameters.getMinimumValue() +
-                (xAxisParameters.getAxisSpan() * mXZoomDisplay.getFarSideOffsetPercentage());
+                (xAxisParameters.getAxisSpan() * xZoomDisplay.getFarSideOffsetPercentage());
 
-        mSignalBufferInterface.getScaledMinimumMaximumBuffers(mDrawBufferMinimumValues,
-                mDrawBufferMaximumValues, lowerX, higherX, xAxisParameters);
+        signalBufferInterface.getScaledMinimumMaximumBuffers(drawBufferMinimumValues,
+                drawBufferMaximumValues, lowerX, higherX, xAxisParameters);
 
-        int drawBufferLength = mDrawBufferMinimumValues.length;
+        int drawBufferLength = drawBufferMinimumValues.length;
 
         for(int i = 0; i < (drawBufferLength - 1); i++) {
-            float minimumY = mDrawBufferMinimumValues[i];
-            float maximumY = mDrawBufferMaximumValues[i];
-            float nextMinimumY = mDrawBufferMinimumValues[i + 1];
-            float nextMaximumY = mDrawBufferMaximumValues[i + 1];
+            float minimumY = drawBufferMinimumValues[i];
+            float maximumY = drawBufferMaximumValues[i];
+            float nextMinimumY = drawBufferMinimumValues[i + 1];
+            float nextMaximumY = drawBufferMaximumValues[i + 1];
 
             // Check if samples are outside of screen range
             minimumY = checkInBounds(minimumY);
@@ -109,15 +109,15 @@ class Signal extends DrawableObject {
 
                 // Ensure something can be seen
                 float centre = bottom - top;
-                if(centre < mStrokeWidth) {
-                    bottom = bottom + (centre / 2) + (mStrokeWidth / 2);
-                    top = top - (centre / 2) - (mStrokeWidth / 2);
+                if(centre < strokeWidth) {
+                    bottom = bottom + (centre / 2) + (strokeWidth / 2);
+                    top = top - (centre / 2) - (strokeWidth / 2);
                 }
 
                 canvas.drawRect(getDrawableArea().checkLimitX(left),
                         getDrawableArea().checkLimitY(top),
                         getDrawableArea().checkLimitX(right),
-                        getDrawableArea().checkLimitY(bottom), mPaint);
+                        getDrawableArea().checkLimitY(bottom), paint);
             }
         }
     }
@@ -188,7 +188,7 @@ class Signal extends DrawableObject {
             canvas.drawLine(getDrawableArea().checkLimitX(drawStartPosX),
                     getDrawableArea().checkLimitY(drawStartPosY),
                     getDrawableArea().checkLimitX(drawEndPosX),
-                    getDrawableArea().checkLimitY(drawEndPosY), mPaint);
+                    getDrawableArea().checkLimitY(drawEndPosY), paint);
         }
     }
 
@@ -214,8 +214,8 @@ class Signal extends DrawableObject {
       How many points per on screen buffer. This is a screen width divisor
      */
         int mLineResolution = 4;
-        mDrawBufferMinimumValues = new float[getDrawableArea().getWidth() / mLineResolution];
-        mDrawBufferMaximumValues = new float[getDrawableArea().getWidth() / mLineResolution];
+        drawBufferMinimumValues = new float[getDrawableArea().getWidth() / mLineResolution];
+        drawBufferMaximumValues = new float[getDrawableArea().getWidth() / mLineResolution];
     }
 
     /**
@@ -232,7 +232,7 @@ class Signal extends DrawableObject {
      * @return the interface to the signal buffer
      */
     SignalBufferInterface getSignalBufferInterface() {
-        return mSignalBufferInterface;
+        return signalBufferInterface;
     }
 
 }

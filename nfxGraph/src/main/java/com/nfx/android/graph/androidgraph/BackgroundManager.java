@@ -17,33 +17,33 @@ class BackgroundManager {
     /**
      * An object which draws onto the canvas
      **/
-    private final Background mBackground;
+    private final Background background;
     /**
      * An object to draw a board around the graph
      */
-    private final Boarder mBoarder;
+    private final Boarder boarder;
     /**
      * Handles the drawing of all grid lines
      */
-    private GridLines mYGridLines;
-    private GridLines mXGridLines;
+    private GridLines yGridLines;
+    private GridLines xGridLines;
 
     /**
      * Handles the drawing of all text on axis
      */
-    private BoarderText mBoarderText;
+    private BoarderText boarderText;
     /**
      * Set dependant which constructor is called
      */
-    private boolean mShowAxisText = false;
+    private boolean showAxisText = false;
     /**
      * Graph Limits
      */
-    private GraphParameters mGraphParameters;
+    private GraphParameters graphParameters;
     /**
      * App Context
      */
-    private Context mContext;
+    private Context context;
 
 
     /**
@@ -55,11 +55,11 @@ class BackgroundManager {
      */
     BackgroundManager(Context context, GraphParameters graphParameters) {
         this();
-        this.mGraphParameters = graphParameters;
-        this.mContext = context;
-        mBoarderText = new BoarderText(context, graphParameters);
-        mXGridLines = new LinXGridLines(graphParameters.getXAxisParameters());
-        mYGridLines = new LinYGridLines(graphParameters.getYAxisParameters());
+        this.graphParameters = graphParameters;
+        this.context = context;
+        boarderText = new BoarderText(context, graphParameters);
+        xGridLines = new LinXGridLines(graphParameters.getXAxisParameters());
+        yGridLines = new LinYGridLines(graphParameters.getYAxisParameters());
     }
 
     /**
@@ -67,8 +67,8 @@ class BackgroundManager {
      */
     @SuppressWarnings("WeakerAccess")
     public BackgroundManager() {
-        mBackground = new Background();
-        mBoarder = new Boarder();
+        background = new Background();
+        boarder = new Boarder();
     }
 
     /**
@@ -78,19 +78,19 @@ class BackgroundManager {
      * @param drawableArea the available area to draw
      */
     public void surfaceChanged(DrawableArea drawableArea) {
-        mBackground.surfaceChanged(drawableArea);
+        background.surfaceChanged(drawableArea);
 
-        if (mShowAxisText) {
-            mBoarderText.surfaceChanged(drawableArea);
+        if(showAxisText) {
+            boarderText.surfaceChanged(drawableArea);
             // we have to call Y here first to shift the x text into the right location
-            mYGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
-            mXGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
+            yGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
+            xGridLines.notifyAxisTextOfSurfaceChange(drawableArea);
         }
 
-        mBoarder.surfaceChanged(drawableArea);
+        boarder.surfaceChanged(drawableArea);
 
-        mXGridLines.surfaceChanged(drawableArea);
-        mYGridLines.surfaceChanged(drawableArea);
+        xGridLines.surfaceChanged(drawableArea);
+        yGridLines.surfaceChanged(drawableArea);
     }
 
     /**
@@ -98,14 +98,14 @@ class BackgroundManager {
      * @param canvas canvas to draw the objects onto
      */
     public void doDraw(Canvas canvas) {
-        mBackground.doDraw(canvas);
-        mBoarder.doDraw(canvas);
+        background.doDraw(canvas);
+        boarder.doDraw(canvas);
 
-        mXGridLines.doDraw(canvas);
-        mYGridLines.doDraw(canvas);
+        xGridLines.doDraw(canvas);
+        yGridLines.doDraw(canvas);
 
-        if (mShowAxisText) {
-            mBoarderText.doDraw(canvas);
+        if(showAxisText) {
+            boarderText.doDraw(canvas);
         }
     }
 
@@ -115,8 +115,8 @@ class BackgroundManager {
      * @param yZoomDisplay zoom object for the y axis
      */
     void setYZoomDisplay(ZoomDisplay yZoomDisplay) {
-        mYGridLines.setZoomDisplay(yZoomDisplay);
-        mBoarderText.setYZoomDisplay(yZoomDisplay);
+        yGridLines.setZoomDisplay(yZoomDisplay);
+        boarderText.setYZoomDisplay(yZoomDisplay);
     }
 
     /**
@@ -125,8 +125,8 @@ class BackgroundManager {
      * @param zoomDisplay zoom object for the x axis
      */
     void setXZoomDisplay(ZoomDisplay zoomDisplay) {
-        mXGridLines.setZoomDisplay(zoomDisplay);
-        mBoarderText.setXZoomDisplay(zoomDisplay);
+        xGridLines.setZoomDisplay(zoomDisplay);
+        boarderText.setXZoomDisplay(zoomDisplay);
     }
 
     /**
@@ -135,7 +135,7 @@ class BackgroundManager {
     void setXAxisLogarithmic() {
         // We want the decades located on the major grid lines but want the max to be 22.05K
         // therefore we have to do a fudge to make 100K the maximum and zoom to 0 - 22.05K
-        float max = mGraphParameters.getXAxisParameters().getMaximumValue();
+        float max = graphParameters.getXAxisParameters().getMaximumValue();
         int i = 0;
         while(max >= 1) {
             i++;
@@ -143,15 +143,15 @@ class BackgroundManager {
         }
         float newMax = (float) Math.pow(10, i);
 
-        mXGridLines.setNumberOfGridLines(i);
-        mXGridLines.getFixedZoomDisplay().setZoomLevelPercentage(1f /
-                mGraphParameters.getXAxisParameters().scaledAxisToGraphPosition(newMax));
+        xGridLines.setNumberOfGridLines(i);
+        xGridLines.getFixedZoomDisplay().setZoomLevelPercentage(1f /
+                graphParameters.getXAxisParameters().scaledAxisToGraphPosition(newMax));
 
         // Axis are reset so lets remove all the children
-        mXGridLines.removeAllChildGridLines();
-        mYGridLines.removeAllChildGridLines();
+        xGridLines.removeAllChildGridLines();
+        yGridLines.removeAllChildGridLines();
 
-        mXGridLines.setChildGridLineScale(Scale.logarithmic);
+        xGridLines.setChildGridLineScale(Scale.logarithmic);
     }
 
     /**
@@ -164,7 +164,7 @@ class BackgroundManager {
         float iterator = 1f;
         float divisor = iterator;
         int i = 1;
-        while((mGraphParameters.getXAxisParameters().getMaximumValue() / divisor) > 1f) {
+        while((graphParameters.getXAxisParameters().getMaximumValue() / divisor) > 1f) {
             divisor += iterator;
             i++;
             if(divisor >= (iterator * 10)) {
@@ -174,14 +174,14 @@ class BackgroundManager {
             }
         }
 
-        mXGridLines.getFixedZoomDisplay().setZoomLevelPercentage(
-                mGraphParameters.getXAxisParameters().getMaximumValue() / divisor);
+        xGridLines.getFixedZoomDisplay().setZoomLevelPercentage(
+                graphParameters.getXAxisParameters().getMaximumValue() / divisor);
 
         // Axis are reset so lets remove all the children
-        mXGridLines.removeAllChildGridLines();
-        mYGridLines.removeAllChildGridLines();
+        xGridLines.removeAllChildGridLines();
+        yGridLines.removeAllChildGridLines();
 
-        mXGridLines.setChildGridLineScale(Scale.linear);
+        xGridLines.setChildGridLineScale(Scale.linear);
     }
 
     /**
@@ -190,7 +190,7 @@ class BackgroundManager {
      * @param colour colour to set
      */
     void setBackgroundColour(int colour) {
-        mBackground.setColour(colour);
+        background.setColour(colour);
     }
 
     /**
@@ -199,26 +199,26 @@ class BackgroundManager {
      * @param colour colour to set
      */
     void setGridLineColour(int colour) {
-        mXGridLines.setColour(colour);
-        mYGridLines.setColour(colour);
-        mBoarder.setColour(colour);
-        mBoarderText.setColour(colour);
+        xGridLines.setColour(colour);
+        yGridLines.setColour(colour);
+        boarder.setColour(colour);
+        boarderText.setColour(colour);
     }
 
     /**
      * Remove child grid lines for x and y axis
      */
     void removeAllChildGridLines() {
-        mXGridLines.removeAllChildGridLines();
-        mYGridLines.removeAllChildGridLines();
+        xGridLines.removeAllChildGridLines();
+        yGridLines.removeAllChildGridLines();
     }
 
 
     void setShowAxisText(boolean showAxisText) {
-        this.mShowAxisText = showAxisText;
+        this.showAxisText = showAxisText;
 
-        mXGridLines.showAxisText(mContext);
-        mYGridLines.showAxisText(mContext);
+        xGridLines.showAxisText(context);
+        yGridLines.showAxisText(context);
     }
 
 }

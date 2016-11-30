@@ -29,18 +29,18 @@ abstract class LogGridLines extends GridLines {
     LogGridLines(AxisOrientation axisOrientation, AxisParameters axisParameters,
                  float gridLineMinimumValue, float gridLineMaximumValue) {
         super(axisOrientation, axisParameters);
-        this.mChildGridLineScale = Scale.logarithmic;
+        this.childGridLineScale = Scale.logarithmic;
         this.mGridLineMinimumValue = gridLineMinimumValue;
         this.mGridLineSpanValue = gridLineMaximumValue - gridLineMinimumValue;
     }
 
     @Override
     float intersect(int gridLine) {
-        if(gridLine >= mNumberOfGridLines || gridLine < 0) {
+        if(gridLine >= numberOfGridLines || gridLine < 0) {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        return mAxisParameters.scaledAxisToGraphPosition(mGridLineMinimumValue + (
+        return axisParameters.scaledAxisToGraphPosition(mGridLineMinimumValue + (
                 (mGridLineSpanValue /
                 (float) (getNumberOfGridLines() - 1)) * (float) gridLine));
     }

@@ -16,15 +16,15 @@ public class SignalBuffer {
     /**
      * Information about the scaling of signal in the y axis
      */
-    private final ZoomDisplay mYZoomDisplay;
+    private final ZoomDisplay yZoomDisplay;
     /**
      * The Parameters of the axis'
      */
-    private final AxisParameters mXAxisParameters;
+    private final AxisParameters xAxisParameters;
     /**
      * buffer of given size which is worked out at runtime. This data is normalized 0-1
      */
-    private float[] mBuffer;
+    private float[] buffer;
     /**
      * Constructor
      *
@@ -33,11 +33,11 @@ public class SignalBuffer {
      */
     @SuppressWarnings("WeakerAccess")
     public SignalBuffer(int sizeOfBuffer, AxisParameters xAxisParameters) {
-        this.mXAxisParameters = xAxisParameters;
+        this.xAxisParameters = xAxisParameters;
 
-        mBuffer = new float[sizeOfBuffer];
+        buffer = new float[sizeOfBuffer];
 
-        mYZoomDisplay = new ZoomDisplay(1f, 0f);
+        yZoomDisplay = new ZoomDisplay(1f, 0f);
     }
 
     /**
@@ -49,11 +49,11 @@ public class SignalBuffer {
      */
     public void setBuffer(float[] buffer) {
         synchronized (this) {
-            if (mBuffer.length == buffer.length) {
-                System.arraycopy(buffer, 0, mBuffer, 0, mBuffer.length);
+            if(this.buffer.length == buffer.length) {
+                System.arraycopy(buffer, 0, this.buffer, 0, this.buffer.length);
             } else {
                 Log.e(TAG, "Buffer passed " + buffer.length +
-                        " in does not match size of signal buffer " + mBuffer.length);
+                        " in does not match size of signal buffer " + this.buffer.length);
             }
         }
     }
@@ -105,20 +105,20 @@ public class SignalBuffer {
 
                     if(arrayPosRemainder == 0) {
                         maximumValuesBuffer[i] = minimumValuesBuffer[i] =
-                                (mBuffer[(int) centreOffset]
-                                        - mYZoomDisplay.getDisplayOffsetPercentage())
-                                        / mYZoomDisplay.getZoomLevelPercentage();
+                                (buffer[(int) centreOffset]
+                                        - yZoomDisplay.getDisplayOffsetPercentage())
+                                        / yZoomDisplay.getZoomLevelPercentage();
                     } else {
                         int lowerPosition = (int) Math.floor(centreOffset);
                         int upperPosition = (int) Math.ceil(centreOffset);
 
-                        float lowerValue = mBuffer[lowerPosition];
-                        float upperValue = mBuffer[upperPosition];
+                        float lowerValue = buffer[lowerPosition];
+                        float upperValue = buffer[upperPosition];
 
                         maximumValuesBuffer[i] = minimumValuesBuffer[i] =
                                 (lowerValue + ((upperValue - lowerValue) * arrayPosRemainder)
-                                        - mYZoomDisplay.getDisplayOffsetPercentage())
-                                        / mYZoomDisplay.getZoomLevelPercentage();
+                                        - yZoomDisplay.getDisplayOffsetPercentage())
+                                        / yZoomDisplay.getZoomLevelPercentage();
                     }
                 } else { // If we are displaying more than 2 frequencies at a given point then
                     // display the average
@@ -127,24 +127,24 @@ public class SignalBuffer {
                     if(roundedLowBound < 0) {
                         roundedLowBound = 0;
                     }
-                    if(roundedHighBound > (mBuffer.length - 1)) {
-                        roundedHighBound = (mBuffer.length - 1);
+                    if(roundedHighBound > (buffer.length - 1)) {
+                        roundedHighBound = (buffer.length - 1);
                     }
 
                     // Get the minimum value
                     float displayValue = minimumValueForGivenRange(roundedLowBound,
                             roundedHighBound);
 
-                    minimumValuesBuffer[i] = (displayValue - mYZoomDisplay
+                    minimumValuesBuffer[i] = (displayValue - yZoomDisplay
                             .getDisplayOffsetPercentage())
-                            / mYZoomDisplay.getZoomLevelPercentage();
+                            / yZoomDisplay.getZoomLevelPercentage();
 
                     // Get the maximum value
                     displayValue = maximumValueForGivenRange(roundedLowBound, roundedHighBound);
 
-                    maximumValuesBuffer[i] = (displayValue - mYZoomDisplay
+                    maximumValuesBuffer[i] = (displayValue - yZoomDisplay
                             .getDisplayOffsetPercentage())
-                            / mYZoomDisplay.getZoomLevelPercentage();
+                            / yZoomDisplay.getZoomLevelPercentage();
 
                 }
             }
@@ -194,20 +194,20 @@ public class SignalBuffer {
                     float arrayPosRemainder = centreOffset % 1;
 
                     if(arrayPosRemainder == 0) {
-                        scaledBuffer[i] = (mBuffer[(int) centreOffset]
-                                - mYZoomDisplay.getDisplayOffsetPercentage())
-                                / mYZoomDisplay.getZoomLevelPercentage();
+                        scaledBuffer[i] = (buffer[(int) centreOffset]
+                                - yZoomDisplay.getDisplayOffsetPercentage())
+                                / yZoomDisplay.getZoomLevelPercentage();
                     } else {
                         int lowerPosition = (int) Math.floor(centreOffset);
                         int upperPosition = (int) Math.ceil(centreOffset);
 
-                        float lowerValue = mBuffer[lowerPosition];
-                        float upperValue = mBuffer[upperPosition];
+                        float lowerValue = buffer[lowerPosition];
+                        float upperValue = buffer[upperPosition];
 
                         scaledBuffer[i] = (lowerValue + ((upperValue - lowerValue) *
                                 arrayPosRemainder)
-                                - mYZoomDisplay.getDisplayOffsetPercentage())
-                                / mYZoomDisplay.getZoomLevelPercentage();
+                                - yZoomDisplay.getDisplayOffsetPercentage())
+                                / yZoomDisplay.getZoomLevelPercentage();
                     }
                 } else { // If we are displaying more than 2 frequencies at a given point then
                     // display the average
@@ -216,15 +216,15 @@ public class SignalBuffer {
                     if(roundedLowBound < 0) {
                         roundedLowBound = 0;
                     }
-                    if(roundedHighBound > (mBuffer.length - 1)) {
-                        roundedHighBound = (mBuffer.length - 1);
+                    if(roundedHighBound > (buffer.length - 1)) {
+                        roundedHighBound = (buffer.length - 1);
                     }
 
                     float displayValue = maximumValueForGivenRange(roundedLowBound,
                             roundedHighBound);
 
-                    scaledBuffer[i] = (displayValue - mYZoomDisplay.getDisplayOffsetPercentage())
-                            / mYZoomDisplay.getZoomLevelPercentage();
+                    scaledBuffer[i] = (displayValue - yZoomDisplay.getDisplayOffsetPercentage())
+                            / yZoomDisplay.getZoomLevelPercentage();
 
                 }
             }
@@ -237,7 +237,7 @@ public class SignalBuffer {
      * @return float array with raw information
      */
     public float[] getUnscaledBuffer() {
-        return mBuffer;
+        return buffer;
     }
 
 
@@ -248,13 +248,13 @@ public class SignalBuffer {
      * @return the value at given position
      */
     float getValueAtPosition(float scalePosition) {
-        if(scalePosition < mXAxisParameters.getMinimumValue() ||
-                scalePosition > mXAxisParameters.getMaximumValue()) {
+        if(scalePosition < xAxisParameters.getMinimumValue() ||
+                scalePosition > xAxisParameters.getMaximumValue()) {
             return 0;
         }
         // Determine position in the buffer
-        float percentageOffset = (scalePosition - mXAxisParameters.getMinimumValue()) /
-                mXAxisParameters.getAxisSpan();
+        float percentageOffset = (scalePosition - xAxisParameters.getMinimumValue()) /
+                xAxisParameters.getAxisSpan();
 
         synchronized(this) {
             float bufferIndexToRead = percentageOffset * (float) (getSizeOfBuffer() - 1);
@@ -262,20 +262,20 @@ public class SignalBuffer {
             float arrayPosRemainder = bufferIndexToRead % 1;
 
             if(arrayPosRemainder == 0) {
-                return (mBuffer[(int) bufferIndexToRead]
-                        - mYZoomDisplay.getDisplayOffsetPercentage())
-                        / mYZoomDisplay.getZoomLevelPercentage();
+                return (buffer[(int) bufferIndexToRead]
+                        - yZoomDisplay.getDisplayOffsetPercentage())
+                        / yZoomDisplay.getZoomLevelPercentage();
             } else {
                 int lowerPosition = (int) Math.floor(bufferIndexToRead);
                 int upperPosition = (int) Math.ceil(bufferIndexToRead);
 
-                float lowerValue = mBuffer[lowerPosition];
-                float upperValue = mBuffer[upperPosition];
+                float lowerValue = buffer[lowerPosition];
+                float upperValue = buffer[upperPosition];
 
                 return (lowerValue + ((upperValue - lowerValue) *
                         arrayPosRemainder)
-                        - mYZoomDisplay.getDisplayOffsetPercentage())
-                        / mYZoomDisplay.getZoomLevelPercentage();
+                        - yZoomDisplay.getDisplayOffsetPercentage())
+                        / yZoomDisplay.getZoomLevelPercentage();
             }
         }
     }
@@ -302,14 +302,14 @@ public class SignalBuffer {
                 minimumGraphPosition + (((float) index / (float) numberOfPoints) *
                         graphPositionSpan));
 
-        float bufferPercentagePosition = (frequencyToRead - mXAxisParameters.getMinimumValue()) /
-                mXAxisParameters.getAxisSpan();
+        float bufferPercentagePosition = (frequencyToRead - xAxisParameters.getMinimumValue()) /
+                xAxisParameters.getAxisSpan();
 
         return bufferPercentagePosition * (getSizeOfBuffer() - 1);
     }
 
     /**
-     * Average value for a given range within mBuffer
+     * Average value for a given range within buffer
      *
      * @param minimumArrayPosition first position in array
      * @param maxArrayPosition     last position in array
@@ -321,7 +321,7 @@ public class SignalBuffer {
         int positionDifference = minimumArrayPosition - maxArrayPosition + 1;
 
         for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
-            displayValue += mBuffer[g];
+            displayValue += buffer[g];
         }
 
         displayValue /= (float) positionDifference;
@@ -330,7 +330,7 @@ public class SignalBuffer {
     }
 
     /**
-     * Find the maximum value for a given range within mBuffer
+     * Find the maximum value for a given range within buffer
      *
      * @param minimumArrayPosition first position in array
      * @param maxArrayPosition     last position in array
@@ -340,8 +340,8 @@ public class SignalBuffer {
         float displayValue = 0;
 
         for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
-            if(mBuffer[g] > displayValue) {
-                displayValue = mBuffer[g];
+            if(buffer[g] > displayValue) {
+                displayValue = buffer[g];
             }
         }
 
@@ -349,7 +349,7 @@ public class SignalBuffer {
     }
 
     /**
-     * Find the minimum value for a given range within mBuffer
+     * Find the minimum value for a given range within buffer
      *
      * @param minimumArrayPosition first position in array
      * @param maxArrayPosition     last position in array
@@ -359,8 +359,8 @@ public class SignalBuffer {
         float displayValue = 1;
 
         for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
-            if(mBuffer[g] < displayValue) {
-                displayValue = mBuffer[g];
+            if(buffer[g] < displayValue) {
+                displayValue = buffer[g];
             }
         }
 
@@ -368,20 +368,20 @@ public class SignalBuffer {
     }
 
     private int getSizeOfBuffer() {
-        return mBuffer.length;
+        return buffer.length;
     }
 
     void setSizeOfBuffer(int sizeOfBuffer) {
         synchronized(this) {
-            mBuffer = new float[sizeOfBuffer];
+            buffer = new float[sizeOfBuffer];
         }
     }
 
     public ZoomDisplay getYZoomDisplay() {
-        return mYZoomDisplay;
+        return yZoomDisplay;
     }
 
     public AxisParameters getXAxisParameters() {
-        return mXAxisParameters;
+        return xAxisParameters;
     }
 }

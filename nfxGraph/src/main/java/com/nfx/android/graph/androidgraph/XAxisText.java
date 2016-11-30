@@ -32,14 +32,14 @@ class XAxisText extends AxisText {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        float lastTextDrawn = mGridLines.intersectZoomCompensated(0) *
-                mGridLines.getDrawableArea().getWidth();
+        float lastTextDrawn = gridLines.intersectZoomCompensated(0) *
+                gridLines.getDrawableArea().getWidth();
         if(lastTextDrawn < 0) {
             lastTextDrawn = 0;
         }
-        final int lastGridLine = mGridLines.getNumberOfGridLines() - 1;
-        float drawLimitText = mGridLines.intersectZoomCompensated(lastGridLine) *
-                mGridLines.getDrawableArea().getWidth();
+        final int lastGridLine = gridLines.getNumberOfGridLines() - 1;
+        float drawLimitText = gridLines.intersectZoomCompensated(lastGridLine) *
+                gridLines.getDrawableArea().getWidth();
         if(drawLimitText > getDrawableArea().getWidth()) {
             drawLimitText = getDrawableArea().getWidth();
         }
@@ -47,19 +47,19 @@ class XAxisText extends AxisText {
         // Our limits are over laps with other grid lines, hence starting from 1 and limit -1
         for(int i = 1; i < lastGridLine; ++i) {
 
-            float xIntersect = mGridLines.intersectZoomCompensated(i) *
-                    mGridLines.getDrawableArea().getWidth();
+            float xIntersect = gridLines.intersectZoomCompensated(i) *
+                    gridLines.getDrawableArea().getWidth();
 
             if(xIntersect > 0 && xIntersect < getDrawableArea().getWidth() &&
-                    xIntersect - lastTextDrawn > mBounds.width() &&
-                    drawLimitText - xIntersect > mBounds.width() * 1.5f) {
-                String displayString = mGridLineValues[i];
+                    xIntersect - lastTextDrawn > bounds.width() &&
+                    drawLimitText - xIntersect > bounds.width() * 1.5f) {
+                String displayString = gridLineValues[i];
                 int x = getDrawableArea().getLeft() + (int) xIntersect;
 
                 // Remember the text is drawn on the baseline
                 canvas.drawText(displayString, x, getDrawableArea()
                         .getTop() +
-                        (int) Math.abs(mPaint.ascent()), mPaint);
+                        (int) Math.abs(paint.ascent()), paint);
 
                 lastTextDrawn = xIntersect;
             }
@@ -75,7 +75,7 @@ class XAxisText extends AxisText {
     public void surfaceChanged(DrawableArea drawableArea) {
         String textString = "0";
         Rect bounds = new Rect();
-        mPaint.getTextBounds(textString, 0, textString.length(), bounds);
+        paint.getTextBounds(textString, 0, textString.length(), bounds);
         getDrawableArea().setDrawableArea(drawableArea.getLeft(),
                 drawableArea.getHeight() - (int) getRealTextHeight(),
                 drawableArea.getWidth(), (int) getRealTextHeight());

@@ -45,49 +45,49 @@ abstract class GridLines extends DrawableObject {
     /**
      * Graph Scale limits
      */
-    final AxisParameters mAxisParameters;
+    final AxisParameters axisParameters;
     /**
      * This allows us to know the axis at runtime
      */
-    private final AxisOrientation mAxisOrientation;
+    private final AxisOrientation axisOrientation;
     /**
      * Minor GridLines
      */
-    private final Map<Integer, GridLines> mChildGridLines = new ConcurrentHashMap<>();
+    private final Map<Integer, GridLines> childGridLines = new ConcurrentHashMap<>();
     /**
      * Number of grid lines to display in the area
      */
-    int mNumberOfGridLines = 6;
+    int numberOfGridLines = 6;
     /**
      * The axis text to be displayed if needed
      */
-    AxisText mAxisText;
+    AxisText axisText;
     /**
      * An offset in relation to drawable area 0-1
      */
-    float mGridLinesOffset = 0;
+    float gridLinesOffset = 0;
     /**
      * scale for child grid lines
      */
-    Scale mChildGridLineScale;
+    Scale childGridLineScale;
     /**
      * This is a zoom that is never changed over the runtime of the app. Useful for setting limits
      */
-    private ZoomDisplay mFixedZoomDisplay;
+    private ZoomDisplay fixedZoomDisplay;
     /**
      * Describes the viewable part of the grid
      */
-    private ZoomDisplay mZoomDisplay;
+    private ZoomDisplay zoomDisplay;
     /**
      * Graph dimension size, This is needed for minor grid lines to calculate where to display in
      * cases of zoom
      */
-    private float mGridLinesSize;
+    private float gridLinesSize;
     /**
      * Base Context
      */
-    private Context mContext;
-    private final ZoomChangedListener mZoomChangeListener = new ZoomChangedListener() {
+    private Context context;
+    private final ZoomChangedListener zoomChangeListener = new ZoomChangedListener() {
         @Override
         public void zoomChanged() {
             refreshChildGridLines();
@@ -101,14 +101,14 @@ abstract class GridLines extends DrawableObject {
      * @param axisParameters  parameters of graph shown
      */
     GridLines(AxisOrientation axisOrientation, AxisParameters axisParameters) {
-        this.mAxisOrientation = axisOrientation;
-        this.mAxisParameters = axisParameters;
+        this.axisOrientation = axisOrientation;
+        this.axisParameters = axisParameters;
 
-        mFixedZoomDisplay = new ZoomDisplay(1f, 0f);
+        fixedZoomDisplay = new ZoomDisplay(1f, 0f);
         // Set a default zoom Display
-        mZoomDisplay = new ZoomDisplay(1f, 0f);
-        mPaint.setColor(INITIAL_LINE_COLOR);
-        mPaint.setStrokeWidth(INITIAL_LINE_STROKE_WIDTH);
+        zoomDisplay = new ZoomDisplay(1f, 0f);
+        paint.setColor(INITIAL_LINE_COLOR);
+        paint.setStrokeWidth(INITIAL_LINE_STROKE_WIDTH);
 
         setGridLinesSize(1f);
     }
@@ -120,10 +120,10 @@ abstract class GridLines extends DrawableObject {
      */
     @Override
     public void doDraw(Canvas canvas) {
-        if (mAxisText != null) {
-            mAxisText.doDraw(canvas);
+        if(axisText != null) {
+            axisText.doDraw(canvas);
         }
-        for(GridLines gridLines : mChildGridLines.values()) {
+        for(GridLines gridLines : childGridLines.values()) {
             gridLines.doDraw(canvas);
         }
     }
@@ -134,7 +134,7 @@ abstract class GridLines extends DrawableObject {
      * @param context application context
      */
     public void showAxisText(Context context) {
-        mContext = context;
+        this.context = context;
     }
 
     /**
@@ -143,7 +143,7 @@ abstract class GridLines extends DrawableObject {
      * @return current number of grid lines
      */
     int getNumberOfGridLines() {
-        return mNumberOfGridLines;
+        return numberOfGridLines;
     }
 
     /**
@@ -152,7 +152,7 @@ abstract class GridLines extends DrawableObject {
      * @param numberOfGridLines amount of grid lines
      */
     void setNumberOfGridLines(int numberOfGridLines) {
-        mNumberOfGridLines = numberOfGridLines;
+        this.numberOfGridLines = numberOfGridLines;
     }
 
     /**
@@ -162,7 +162,7 @@ abstract class GridLines extends DrawableObject {
      */
     @SuppressWarnings("SameParameterValue")
     private void setGridStrokeWidth(int strokeWidth) {
-        mPaint.setStrokeWidth(strokeWidth);
+        paint.setStrokeWidth(strokeWidth);
 
     }
 
@@ -172,7 +172,7 @@ abstract class GridLines extends DrawableObject {
      * @param color new color value
      */
     private void setColor(@SuppressWarnings("SameParameterValue") int color) {
-        mPaint.setColor(color);
+        paint.setColor(color);
     }
 
     /**
@@ -180,7 +180,7 @@ abstract class GridLines extends DrawableObject {
      */
     float getGridLineDrawableWidth() {
         // -1 as we want the first grid line to be at 0 and the last at the width of the graph
-        return mGridLinesSize / (float) (mNumberOfGridLines - 1);
+        return gridLinesSize / (float) (numberOfGridLines - 1);
     }
 
     /**
@@ -203,8 +203,8 @@ abstract class GridLines extends DrawableObject {
             return GRID_LINE_OUT_OF_RANGE;
         }
 
-        intersect -= mZoomDisplay.getDisplayOffsetPercentage();
-        intersect /= mZoomDisplay.getZoomLevelPercentage();
+        intersect -= zoomDisplay.getDisplayOffsetPercentage();
+        intersect /= zoomDisplay.getZoomLevelPercentage();
 
         return intersect;
     }
@@ -226,7 +226,7 @@ abstract class GridLines extends DrawableObject {
      * @param gridLinesSize size of the full graph viewable area
      */
     private void setGridLinesSize(float gridLinesSize) {
-        mGridLinesSize = gridLinesSize;
+        this.gridLinesSize = gridLinesSize;
     }
 
     /**
@@ -235,7 +235,7 @@ abstract class GridLines extends DrawableObject {
      * @param graphOffset a value between 0 - 1
      */
     void setGridLinesOffset(float graphOffset) {
-        mGridLinesOffset = graphOffset;
+        gridLinesOffset = graphOffset;
     }
 
     /**
@@ -244,7 +244,7 @@ abstract class GridLines extends DrawableObject {
      * @param scale log or lin
      */
     void setChildGridLineScale(Scale scale) {
-        mChildGridLineScale = scale;
+        childGridLineScale = scale;
         refreshChildGridLines();
     }
 
@@ -256,8 +256,8 @@ abstract class GridLines extends DrawableObject {
      * @param drawableArea the drawable area available
      */
     void notifyAxisTextOfSurfaceChange(DrawableArea drawableArea) {
-        if (mAxisText != null) {
-            mAxisText.surfaceChanged(drawableArea);
+        if(axisText != null) {
+            axisText.surfaceChanged(drawableArea);
         }
     }
 
@@ -269,13 +269,13 @@ abstract class GridLines extends DrawableObject {
     @Override
     public void surfaceChanged(DrawableArea drawableArea) {
         super.surfaceChanged(drawableArea);
-        for (Map.Entry<Integer, GridLines> gridLines : mChildGridLines.entrySet()) {
+        for(Map.Entry<Integer, GridLines> gridLines : childGridLines.entrySet()) {
             gridLines.getValue().surfaceChanged(drawableArea);
             minorGridLineSurfaceChanged(gridLines.getValue(), gridLines.getKey());
         }
 
-        if(mAxisText != null) {
-            mAxisText.calculateGridLineValues();
+        if(axisText != null) {
+            axisText.calculateGridLineValues();
         }
         refreshChildGridLines();
     }
@@ -284,7 +284,7 @@ abstract class GridLines extends DrawableObject {
      * @return the zoom object attached to these grid lines
      */
     private ZoomDisplay getZoomDisplay() {
-        return mZoomDisplay;
+        return zoomDisplay;
     }
 
     /**
@@ -293,17 +293,17 @@ abstract class GridLines extends DrawableObject {
      * @param zoomDisplay zoomDisplay to set
      */
     void setZoomDisplay(ZoomDisplay zoomDisplay) {
-        mZoomDisplay = zoomDisplay;
+        this.zoomDisplay = zoomDisplay;
 
-        zoomDisplay.addListener(mZoomChangeListener);
+        zoomDisplay.addListener(zoomChangeListener);
     }
 
     /**
      * remove the zoomDisplay, this is done to remove the listener.
      */
     private void removeZoomDisplay() {
-        mZoomDisplay.removeListener(mZoomChangeListener);
-        mZoomDisplay = new ZoomDisplay(1f, 0f);
+        zoomDisplay.removeListener(zoomChangeListener);
+        zoomDisplay = new ZoomDisplay(1f, 0f);
     }
 
     /**
@@ -317,11 +317,11 @@ abstract class GridLines extends DrawableObject {
         for(int i = 0; i < arraySize; i++) {
             int key = minorXGridLinesToDisplay.keyAt(i);
             if(minorXGridLinesToDisplay.get(key)) {
-                if(!mChildGridLines.containsKey(key)) {
+                if(!childGridLines.containsKey(key)) {
                     addMinorGridLine(key);
                 }
             } else {
-                GridLines childGridLine = mChildGridLines.remove(key);
+                GridLines childGridLine = childGridLines.remove(key);
                 // We must ensure the observer is removed
                 if(childGridLine != null) {
                     childGridLine.removeZoomDisplay();
@@ -371,20 +371,20 @@ abstract class GridLines extends DrawableObject {
      */
     private void addMinorGridLine(int majorGridLine) {
         int numberOfChildGridLines = 11;
-        if (!mChildGridLines.containsKey(majorGridLine)) {
+        if(!childGridLines.containsKey(majorGridLine)) {
             GridLines minorGridLine;
 
-            if(mChildGridLineScale == Scale.linear) {
-                if(mAxisOrientation == AxisOrientation.xAxis) {
-                    minorGridLine = new LinXGridLines(mAxisParameters);
+            if(childGridLineScale == Scale.linear) {
+                if(axisOrientation == AxisOrientation.xAxis) {
+                    minorGridLine = new LinXGridLines(axisParameters);
                 } else {
-                    minorGridLine = new LinYGridLines(mAxisParameters);
+                    minorGridLine = new LinYGridLines(axisParameters);
                 }
             } else {
-                float gridLineMinimumValue = mAxisParameters.graphPositionToScaledAxis(
+                float gridLineMinimumValue = axisParameters.graphPositionToScaledAxis(
                         intersect(majorGridLine));
 
-                float gridLineMaximumValue = mAxisParameters.graphPositionToScaledAxis(
+                float gridLineMaximumValue = axisParameters.graphPositionToScaledAxis(
                         intersect(majorGridLine + 1));
 
                 // calculates the number of gridLines needed to give a equal whole number
@@ -403,23 +403,23 @@ abstract class GridLines extends DrawableObject {
                     }
                 }
 
-                if(mAxisOrientation == AxisOrientation.xAxis) {
-                    minorGridLine = new LogXGridLines(mAxisParameters, gridLineMinimumValue,
+                if(axisOrientation == AxisOrientation.xAxis) {
+                    minorGridLine = new LogXGridLines(axisParameters, gridLineMinimumValue,
                             gridLineMaximumValue);
                 } else {
-                    minorGridLine = new LogYGridLines(mAxisParameters, gridLineMinimumValue,
+                    minorGridLine = new LogYGridLines(axisParameters, gridLineMinimumValue,
                             gridLineMaximumValue);
                 }
             }
             minorGridLine.setGridStrokeWidth(2);
             minorGridLine.setColor(Color.DKGRAY);
             minorGridLine.setNumberOfGridLines(numberOfChildGridLines);
-            minorGridLine.setFixedZoomDisplay(mFixedZoomDisplay);
-            mChildGridLines.put(majorGridLine, minorGridLine);
+            minorGridLine.setFixedZoomDisplay(fixedZoomDisplay);
+            childGridLines.put(majorGridLine, minorGridLine);
 
 
-            if (mAxisText != null) {
-                minorGridLine.showAxisText(mContext);
+            if(axisText != null) {
+                minorGridLine.showAxisText(context);
             }
 
             minorGridLineSurfaceChanged(minorGridLine, majorGridLine);
@@ -452,9 +452,9 @@ abstract class GridLines extends DrawableObject {
         gridLine.setGridLinesSize(right - left);
         gridLine.setGridLinesOffset(left);
 
-        if (mAxisText != null) {
+        if(axisText != null) {
             // We want out children Axis to have the same drawable area as our own.
-            gridLine.getAxisText().getDrawableArea().setDrawableArea(mAxisText.getDrawableArea());
+            gridLine.getAxisText().getDrawableArea().setDrawableArea(axisText.getDrawableArea());
             gridLine.getAxisText().calculateGridLineValues();
         }
     }
@@ -463,7 +463,7 @@ abstract class GridLines extends DrawableObject {
      * Remove all the child grid lines from this object
      */
     void removeAllChildGridLines() {
-        for(Iterator<Map.Entry<Integer, GridLines>> it = mChildGridLines.entrySet().iterator();
+        for(Iterator<Map.Entry<Integer, GridLines>> it = childGridLines.entrySet().iterator();
             it.hasNext(); ) {
             Map.Entry<Integer, GridLines> entry = it.next();
             entry.getValue().removeAllChildGridLines();
@@ -482,14 +482,14 @@ abstract class GridLines extends DrawableObject {
      * @return axis text displayed which could be null
      */
     private AxisText getAxisText() {
-        return mAxisText;
+        return axisText;
     }
 
     /**
      * @return the fixed zoom display applied to these grid lines
      */
     ZoomDisplay getFixedZoomDisplay() {
-        return mFixedZoomDisplay;
+        return fixedZoomDisplay;
     }
 
     /**
@@ -498,14 +498,14 @@ abstract class GridLines extends DrawableObject {
      * @param zoomDisplay zoom display object with fixed values
      */
     private void setFixedZoomDisplay(ZoomDisplay zoomDisplay) {
-        this.mFixedZoomDisplay = zoomDisplay;
+        this.fixedZoomDisplay = zoomDisplay;
     }
 
     @Override
     public void setColour(int colour) {
         super.setColour(colour);
-        if(mAxisText != null) {
-            mAxisText.setColour(colour);
+        if(axisText != null) {
+            axisText.setColour(colour);
         }
     }
 

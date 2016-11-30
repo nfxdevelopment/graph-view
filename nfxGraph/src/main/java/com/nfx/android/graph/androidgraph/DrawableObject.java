@@ -12,11 +12,11 @@ abstract class DrawableObject {
     /**
      * The paint in which to draw with
      */
-    final Paint mPaint = new Paint();
+    final Paint paint = new Paint();
     /**
      * Advises the background in which area it can draw.
      **/
-    private final DrawableArea mDrawableArea = new DrawableArea(0, 0, 0, 0);
+    private final DrawableArea drawableArea = new DrawableArea(0, 0, 0, 0);
 
     /**
      * Override and implement the specific drawing onto the canvas
@@ -29,7 +29,7 @@ abstract class DrawableObject {
      * @return the drawableArea of the object
      */
     DrawableArea getDrawableArea() {
-        return mDrawableArea;
+        return drawableArea;
     }
 
     /**
@@ -55,6 +55,6 @@ abstract class DrawableObject {
      * @param colour colour to set
      */
     public void setColour(int colour) {
-        mPaint.setColor(colour);
+        paint.setColor(colour);
     }
 }

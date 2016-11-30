@@ -22,27 +22,27 @@ public class Marker extends DrawableObject {
     /**
      * GraphView interface
      */
-    private final GraphView.GraphSignalInputInterface mGraphInterface;
+    private final GraphView.GraphSignalInputInterface graphInterface;
     /**
      * Post updates to this object
      */
-    private final MarkerUpdateInterface mMarkerUpdateInterface;
+    private final MarkerUpdateInterface markerUpdateInterface;
     /**
      * Id of the signal
      */
-    private final int mSignalId;
+    private final int signalId;
     /**
      * interface to signal
      */
-    private SignalBufferInterface mSignalInterface;
+    private SignalBufferInterface signalInterface;
     /**
      * Size of the circle
      */
-    private float mCircleRadius = 20f;
+    private float circleRadius = 20f;
     /**
      * Default position for the marker
      */
-    private float mMarkerPosition = (float) Math.random();
+    private float markerPosition = (float) Math.random();
 
     /**
      * @param signalId                  Id of the signal the markers are attached to
@@ -52,37 +52,37 @@ public class Marker extends DrawableObject {
      */
     Marker(int signalId, GraphView.GraphSignalInputInterface graphSignalInputInterface,
            SignalBufferInterface signal, MarkerUpdateInterface markerUpdateInterface) {
-        this.mSignalId = signalId;
-        this.mGraphInterface = graphSignalInputInterface;
-        this.mSignalInterface = signal;
-        this.mMarkerUpdateInterface = markerUpdateInterface;
-        mPaint.setColor(INITIAL_LINE_COLOR);
-        mPaint.setStrokeWidth(INITIAL_LINE_STROKE_WIDTH);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setAntiAlias(true);
-        mMarkerUpdateInterface.markerColour(INITIAL_LINE_COLOR);
+        this.signalId = signalId;
+        this.graphInterface = graphSignalInputInterface;
+        this.signalInterface = signal;
+        this.markerUpdateInterface = markerUpdateInterface;
+        paint.setColor(INITIAL_LINE_COLOR);
+        paint.setStrokeWidth(INITIAL_LINE_STROKE_WIDTH);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setAntiAlias(true);
+        this.markerUpdateInterface.markerColour(INITIAL_LINE_COLOR);
     }
 
     @Override
     public void doDraw(Canvas canvas) {
-        float xValue = mGraphInterface.getGraphParameters().getXAxisParameters().
-                graphPositionToScaledAxis(mMarkerPosition);
-        float yValue = mSignalInterface.getValueAtPosition(xValue);
-        mMarkerUpdateInterface.markerPositionUpdate(xValue, yValue);
+        float xValue = graphInterface.getGraphParameters().getXAxisParameters().
+                graphPositionToScaledAxis(markerPosition);
+        float yValue = signalInterface.getValueAtPosition(xValue);
+        markerUpdateInterface.markerPositionUpdate(xValue, yValue);
 
         float centreX, centreY;
 
-        if(mMarkerPosition <
-                mGraphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
+        if(markerPosition <
+                graphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
             centreX = getDrawableArea().getLeft();
-        } else if(mMarkerPosition >
-                mGraphInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
+        } else if(markerPosition >
+                graphInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
             centreX = getDrawableArea().getRight();
         } else {
             centreX = getMarkerPositionInPx();
         }
 
-        float yPosition = (1f - mSignalInterface.getValueAtPosition(xValue));
+        float yPosition = (1f - signalInterface.getValueAtPosition(xValue));
 
         if(yPosition < 0) {
             centreY = getDrawableArea().getTop();
@@ -95,20 +95,20 @@ public class Marker extends DrawableObject {
         canvas.drawCircle(
                 centreX,
                 centreY,
-                mCircleRadius,
-                mPaint
+                circleRadius,
+                paint
         );
-        canvas.drawLine(centreX - mCircleRadius,
+        canvas.drawLine(centreX - circleRadius,
                 centreY,
-                centreX + mCircleRadius,
+                centreX + circleRadius,
                 centreY,
-                mPaint
+                paint
         );
         canvas.drawLine(centreX,
-                centreY - mCircleRadius,
+                centreY - circleRadius,
                 centreX,
-                centreY + mCircleRadius,
-                mPaint
+                centreY + circleRadius,
+                paint
         );
     }
 
@@ -116,9 +116,9 @@ public class Marker extends DrawableObject {
     public void surfaceChanged(DrawableArea drawableArea) {
         float dimensionDivisor = 30f;
         if(drawableArea.getHeight() < drawableArea.getWidth()) {
-            mCircleRadius = drawableArea.getHeight() / dimensionDivisor;
+            circleRadius = drawableArea.getHeight() / dimensionDivisor;
         } else {
-            mCircleRadius = drawableArea.getWidth() / 30;
+            circleRadius = drawableArea.getWidth() / 30;
         }
         super.surfaceChanged(drawableArea);
     }
@@ -132,7 +132,7 @@ public class Marker extends DrawableObject {
      * @return current position of the marker 0-1
      */
     public float getMarkerPosition() {
-        return mMarkerPosition;
+        return markerPosition;
     }
 
     /**
@@ -142,11 +142,11 @@ public class Marker extends DrawableObject {
      */
     public void setMarkerPosition(float markerPosition) {
         if(markerPosition > 1.0f) {
-            this.mMarkerPosition = 1.0f;
+            this.markerPosition = 1.0f;
         } else if(markerPosition < 0.0f) {
-            this.mMarkerPosition = 0.0f;
+            this.markerPosition = 0.0f;
         } else {
-            this.mMarkerPosition = markerPosition;
+            this.markerPosition = markerPosition;
         }
     }
 
@@ -154,10 +154,10 @@ public class Marker extends DrawableObject {
      * @return the marker position in relation to pixels
      */
     public float getMarkerPositionInPx() {
-        float intersect = mMarkerPosition;
+        float intersect = markerPosition;
 
-        intersect -= mGraphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
-        intersect /= mGraphInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
+        intersect -= graphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
+        intersect /= graphInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
 
         intersect *= getDrawableArea().getWidth();
         intersect += getDrawableArea().getLeft();
@@ -182,8 +182,8 @@ public class Marker extends DrawableObject {
         markerPosition -= getDrawableArea().getLeft();
         markerPosition /= getDrawableArea().getWidth();
 
-        markerPosition += mGraphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
-        markerPosition *= mGraphInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
+        markerPosition += graphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
+        markerPosition *= graphInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
 
         setMarkerPosition(markerPosition);
     }
@@ -191,7 +191,7 @@ public class Marker extends DrawableObject {
     @Override
     public void setColour(int colour) {
         super.setColour(colour);
-        mMarkerUpdateInterface.markerColour(colour);
+        markerUpdateInterface.markerColour(colour);
     }
 
     /**
@@ -200,21 +200,21 @@ public class Marker extends DrawableObject {
      * @param mSignalInterface interface to the new signal
      */
     void setSignalInterface(SignalBufferInterface mSignalInterface) {
-        this.mSignalInterface = mSignalInterface;
+        this.signalInterface = mSignalInterface;
     }
 
     /**
      * @return interface to the graph view
      */
     public GraphView.GraphSignalInputInterface getGraphInterface() {
-        return mGraphInterface;
+        return graphInterface;
     }
 
     /**
      * @return signal id which the markers are attached to
      */
     int getSignalId() {
-        return mSignalId;
+        return signalId;
     }
 
     /**

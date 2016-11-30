@@ -21,8 +21,8 @@ class Boarder extends DrawableObject {
     private static final int COLOR = Color.GRAY;
 
     Boarder() {
-        mPaint.setColor(COLOR);
-        mPaint.setStrokeWidth(STROKE_WIDTH);
+        paint.setColor(COLOR);
+        paint.setStrokeWidth(STROKE_WIDTH);
     }
 
     /**
@@ -37,19 +37,19 @@ class Boarder extends DrawableObject {
         // Draw the left boarder
         canvas.drawLine(getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getTop(),
                 getDrawableArea().getLeft() + halfStrokeWidth, getDrawableArea().getBottom(),
-                mPaint);
+                paint);
         // Draw the right boarder
         canvas.drawLine(getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getTop(),
                 getDrawableArea().getRight() - halfStrokeWidth, getDrawableArea().getBottom(),
-                mPaint);
+                paint);
         // Draw the top boarder
         canvas.drawLine(getDrawableArea().getLeft(), getDrawableArea().getTop() + halfStrokeWidth,
-                getDrawableArea().getRight(), getDrawableArea().getTop() + halfStrokeWidth, mPaint);
+                getDrawableArea().getRight(), getDrawableArea().getTop() + halfStrokeWidth, paint);
         // draw the bottom boarder
         canvas.drawLine(getDrawableArea().getLeft(),
                 getDrawableArea().getBottom() - halfStrokeWidth,
                 getDrawableArea().getRight(),
-                getDrawableArea().getBottom() - halfStrokeWidth, mPaint);
+                getDrawableArea().getBottom() - halfStrokeWidth, paint);
     }
 
     /**

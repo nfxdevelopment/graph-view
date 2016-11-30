@@ -19,23 +19,23 @@ class BoarderText extends DrawableObject {
     /**
      * Maximum Bounds of text
      */
-    private final Rect mBounds = new Rect();
+    private final Rect bounds = new Rect();
     /**
      * Graph Limits
      */
-    private final GraphParameters mGraphParameters;
+    private final GraphParameters graphParameters;
     /**
      * The zoom levels from the x and y Axis
      */
-    private ZoomDisplay mXZoomDisplay;
-    private ZoomDisplay mYZoomDisplay;
+    private ZoomDisplay xZoomDisplay;
+    private ZoomDisplay yZoomDisplay;
     /**
      * The values to display in each corner
      */
-    private String mLeftX;
-    private String mRightX;
-    private String mTopY;
-    private String mBottomY;
+    private String leftX;
+    private String rightX;
+    private String topY;
+    private String bottomY;
 
     /**
      * @param context  needed to work out the text size
@@ -44,59 +44,59 @@ class BoarderText extends DrawableObject {
     BoarderText(Context context, GraphParameters graphParameters) {
 
         // Set a default zoom Display
-        mXZoomDisplay = new ZoomDisplay(1f, 0f);
-        mYZoomDisplay = new ZoomDisplay(1f, 0f);
+        xZoomDisplay = new ZoomDisplay(1f, 0f);
+        yZoomDisplay = new ZoomDisplay(1f, 0f);
 
-        this.mGraphParameters = graphParameters;
+        this.graphParameters = graphParameters;
 
         float textScale = context.getResources().getDisplayMetrics().density;
 
-        mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setTextAlign(Paint.Align.RIGHT);
-        mPaint.setColor(Color.GRAY);
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextAlign(Paint.Align.RIGHT);
+        paint.setColor(Color.GRAY);
         /*
       text size before scaling for screen has been applied
      */
         int mUnscaledTextSize = 16;
-        mPaint.setTextSize((float) mUnscaledTextSize * textScale);
-        mPaint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+        paint.setTextSize((float) mUnscaledTextSize * textScale);
+        paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
 
         String sMaximumString = "00.00K";
-        mPaint.getTextBounds(sMaximumString, 0, sMaximumString.length(), mBounds);
+        paint.getTextBounds(sMaximumString, 0, sMaximumString.length(), bounds);
 
         calculateValuesToDisplay();
     }
 
     @Override
     public void doDraw(Canvas canvas) {
-        canvas.drawText(mTopY, getDrawableArea().getLeft() + mBounds.width(),
-                getDrawableArea().getTop() + mBounds.height(), mPaint);
+        canvas.drawText(topY, getDrawableArea().getLeft() + bounds.width(),
+                getDrawableArea().getTop() + bounds.height(), paint);
 
-        canvas.drawText(mBottomY, getDrawableArea().getLeft() + mBounds.width(),
-                getDrawableArea().getBottom() - getRealTextHeight(), mPaint);
+        canvas.drawText(bottomY, getDrawableArea().getLeft() + bounds.width(),
+                getDrawableArea().getBottom() - getRealTextHeight(), paint);
 
-        canvas.drawText(mLeftX, (getDrawableArea().getLeft() + mBounds.width() + (mBounds.width()
+        canvas.drawText(leftX, (getDrawableArea().getLeft() + bounds.width() + (bounds.width()
                         / 2)),
-                getDrawableArea().getBottom() - Math.abs(mPaint.descent()), mPaint);
+                getDrawableArea().getBottom() - Math.abs(paint.descent()), paint);
 
-        canvas.drawText(mRightX, getDrawableArea().getRight(),
-                getDrawableArea().getBottom() - Math.abs(mPaint.descent()), mPaint);
+        canvas.drawText(rightX, getDrawableArea().getRight(),
+                getDrawableArea().getBottom() - Math.abs(paint.descent()), paint);
     }
 
     /**
      * We calculate the value ahead of time to removeAllChildGridLines any hold up in doDraw
      */
     private void calculateValuesToDisplay() {
-        mTopY = displayString(mGraphParameters.getYAxisParameters().getMinimumValue() +
-                (mYZoomDisplay.getFarSideOffsetPercentage() * mGraphParameters.getYAxisParameters
+        topY = displayString(graphParameters.getYAxisParameters().getMinimumValue() +
+                (yZoomDisplay.getFarSideOffsetPercentage() * graphParameters.getYAxisParameters
                         ().getAxisSpan()));
-        mBottomY = displayString(mGraphParameters.getYAxisParameters().getMinimumValue() +
-                (mYZoomDisplay.getDisplayOffsetPercentage() * mGraphParameters.getYAxisParameters
+        bottomY = displayString(graphParameters.getYAxisParameters().getMinimumValue() +
+                (yZoomDisplay.getDisplayOffsetPercentage() * graphParameters.getYAxisParameters
                         ().getAxisSpan()));
-        mLeftX = displayString(mGraphParameters.getXAxisParameters().graphPositionToScaledAxis(
-                mXZoomDisplay.getDisplayOffsetPercentage()));
-        mRightX = displayString(mGraphParameters.getXAxisParameters().graphPositionToScaledAxis(
-                mXZoomDisplay.getFarSideOffsetPercentage()));
+        leftX = displayString(graphParameters.getXAxisParameters().graphPositionToScaledAxis(
+                xZoomDisplay.getDisplayOffsetPercentage()));
+        rightX = displayString(graphParameters.getXAxisParameters().graphPositionToScaledAxis(
+                xZoomDisplay.getFarSideOffsetPercentage()));
     }
 
     /**
@@ -140,12 +140,12 @@ class BoarderText extends DrawableObject {
      * @param zoomDisplay the y Zoom levels
      */
     void setYZoomDisplay(ZoomDisplay zoomDisplay) {
-        mYZoomDisplay = zoomDisplay;
+        yZoomDisplay = zoomDisplay;
 
         /*
             We have to list for changes to the zoom offset to update the shown values
          */
-        mYZoomDisplay.addListener(new ZoomChangedListener() {
+        yZoomDisplay.addListener(new ZoomChangedListener() {
             @Override
             public void zoomChanged() {
                 calculateValuesToDisplay();
@@ -160,12 +160,12 @@ class BoarderText extends DrawableObject {
      * @param zoomDisplay the y Zoom levels
      */
     void setXZoomDisplay(ZoomDisplay zoomDisplay) {
-        mXZoomDisplay = zoomDisplay;
+        xZoomDisplay = zoomDisplay;
 
         /*
             We have to list for changes to the zoom offset to update the shown values
          */
-        mXZoomDisplay.addListener(new ZoomChangedListener() {
+        xZoomDisplay.addListener(new ZoomChangedListener() {
             @Override
             public void zoomChanged() {
                 calculateValuesToDisplay();
@@ -180,6 +180,6 @@ class BoarderText extends DrawableObject {
      * @return text height
      */
     private float getRealTextHeight() {
-        return (Math.abs(mPaint.ascent()) + Math.abs(mPaint.descent()));
+        return (Math.abs(paint.ascent()) + Math.abs(paint.descent()));
     }
 }
