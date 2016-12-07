@@ -199,14 +199,15 @@ public abstract class MicrophoneInput extends Input {
      * @param inputBlockSize block size to set to
      */
     public void setInputBlockSize(int inputBlockSize) {
-        boolean running = this.running;
+        boolean running = isRunning();
 
         if(running) {
             stop();
         }
 
-        initialise();
+        this.inputBlockSize = inputBlockSize;
 
+        initialise();
         if(running) {
             start();
         }

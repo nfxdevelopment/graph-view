@@ -166,20 +166,4 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
         historyMagnitudeBuffers = new float[sNumberOfHistoryBuffers][inputBlockSize / 2];
     }
-
-    @Override
-    public void setInputBlockSize(int inputBlockSize) {
-        boolean running = isRunning();
-
-        if(running) {
-            stop();
-        }
-
-        this.inputBlockSize = inputBlockSize;
-
-        initialise();
-        if(running) {
-            start();
-        }
-    }
 }
