@@ -105,4 +105,6 @@ public abstract class Input {
     public void setPaused(boolean paused) {
         this.paused = paused;
     }
+
+    public abstract int getBufferSize();
 }

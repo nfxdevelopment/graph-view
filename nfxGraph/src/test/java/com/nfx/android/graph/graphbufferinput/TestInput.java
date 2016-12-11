@@ -11,7 +11,7 @@ class TestInput extends Input {
 
     @Override
     public void initialise() {
-        setLength(8000);
+        setLength(getBufferSize());
     }
 
     @Override
@@ -27,6 +27,11 @@ class TestInput extends Input {
     @Override
     public void destroy() {
 
+    }
+
+    @Override
+    public int getBufferSize() {
+        return 8000;
     }
 
     void generateRandomBufferInput() {

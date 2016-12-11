@@ -82,6 +82,11 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
     }
 
+    @Override
+    public int getBufferSize() {
+        return inputBlockSize / 2;
+    }
+
     /**
      * This takes the last read buffer and does a FFT calculation on it. It then converts the values
      * into dB. This may take a while so we have to optimise this as much as possible
