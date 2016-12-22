@@ -24,6 +24,9 @@ public class MarkerAdapter extends BaseAdapter {
     private final Handler mHandler;
     private final Runnable mRefreshListRun;
 
+    private boolean xIsInteger = true;
+    private boolean yIsInteger = false;
+
     public MarkerAdapter(Context context, List<MarkerModel> list) {
         mContext = context;
         mList = list;
@@ -64,9 +67,24 @@ public class MarkerAdapter extends BaseAdapter {
         } else {
             viewHolder = (MarkerViewHolder) v.getTag();
         }
+
+        String xValue;
+        String yValue;
         int maxChars = 6;
-        String xValue = String.valueOf((int) mList.get(position).getXValue());
-        String yValue = String.valueOf(mList.get(position).getYValue());
+
+        if(xIsInteger) {
+            xValue = String.valueOf((int) mList.get(position).getXValue());
+        } else {
+            xValue = String.valueOf(mList.get(position).getXValue());
+        }
+        if(xValue.length() > maxChars) {
+            xValue = xValue.substring(0, maxChars);
+        }
+        if(yIsInteger) {
+            yValue = String.valueOf((int) mList.get(position).getYValue());
+        } else {
+            yValue = String.valueOf(mList.get(position).getYValue());
+        }
         if(yValue.length() > maxChars) {
             yValue = yValue.substring(0, maxChars);
         }
@@ -79,6 +97,15 @@ public class MarkerAdapter extends BaseAdapter {
 
     void refreshList() {
         mHandler.post(mRefreshListRun);
+    }
+
+
+    public void setXIsInteger(boolean xIsInteger) {
+        this.xIsInteger = xIsInteger;
+    }
+
+    public void setYIsInteger(boolean yIsInteger) {
+        this.yIsInteger = yIsInteger;
     }
 }
 

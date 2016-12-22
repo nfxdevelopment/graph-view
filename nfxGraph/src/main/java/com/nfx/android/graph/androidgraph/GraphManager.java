@@ -5,15 +5,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.nfx.android.graph.R;
-import com.nfx.android.graph.androidgraph.markerList.MarkerAdapter;
-import com.nfx.android.graph.androidgraph.markerList.MarkerModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * NFX Development
@@ -26,15 +20,11 @@ public class GraphManager extends RelativeLayout {
     /**
      * Object which delegates all the graph drawing
      */
-    private GraphView mGraphView;
+    private GraphView graphView;
     /**
-     * List of all the markers
+     * A manager to help display markers
      */
-    private List<MarkerModel> mMarkerList;
-    /**
-     * Object to control the list view of marker information
-     */
-    private MarkerAdapter mMarkerAdapter;
+    private MarkerManager markerManager;
 
     /**
      * @param context application context
@@ -68,7 +58,7 @@ public class GraphManager extends RelativeLayout {
      * @param attr attributes to be applied
      */
     private void initialiseWithAttributes(AttributeSet attr) {
-        mGraphView = new GraphView(getContext(), attr);
+        graphView = new GraphView(getContext(), attr);
         initialise();
     }
 
@@ -76,7 +66,7 @@ public class GraphManager extends RelativeLayout {
      * Called from the constructors for a generic setup
      */
     private void initialiseWithoutAttributes() {
-        mGraphView = new GraphView(getContext());
+        graphView = new GraphView(getContext());
         initialise();
     }
 
@@ -86,67 +76,34 @@ public class GraphManager extends RelativeLayout {
     private void initialise() {
         inflate(getContext(), R.layout.nfx_graph, this);
 
-        if(mGraphView.getParent() != null) {
-            ((ViewGroup) mGraphView.getParent()).removeView(mGraphView);
+        if(graphView.getParent() != null) {
+            ((ViewGroup) graphView.getParent()).removeView(graphView);
         }
         FrameLayout graphView = (FrameLayout)findViewById(R.id.graph);
-        graphView.addView(mGraphView);
-        ListView mMarkerInformation = (ListView) findViewById(R.id.marker_information);
+        graphView.addView(this.graphView);
 
-        mMarkerList = new ArrayList<>();
-        mMarkerAdapter = new MarkerAdapter(getContext(), mMarkerList);
-
-        mMarkerInformation.setAdapter(mMarkerAdapter);
-        mGraphView.getBackgroundManager().setBackgroundColour(
+        this.graphView.getBackgroundManager().setBackgroundColour(
                 ContextCompat.getColor(getContext(), R.color.background));
-        mGraphView.getBackgroundManager().setGridLineColour(
+        this.graphView.getBackgroundManager().setGridLineColour(
                 ContextCompat.getColor(getContext(), R.color.gridLines));
+
+        markerManager = new MarkerManager(getContext(), getGraphView(), this);
+        markerManager.initialise();
     }
 
-    /**
-     * Sets the markers on or off on a specific signal
-     *
-     * @param signalId  signal to apply the markers to
-     * @param isShown   are the markers shown on the signal
-     */
-    public void setMarkers(int signalId, boolean isShown) {
-        if(isShown) {
-            addMarker(signalId, ContextCompat.getColor(getContext(), R.color.marker1));
-            addMarker(signalId, ContextCompat.getColor(getContext(), R.color.marker2));
-        } else {
-            removeMarker(signalId);
-            mMarkerList.clear();
-        }
-
-        mMarkerAdapter.notifyDataSetChanged();
-    }
-
-    /**
-     * Add a marker to a given signal
-     *
-     * @param signalId  signal id to apply markers to
-     * @param colour    colour of marker
-     */
-    private void addMarker(int signalId, int colour) {
-        MarkerModel markerModel = new MarkerModel(mMarkerAdapter,
-                getGraphView().getGraphSignalInputInterface());
-        mMarkerList.add(markerModel);
-        getGraphView().getSignalManager().addMarker(colour, signalId, markerModel);
-    }
-
-    /**
-     * Remove markers on given signal
-     * @param signalId a signal id
-     */
-    private void removeMarker(int signalId) {
-        getGraphView().getSignalManager().removeMarkers(signalId);
-    }
 
     /**
      * @return graph view from the manager
      */
     public GraphView getGraphView() {
-        return mGraphView;
+        return graphView;
+    }
+
+    /**
+     * @return marker manager
+     */
+    public MarkerManager getMarkerManager() {
+        return markerManager;
     }
 
 }
