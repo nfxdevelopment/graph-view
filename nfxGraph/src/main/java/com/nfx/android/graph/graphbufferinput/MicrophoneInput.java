@@ -14,10 +14,6 @@ import android.util.Log;
  * The touch events are handled by this object to manipulate the microphone input
  */
 public abstract class MicrophoneInput extends Input {
-    /**
-     * The desired sampling rate for this analyser, in samples/sec.
-     */
-    private static final int SAMPLE_RATE = 48000;
     private final static String TAG = "MicrophoneInput";
     @SuppressWarnings("FieldCanBeLocal")
     private final int channelConfig = AudioFormat.CHANNEL_IN_MONO;
@@ -25,6 +21,10 @@ public abstract class MicrophoneInput extends Input {
      * Audio input block size, in samples.
      */
     int inputBlockSize = 2048;
+    /**
+     * The desired sampling rate for this analyser, in samples/sec.
+     */
+    private int sampleRate = 48000;
     /**
      * Audio input device
      */
@@ -61,43 +61,54 @@ public abstract class MicrophoneInput extends Input {
     }
 
     @Override
-    public void start() {
-        final int audioBufferSizeInBytes = AudioRecord.getMinBufferSize(SAMPLE_RATE, channelConfig,
-                audioFormat);
+    public void start() throws RuntimeException {
+        // Only try and start if not running
+        if(!running) {
+            final int audioBufferSizeInBytes = AudioRecord.getMinBufferSize(sampleRate,
+                    channelConfig,
+                    audioFormat);
 
-        if(audioFormat == AudioFormat.ENCODING_PCM_FLOAT) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                inputBlockSize = Math.max(inputBlockSize, audioBufferSizeInBytes / 4);
-                bufferSizeInBytes = inputBlockSize * 4;
+            if(audioFormat == AudioFormat.ENCODING_PCM_FLOAT) {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    inputBlockSize = Math.max(inputBlockSize, audioBufferSizeInBytes / 4);
+                    bufferSizeInBytes = inputBlockSize * 4;
+                } else {
+                    throw new RuntimeException("ENCODING_PCM_FLOAT is not supported below Android" +
+                            " Version 6.0");
+                }
+            } else if(audioFormat == AudioFormat.ENCODING_PCM_16BIT) {
+                inputBlockSize = Math.max(inputBlockSize, audioBufferSizeInBytes / 2);
+                bufferSizeInBytes = inputBlockSize * 2;
+            } else if(audioFormat == AudioFormat.ENCODING_PCM_8BIT) {
+                inputBlockSize = Math.max(inputBlockSize, audioBufferSizeInBytes);
+                bufferSizeInBytes = inputBlockSize;
             } else {
-                throw new RuntimeException("ENCODING_PCM_FLOAT is not supported below Android" +
-                        " Version 6.0");
+                throw new RuntimeException("Unrecognized Encoding format only ENCODING_PCM_FLOAT," +
+                        " ENCODING_PCM_16BIT , ENCODING_PCM_8BIT is supported");
             }
-        } else if(audioFormat == AudioFormat.ENCODING_PCM_16BIT) {
-            inputBlockSize = Math.max(inputBlockSize, audioBufferSizeInBytes / 2);
-            bufferSizeInBytes = inputBlockSize * 2;
-        } else if(audioFormat == AudioFormat.ENCODING_PCM_8BIT) {
-            inputBlockSize = Math.max(inputBlockSize, audioBufferSizeInBytes);
-            bufferSizeInBytes = inputBlockSize;
-        } else {
-            throw new RuntimeException("Unrecognized Encoding format only ENCODING_PCM_FLOAT," +
-                    " ENCODING_PCM_16BIT , ENCODING_PCM_8BIT is supported");
+
+            notifyListenersOfInputBlockSizeChange(inputBlockSize);
+
+            // Set up the audio input.
+            try {
+                audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
+                        channelConfig,
+                        audioFormat, bufferSizeInBytes);
+            } catch(RuntimeException e) {
+                throw new RuntimeException("Your input device cannot use sample rate: " +
+                        sampleRate +
+                        ". Please select anther sample rate");
+            }
+
+            running = true;
+            readerThread = new Thread(new Runnable() {
+                public void run() {
+                    readerRun();
+                }
+            }, "Audio Reader");
+
+            readerThread.start();
         }
-
-        notifyListenersOfInputBlockSizeChange(inputBlockSize);
-
-        // Set up the audio input.
-        audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, channelConfig,
-                audioFormat, bufferSizeInBytes);
-
-        running = true;
-        readerThread = new Thread(new Runnable() {
-            public void run() {
-                readerRun();
-            }
-        }, "Audio Reader");
-
-        readerThread.start();
     }
 
     @Override
@@ -182,7 +193,27 @@ public abstract class MicrophoneInput extends Input {
      * @return current sample rate
      */
     public int getSampleRate() {
-        return SAMPLE_RATE;
+        return sampleRate;
+    }
+
+    /**
+     * Set the sample rate for the input
+     *
+     * @param sampleRate sample rate to set
+     */
+    public void setSampleRate(int sampleRate) throws Exception {
+        boolean running = isRunning();
+
+        if(running) {
+            stop();
+        }
+
+        this.sampleRate = sampleRate;
+
+        initialise();
+        if(running) {
+            start();
+        }
     }
 
     /**

@@ -86,7 +86,7 @@ class BoarderText extends DrawableObject {
     /**
      * We calculate the value ahead of time to removeAllChildGridLines any hold up in doDraw
      */
-    private void calculateValuesToDisplay() {
+    void calculateValuesToDisplay() {
         topY = displayString(graphParameters.getYAxisParameters().getMinimumValue() +
                 (yZoomDisplay.getFarSideOffsetPercentage() * graphParameters.getYAxisParameters
                         ().getAxisSpan()));

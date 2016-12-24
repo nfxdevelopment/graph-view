@@ -13,7 +13,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
  * It makes batch calls to DoDraw functions of all it's members and individual sizing options
  * are possible by overriding surfaceChanged
  */
-class BackgroundManager {
+public class BackgroundManager {
     /**
      * An object which draws onto the canvas
      **/
@@ -129,6 +129,7 @@ class BackgroundManager {
         boarderText.setXZoomDisplay(zoomDisplay);
     }
 
+    // TODO This is not handling other sample rates
     /**
      * Handle changes to display the x axis as a logarithmic scale
      */
@@ -219,6 +220,12 @@ class BackgroundManager {
 
         xGridLines.showAxisText(context);
         yGridLines.showAxisText(context);
+    }
+
+    public void forceGridLineValueRecalculate() {
+        boarderText.calculateValuesToDisplay();
+        yGridLines.axisText.calculateGridLineValues();
+        xGridLines.axisText.calculateGridLineValues();
     }
 
 }

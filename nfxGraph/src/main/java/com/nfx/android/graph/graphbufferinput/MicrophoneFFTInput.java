@@ -67,7 +67,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     }
 
     @Override
-    public void start() {
+    public void start() throws RuntimeException {
         super.start();
 
         fftCalculations = new FloatFFT_1D(inputBlockSize);

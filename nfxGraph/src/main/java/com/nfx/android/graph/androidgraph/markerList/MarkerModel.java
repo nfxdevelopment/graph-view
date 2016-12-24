@@ -46,7 +46,6 @@ public class MarkerModel implements Marker.MarkerUpdateInterface {
         parentAdapter.refreshList();
     }
 
-    // TODO may have broken specscope because of this change
     @Override
     public void markerPositionUpdate(float xValue, float yValue) {
         // The buffer has been converted to decibels, flipped, then scaled to the minimum value.
@@ -58,7 +57,7 @@ public class MarkerModel implements Marker.MarkerUpdateInterface {
                 getYAxisParameters().getMinimumValue();
         float axisSpan = graphSignalInputInterface.getGraphParameters().
                 getYAxisParameters().getAxisSpan();
-        this.yValue = miniMumValue + (1f - yValue) * axisSpan;
+        this.yValue = miniMumValue + yValue * axisSpan;
         parentAdapter.refreshList();
     }
 }

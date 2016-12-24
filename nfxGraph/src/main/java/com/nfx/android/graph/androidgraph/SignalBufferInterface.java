@@ -1,5 +1,7 @@
 package com.nfx.android.graph.androidgraph;
 
+import android.support.annotation.Nullable;
+
 import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.graph.graphbufferinput.InputListener;
 
@@ -10,6 +12,7 @@ import com.nfx.android.graph.graphbufferinput.InputListener;
  * An interface to communicate to the input or the Signal Buffer to display
  */
 class SignalBufferInterface extends InputListener {
+    @Nullable
     private SignalBuffer signalBuffer = null;
 
     /**
@@ -17,7 +20,7 @@ class SignalBufferInterface extends InputListener {
      *
      * @param signalBuffer the display object
      */
-    SignalBufferInterface(SignalBuffer signalBuffer) {
+    SignalBufferInterface(@Nullable SignalBuffer signalBuffer) {
         this.signalBuffer = signalBuffer;
     }
 
@@ -35,8 +38,10 @@ class SignalBufferInterface extends InputListener {
     void getScaledMinimumMaximumBuffers(float[] minimumValuesBuffer, float[] maximumValuesBuffer,
                                         float minimumXValue, float maximumXValue,
                                         AxisParameters xAxisParameters) {
-        signalBuffer.getScaledMinimumMaximumBuffers(minimumValuesBuffer, maximumValuesBuffer,
-                minimumXValue, maximumXValue, xAxisParameters);
+        if(signalBuffer != null) {
+            signalBuffer.getScaledMinimumMaximumBuffers(minimumValuesBuffer, maximumValuesBuffer,
+                    minimumXValue, maximumXValue, xAxisParameters);
+        }
     }
 
     /**
@@ -45,12 +50,18 @@ class SignalBufferInterface extends InputListener {
      * @param position a value between minimumX and maximumX
      */
     float getValueAtPosition(float position) {
-        return signalBuffer.getValueAtPosition(position);
+        if(signalBuffer != null) {
+            return signalBuffer.getValueAtPosition(position);
+        } else {
+            return 0;
+        }
     }
 
     @Override
     public void inputBlockSizeUpdate(int blockSize) {
-        signalBuffer.setSizeOfBuffer(blockSize);
+        if(signalBuffer != null) {
+            signalBuffer.setSizeOfBuffer(blockSize);
+        }
     }
 
     /**

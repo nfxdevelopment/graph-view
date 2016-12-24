@@ -24,7 +24,7 @@ public class MarkerAdapter extends BaseAdapter {
     private final Handler mHandler;
     private final Runnable mRefreshListRun;
 
-    private boolean xIsInteger = true;
+    private boolean xIsInteger = false;
     private boolean yIsInteger = false;
 
     public MarkerAdapter(Context context, List<MarkerModel> list) {
