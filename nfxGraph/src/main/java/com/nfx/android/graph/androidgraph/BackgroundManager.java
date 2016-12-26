@@ -129,7 +129,6 @@ public class BackgroundManager {
         boarderText.setXZoomDisplay(zoomDisplay);
     }
 
-    // TODO This is not handling other sample rates
     /**
      * Handle changes to display the x axis as a logarithmic scale
      */

@@ -1,6 +1,8 @@
 package com.nfx.android.graph.graphbufferinput;
 
 import com.nfx.android.graph.androidgraph.GraphView;
+import com.nfx.android.graph.graphbufferinput.windowing.HannWindow;
+import com.nfx.android.graph.graphbufferinput.windowing.Window;
 
 import org.jtransforms.fft.FloatFFT_1D;
 
@@ -53,6 +55,10 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      * Current history buffer to write into
      */
     private int historyIndex = 0;
+    /**
+     * Window to apply to signal prior to FFT
+     */
+    private Window window = new HannWindow();
 
     /**
      * Constructor to initialise microphone for listening
@@ -102,7 +108,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
     protected void applyMagnitudeConversions(float buffer[]) {
         if(graphSignalInputInterface != null) {
-            applyHanningWindow(buffer);
+            buffer = window.applyWindow(buffer);
             System.arraycopy(buffer, 0, fftBuffer, 0, buffer.length);
             fftCalculations.realForwardFull(fftBuffer);
 
@@ -171,4 +177,9 @@ public class MicrophoneFFTInput extends MicrophoneInput {
 
         historyMagnitudeBuffers = new float[sNumberOfHistoryBuffers][inputBlockSize / 2];
     }
+
+    public void setWindow(Window window) {
+        this.window = window;
+    }
+
 }
