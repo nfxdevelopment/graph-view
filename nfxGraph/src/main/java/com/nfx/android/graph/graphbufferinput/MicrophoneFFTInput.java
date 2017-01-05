@@ -73,7 +73,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     }
 
     @Override
-    public void start() throws RuntimeException {
+    public synchronized void start() throws RuntimeException {
         super.start();
 
         fftCalculations = new FloatFFT_1D(inputBlockSize);
@@ -100,10 +100,12 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      * @param buffer Buffer containing the data.
      */
     @Override
-    protected void readDone(float[] buffer) {
-        applyMagnitudeConversions(buffer);
-        applyingFFTAveraging();
-        notifyListenersOfBufferChange(returnedMagnitudeBuffer);
+    protected synchronized void readDone(float[] buffer) {
+        if(isRunning()) {
+            applyMagnitudeConversions(buffer);
+            applyingFFTAveraging();
+            notifyListenersOfBufferChange(returnedMagnitudeBuffer);
+        }
     }
 
     protected void applyMagnitudeConversions(float buffer[]) {
