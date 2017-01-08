@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">nfxGraph</string>
+    <string name="average_frequency_title">Avg. Freq</string>
 </resources>

@@ -24,7 +24,7 @@ public class GraphManager extends RelativeLayout {
     /**
      * A manager to help display markers
      */
-    private MarkerManager markerManager;
+    private GraphListManager graphListManager;
 
     /**
      * @param context application context
@@ -87,8 +87,8 @@ public class GraphManager extends RelativeLayout {
         this.graphView.getBackgroundManager().setGridLineColour(
                 ContextCompat.getColor(getContext(), R.color.gridLines));
 
-        markerManager = new MarkerManager(getContext(), getGraphView(), this);
-        markerManager.initialise();
+        graphListManager = new GraphListManager(getContext(), getGraphView(), this);
+        graphListManager.initialise();
     }
 
 
@@ -103,7 +103,14 @@ public class GraphManager extends RelativeLayout {
      * @return marker manager
      */
     public MarkerManager getMarkerManager() {
-        return markerManager;
+        return graphListManager.getMarkerManager();
+    }
+
+    /**
+     * @return average frequency manager
+     */
+    public AverageFrequencyManager getAverageFrequencyManager() {
+        return graphListManager.getAverageFrequencyManager();
     }
 
 }

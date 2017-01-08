@@ -1,4 +1,4 @@
-package com.nfx.android.graph.androidgraph.markerList;
+package com.nfx.android.graph.androidgraph.list.data;
 
 import android.graphics.Color;
 
@@ -12,43 +12,43 @@ import com.nfx.android.graph.androidgraph.SignalBuffer;
  * <p/>
  * An object that holds the values to display in the floating widgets.
  */
-public class MarkerModel implements Marker.MarkerUpdateInterface {
-    private final MarkerAdapter parentAdapter;
+public class MarkerData implements Marker.MarkerUpdateInterface {
     private final GraphView.GraphSignalInputInterface graphSignalInputInterface;
     private final SignalBuffer signalBuffer;
     private float xValue = 0;
     private float yValue = 0;
     private int markerColor = Color.BLACK;
 
-    public MarkerModel(MarkerAdapter parentAdapter,
-                       GraphView.GraphSignalInputInterface graphSignalInputInterface,
-                       SignalBuffer signalBuffer) {
-        this.parentAdapter = parentAdapter;
+    private boolean xIsInteger = false;
+    private boolean yIsInteger = false;
+
+    public MarkerData(GraphView.GraphSignalInputInterface graphSignalInputInterface,
+                      SignalBuffer signalBuffer) {
         this.graphSignalInputInterface = graphSignalInputInterface;
         this.signalBuffer = signalBuffer;
     }
 
-    float getXValue() {
+    public float getXValue() {
         return xValue;
     }
 
-    float getYValue() {
+    public float getYValue() {
         return yValue;
     }
 
-    int getMarkerColor() {
+    public int getMarkerColor() {
         return markerColor;
     }
 
     @Override
     public void markerColour(int color) {
         this.markerColor = color;
-        parentAdapter.refreshList();
     }
 
     @Override
     public void markerPositionUpdate(float xValue, float yValue) {
-        // The buffer has been converted to decibels, flipped, then scaled to the minimum value.
+        // The buffer has been converted to values relevant to the graph being displayed on
+        // so it has been flipped, then scaled to the minimum value.
         // So we need to reverse this, retrieve and convert back to the decibel value
         this.xValue = xValue;
         yValue *= signalBuffer.getYZoomDisplay().getZoomLevelPercentage();
@@ -58,6 +58,21 @@ public class MarkerModel implements Marker.MarkerUpdateInterface {
         float axisSpan = graphSignalInputInterface.getGraphParameters().
                 getYAxisParameters().getAxisSpan();
         this.yValue = miniMumValue + yValue * axisSpan;
-        parentAdapter.refreshList();
+    }
+
+    public void setXIsInteger(boolean xIsInteger) {
+        this.xIsInteger = xIsInteger;
+    }
+
+    public void setYIsInteger(boolean yIsInteger) {
+        this.yIsInteger = yIsInteger;
+    }
+
+    public boolean xIsInteger() {
+        return xIsInteger;
+    }
+
+    public boolean yIsInteger() {
+        return yIsInteger;
     }
 }
