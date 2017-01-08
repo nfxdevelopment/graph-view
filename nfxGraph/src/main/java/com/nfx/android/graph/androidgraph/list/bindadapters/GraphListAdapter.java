@@ -20,6 +20,7 @@ public class GraphListAdapter extends ListBindAdapter {
     }
 
     public void setMarkerList(List<MarkerData> dataSet) {
+        ((MarkerBinder) getDataBinder(0)).clear();
         ((MarkerBinder) getDataBinder(0)).addAll(dataSet);
 
     }
@@ -30,6 +31,7 @@ public class GraphListAdapter extends ListBindAdapter {
     }
 
     public void setAverageFrequencyList(List<AverageFrequencyData> dataSet) {
+        ((AverageFrequencyBinder) getDataBinder(1)).clear();
         ((AverageFrequencyBinder) getDataBinder(1)).addAll(dataSet);
 
     }

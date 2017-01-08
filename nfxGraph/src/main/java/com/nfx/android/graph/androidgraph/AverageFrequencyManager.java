@@ -45,6 +45,10 @@ public class AverageFrequencyManager {
         graphListAdapter.setAverageFrequencyList(averageFrequencyDataList);
     }
 
+    public boolean hasAverageFrequencyListener(int signalId) {
+        return averageFrequencyDataMap.containsKey(signalId);
+    }
+
     public void removeAverageFrequencyListener(int signalId) {
         averageFrequencyDataMap.remove(signalId);
         List<AverageFrequencyData> averageFrequencyDataList = new ArrayList<>();
