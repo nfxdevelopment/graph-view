@@ -1,6 +1,7 @@
 package com.nfx.android.graph.androidgraph;
 
 import android.graphics.Canvas;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -40,6 +41,14 @@ public class SignalManager {
      * Handles the drawing of a unlimited amount of Markers
      **/
     private final List<Marker> markers = new Vector<>();
+    /**
+     * Label point to denote 0 seconds
+     */
+    private LabelPointer xAxisZeroIntersect;
+    /**
+     * Show a pointer and line to show the yAxis Zero Intercept
+     */
+    private boolean showYAxisIntercept = false;
     /**
      * Current drawable area
      */
@@ -83,6 +92,11 @@ public class SignalManager {
                 signalBufferInterface, graphView.getXZoomDisplay());
         signal.surfaceChanged(drawableArea);
         signal.setColour(color);
+        if(showYAxisIntercept) {
+            signal.enableYAxisZeroIntercept(color);
+        } else {
+            signal.disableYAxisZeroIntercept();
+        }
 
         synchronized(this) {
             signalDrawers.put(id, signal);
@@ -166,6 +180,7 @@ public class SignalManager {
         for(Marker marker : markers) {
             marker.surfaceChanged(drawableArea);
         }
+        xAxisZeroIntersect.surfaceChanged(drawableArea);
     }
 
     /**
@@ -183,6 +198,7 @@ public class SignalManager {
             for(Marker marker : markers) {
                 marker.doDraw(canvas);
             }
+            xAxisZeroIntersect.doDraw(canvas);
         }
     }
 
@@ -201,5 +217,43 @@ public class SignalManager {
      */
     public Map<Integer, SignalBuffer> getSignalBuffers() {
         return signalBuffers;
+    }
+
+    /**
+     * Displays the zero crossing point on a signal graph. Note this is only applicable on a time vs
+     * amplitude plot
+     */
+    public void enableXAxisZeroIntersect(int colour) {
+        xAxisZeroIntersect = new VerticalLabelPointer(
+                graphView.getGraphSignalInputInterface().getGraphXZoomDisplay());
+        xAxisZeroIntersect.surfaceChanged(drawableArea);
+        xAxisZeroIntersect.setColour(colour);
+    }
+
+    /**
+     * Removes the zero crossing point on a signal graph.
+     */
+    public void disableXAxisZeroIntersect() {
+        xAxisZeroIntersect = null;
+    }
+
+    @Nullable
+    public LabelPointer getXAxisZeroIntersect() {
+        return xAxisZeroIntersect;
+    }
+
+    public void enableYAxisIntercept() {
+        showYAxisIntercept = true;
+        for(int i = 0; i < signalDrawers.size(); i++) {
+            Signal signal = signalDrawers.valueAt(i);
+            signal.enableYAxisZeroIntercept(signal.getColour());
+        }
+    }
+
+    public void disableYAxisIntercept() {
+        showYAxisIntercept = false;
+        for(int i = 0; i < signalDrawers.size(); i++) {
+            signalDrawers.valueAt(i).disableYAxisZeroIntercept();
+        }
     }
 }

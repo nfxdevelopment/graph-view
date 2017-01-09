@@ -2,6 +2,7 @@ package com.nfx.android.graph.androidgraph;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 
 import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
@@ -35,6 +36,11 @@ class Signal extends DrawableObject {
      */
     private float[] drawBufferMinimumValues;
     private float[] drawBufferMaximumValues;
+    /**
+     * A line and point to show where the zero intercept of y is
+     */
+    @Nullable
+    private LabelPointer yAxisZeroIntercept = null;
 
     /**
      * Constructor
@@ -119,6 +125,10 @@ class Signal extends DrawableObject {
                         getDrawableArea().checkLimitX(right),
                         getDrawableArea().checkLimitY(bottom), paint);
             }
+        }
+
+        if(yAxisZeroIntercept != null) {
+            yAxisZeroIntercept.doDraw(canvas);
         }
     }
 
@@ -216,6 +226,10 @@ class Signal extends DrawableObject {
         int mLineResolution = 4;
         drawBufferMinimumValues = new float[getDrawableArea().getWidth() / mLineResolution];
         drawBufferMaximumValues = new float[getDrawableArea().getWidth() / mLineResolution];
+
+        if(yAxisZeroIntercept != null) {
+            yAxisZeroIntercept.surfaceChanged(drawableArea);
+        }
     }
 
     /**
@@ -235,4 +249,17 @@ class Signal extends DrawableObject {
         return signalBufferInterface;
     }
 
+    /**
+     * Enable the line and pointer for the zero intercept of the y axis
+     */
+    void enableYAxisZeroIntercept(int colour) {
+        yAxisZeroIntercept = new HorizontalLabelPointer(signalBufferInterface.getYZoomDisplay());
+        yAxisZeroIntercept.surfaceChanged(getDrawableArea());
+        yAxisZeroIntercept.setColour(colour);
+        yAxisZeroIntercept.setShowLine(true);
+    }
+
+    void disableYAxisZeroIntercept() {
+        yAxisZeroIntercept = null;
+    }
 }

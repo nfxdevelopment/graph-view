@@ -50,6 +50,15 @@ abstract class DrawableObject {
     protected abstract void calculateRemainingDrawableArea(DrawableArea currentDrawableArea);
 
     /**
+     * Get the colour on the default paint
+     *
+     * @return colour of paint
+     */
+    int getColour() {
+        return paint.getColor();
+    }
+
+    /**
      * Set the colour on the default paint
      *
      * @param colour colour to set

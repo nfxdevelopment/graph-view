@@ -79,4 +79,9 @@ class SignalBufferInterface extends InputListener {
     public void inputRemoved() {
         // TODO Look at a way to automate the removal of a signal
     }
+
+    @Nullable
+    ZoomDisplay getYZoomDisplay() {
+        return signalBuffer != null ? signalBuffer.getYZoomDisplay() : null;
+    }
 }
