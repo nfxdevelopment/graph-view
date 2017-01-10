@@ -44,6 +44,7 @@ public class SignalManager {
     /**
      * Label point to denote 0 seconds
      */
+    @Nullable
     private LabelPointer xAxisZeroIntersect;
     /**
      * Show a pointer and line to show the yAxis Zero Intercept
@@ -180,7 +181,9 @@ public class SignalManager {
         for(Marker marker : markers) {
             marker.surfaceChanged(drawableArea);
         }
-        xAxisZeroIntersect.surfaceChanged(drawableArea);
+        if(xAxisZeroIntersect != null) {
+            xAxisZeroIntersect.surfaceChanged(drawableArea);
+        }
     }
 
     /**
@@ -198,7 +201,9 @@ public class SignalManager {
             for(Marker marker : markers) {
                 marker.doDraw(canvas);
             }
-            xAxisZeroIntersect.doDraw(canvas);
+            if(xAxisZeroIntersect != null) {
+                xAxisZeroIntersect.doDraw(canvas);
+            }
         }
     }
 
