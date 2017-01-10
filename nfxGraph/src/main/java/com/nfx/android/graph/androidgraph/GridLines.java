@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Extend from this class to create a drawable lines representing graph lines. This will draw a
  * single axis for the given number of lines.
  */
-abstract class GridLines extends DrawableObject {
+public abstract class GridLines extends DrawableObject {
 
     /**
      * When a using asks for a grid line which is not present in this object
@@ -142,7 +142,7 @@ abstract class GridLines extends DrawableObject {
      *
      * @return current number of grid lines
      */
-    int getNumberOfGridLines() {
+    public int getNumberOfGridLines() {
         return numberOfGridLines;
     }
 

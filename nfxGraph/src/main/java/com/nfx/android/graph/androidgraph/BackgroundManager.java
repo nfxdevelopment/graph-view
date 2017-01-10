@@ -227,4 +227,12 @@ public class BackgroundManager {
         xGridLines.axisText.calculateGridLineValues();
     }
 
+    public GridLines getXGridLines() {
+        return xGridLines;
+    }
+
+    public GridLines getYGridLines() {
+        return yGridLines;
+    }
+
 }
