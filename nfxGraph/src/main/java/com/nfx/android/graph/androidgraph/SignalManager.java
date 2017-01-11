@@ -261,4 +261,8 @@ public class SignalManager {
             signalDrawers.valueAt(i).disableYAxisZeroIntercept();
         }
     }
+
+    public SparseArray<Signal> getSignalDrawers() {
+        return signalDrawers;
+    }
 }

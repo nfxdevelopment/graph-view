@@ -27,6 +27,10 @@ public abstract class LabelPointer extends DrawableObject {
         // This object can be drawn over, so do not change the drawable area
     }
 
+    public abstract float getYPositionOfPointer();
+
+    public abstract float getXPositionOfPointer();
+
     Alignment getAlignment() {
         return alignment;
     }

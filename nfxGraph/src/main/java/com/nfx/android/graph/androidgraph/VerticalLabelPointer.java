@@ -39,7 +39,8 @@ class VerticalLabelPointer extends LabelPointer {
         }
     }
 
-    private float getXPositionOfPointer() {
+    @Override
+    public float getXPositionOfPointer() {
         float intersect = location;
 
         intersect -= zoomDisplay.getDisplayOffsetPercentage();
@@ -57,7 +58,8 @@ class VerticalLabelPointer extends LabelPointer {
         return intersect;
     }
 
-    private float getYPositionOfPointer() {
+    @Override
+    public float getYPositionOfPointer() {
         if(getAlignment() == Alignment.start) {
             return getDrawableArea().getTop() + circleRadius;
         } else if(getAlignment() == Alignment.end) {

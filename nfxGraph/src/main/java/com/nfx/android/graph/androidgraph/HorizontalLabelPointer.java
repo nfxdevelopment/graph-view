@@ -7,8 +7,9 @@ import android.util.Log;
  * NFX Development
  * Created by nick on 9/01/17.
  */
-class HorizontalLabelPointer extends LabelPointer {
+public class HorizontalLabelPointer extends LabelPointer {
     private static final String TAG = HorizontalLabelPointer.class.getName();
+
     private ZoomDisplay zoomDisplay;
 
     HorizontalLabelPointer(ZoomDisplay zoomDisplay) {
@@ -35,7 +36,8 @@ class HorizontalLabelPointer extends LabelPointer {
         }
     }
 
-    private float getYPositionOfPointer() {
+    @Override
+    public float getYPositionOfPointer() {
         float intersect = location;
 
         intersect -= zoomDisplay.getDisplayOffsetPercentage();
@@ -54,7 +56,8 @@ class HorizontalLabelPointer extends LabelPointer {
         return intersect;
     }
 
-    private float getXPositionOfPointer() {
+    @Override
+    public float getXPositionOfPointer() {
         if(getAlignment() == Alignment.start) {
             return getDrawableArea().getLeft() + circleRadius;
         } else if(getAlignment() == Alignment.end) {
@@ -63,5 +66,9 @@ class HorizontalLabelPointer extends LabelPointer {
             Log.e(TAG, "Alignment not recognized drawing circle at 0");
             return 0;
         }
+    }
+
+    public ZoomDisplay getZoomDisplay() {
+        return zoomDisplay;
     }
 }

@@ -14,7 +14,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
  * This object will draw a signal on screen. The object has the ability to draw either in a
  * logarithmic or linear fashion at runtime
  */
-class Signal extends DrawableObject {
+public class Signal extends DrawableObject {
     /**
      * The buffer which will be drawn by this object
      */
@@ -41,6 +41,11 @@ class Signal extends DrawableObject {
      */
     @Nullable
     private LabelPointer yAxisZeroIntercept = null;
+    /**
+     * A line and point to show where the zero intercept of y is
+     */
+    @Nullable
+    private HorizontalLabelPointer triggerLevelLabelPointer = null;
 
     /**
      * Constructor
@@ -129,6 +134,10 @@ class Signal extends DrawableObject {
 
         if(yAxisZeroIntercept != null) {
             yAxisZeroIntercept.doDraw(canvas);
+        }
+
+        if(triggerLevelLabelPointer != null) {
+            triggerLevelLabelPointer.doDraw(canvas);
         }
     }
 
@@ -230,6 +239,10 @@ class Signal extends DrawableObject {
         if(yAxisZeroIntercept != null) {
             yAxisZeroIntercept.surfaceChanged(drawableArea);
         }
+
+        if(triggerLevelLabelPointer != null) {
+            triggerLevelLabelPointer.surfaceChanged(drawableArea);
+        }
     }
 
     /**
@@ -261,5 +274,21 @@ class Signal extends DrawableObject {
 
     void disableYAxisZeroIntercept() {
         yAxisZeroIntercept = null;
+    }
+
+    public void enableTriggerLevelPointer(int colour) {
+        triggerLevelLabelPointer = new HorizontalLabelPointer(signalBufferInterface
+                .getYZoomDisplay());
+        triggerLevelLabelPointer.surfaceChanged(getDrawableArea());
+        triggerLevelLabelPointer.setColour(colour);
+    }
+
+    public void disableTriggerLevelPointer() {
+        triggerLevelLabelPointer = null;
+    }
+
+    @Nullable
+    public HorizontalLabelPointer getTriggerLevelPointer() {
+        return triggerLevelLabelPointer;
     }
 }
