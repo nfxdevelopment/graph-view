@@ -30,10 +30,6 @@ public abstract class MicrophoneInput extends Input {
      */
     private AudioRecord audioInput;
     /**
-     * Flag whether the thread should be running.
-     */
-    private boolean running = false;
-    /**
      * The thread, if any, which is currently reading.  Null if not running
      */
     private Thread readerThread = null;
@@ -192,6 +188,7 @@ public abstract class MicrophoneInput extends Input {
     /**
      * @return current sample rate
      */
+    @Override
     public int getSampleRate() {
         return sampleRate;
     }
@@ -219,7 +216,7 @@ public abstract class MicrophoneInput extends Input {
     /**
      * @return current input block size
      */
-    public int getInputBlockSize() {
+    protected int getInputBlockSize() {
         return inputBlockSize;
     }
 
@@ -243,13 +240,4 @@ public abstract class MicrophoneInput extends Input {
             start();
         }
     }
-
-    /**
-     * @return is the audio capture thread running
-     */
-    @SuppressWarnings("WeakerAccess")
-    public boolean isRunning() {
-        return running;
-    }
-
 }

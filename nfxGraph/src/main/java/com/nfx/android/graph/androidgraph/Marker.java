@@ -22,7 +22,7 @@ public class Marker extends DrawableObject {
     /**
      * GraphView interface
      */
-    private final GraphView.GraphSignalInputInterface graphInterface;
+    private final GraphViewInterface graphViewInterface;
     /**
      * Post updates to this object
      */
@@ -46,14 +46,14 @@ public class Marker extends DrawableObject {
 
     /**
      * @param signalId                  Id of the signal the markers are attached to
-     * @param graphSignalInputInterface interface to the graph view
+     * @param graphViewInterface interface to the graph view
      * @param signal                    signal interface
      * @param markerUpdateInterface     marker updater object
      */
-    Marker(int signalId, GraphView.GraphSignalInputInterface graphSignalInputInterface,
+    Marker(int signalId, GraphViewInterface graphViewInterface,
            SignalBufferInterface signal, MarkerUpdateInterface markerUpdateInterface) {
         this.signalId = signalId;
-        this.graphInterface = graphSignalInputInterface;
+        this.graphViewInterface = graphViewInterface;
         this.signalInterface = signal;
         this.markerUpdateInterface = markerUpdateInterface;
         paint.setColor(INITIAL_LINE_COLOR);
@@ -65,7 +65,7 @@ public class Marker extends DrawableObject {
 
     @Override
     public void doDraw(Canvas canvas) {
-        float xValue = graphInterface.getGraphParameters().getXAxisParameters().
+        float xValue = graphViewInterface.getGraphParameters().getXAxisParameters().
                 graphPositionToScaledAxis(markerPosition);
         float yValue = signalInterface.getValueAtPosition(xValue);
         markerUpdateInterface.markerPositionUpdate(xValue, yValue);
@@ -73,10 +73,10 @@ public class Marker extends DrawableObject {
         float centreX, centreY;
 
         if(markerPosition <
-                graphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
+                graphViewInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
             centreX = getDrawableArea().getLeft();
         } else if(markerPosition >
-                graphInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
+                graphViewInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
             centreX = getDrawableArea().getRight();
         } else {
             centreX = getMarkerPositionInPx();
@@ -153,11 +153,11 @@ public class Marker extends DrawableObject {
     /**
      * @return the marker position in relation to pixels
      */
-    public float getMarkerPositionInPx() {
+    float getMarkerPositionInPx() {
         float intersect = markerPosition;
 
-        intersect -= graphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
-        intersect /= graphInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
+        intersect -= graphViewInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
+        intersect /= graphViewInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
 
         intersect *= getDrawableArea().getWidth();
         intersect += getDrawableArea().getLeft();
@@ -182,8 +182,8 @@ public class Marker extends DrawableObject {
         markerPosition -= getDrawableArea().getLeft();
         markerPosition /= getDrawableArea().getWidth();
 
-        markerPosition += graphInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
-        markerPosition *= graphInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
+        markerPosition += graphViewInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage();
+        markerPosition *= graphViewInterface.getGraphXZoomDisplay().getZoomLevelPercentage();
 
         setMarkerPosition(markerPosition);
     }
@@ -206,8 +206,8 @@ public class Marker extends DrawableObject {
     /**
      * @return interface to the graph view
      */
-    public GraphView.GraphSignalInputInterface getGraphInterface() {
-        return graphInterface;
+    public GraphViewInterface getGraphViewInterface() {
+        return graphViewInterface;
     }
 
     /**

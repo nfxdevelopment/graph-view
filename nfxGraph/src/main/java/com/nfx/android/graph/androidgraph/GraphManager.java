@@ -1,6 +1,7 @@
 package com.nfx.android.graph.androidgraph;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ public class GraphManager extends RelativeLayout {
      * Object which delegates all the graph drawing
      */
     private GraphView graphView;
+
     /**
      * A manager to help display markers
      */
@@ -31,7 +33,7 @@ public class GraphManager extends RelativeLayout {
      */
     public GraphManager(Context context) {
         super(context);
-        initialiseWithoutAttributes();
+        initialise(null);
     }
 
     /**
@@ -40,7 +42,7 @@ public class GraphManager extends RelativeLayout {
      */
     public GraphManager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialiseWithAttributes(attrs);
+        initialise(attrs);
     }
 
     /**
@@ -50,31 +52,21 @@ public class GraphManager extends RelativeLayout {
      */
     public GraphManager(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialiseWithAttributes(attrs);
-    }
-
-    /**
-     * Called from the constructors for a generic setup with attributes to be applied
-     * @param attr attributes to be applied
-     */
-    private void initialiseWithAttributes(AttributeSet attr) {
-        graphView = new GraphView(getContext(), attr);
-        initialise();
-    }
-
-    /**
-     * Called from the constructors for a generic setup
-     */
-    private void initialiseWithoutAttributes() {
-        graphView = new GraphView(getContext());
-        initialise();
+        initialise(attrs);
     }
 
     /**
      * Inflate and setup all the views within the layout
      */
-    private void initialise() {
+    private void initialise(@Nullable AttributeSet attr) {
         inflate(getContext(), R.layout.nfx_graph, this);
+
+        graphListManager = new GraphListManager(getContext(), this);
+        if(attr != null) {
+            graphView = new GraphView(getContext(), attr, graphListManager);
+        } else {
+            graphView = new GraphView(getContext(), graphListManager);
+        }
 
         if(graphView.getParent() != null) {
             ((ViewGroup) graphView.getParent()).removeView(graphView);
@@ -87,7 +79,6 @@ public class GraphManager extends RelativeLayout {
         this.graphView.getBackgroundManager().setGridLineColour(
                 ContextCompat.getColor(getContext(), R.color.gridLines));
 
-        graphListManager = new GraphListManager(getContext(), getGraphView(), this);
         graphListManager.initialise();
     }
 
@@ -95,22 +86,33 @@ public class GraphManager extends RelativeLayout {
     /**
      * @return graph view from the manager
      */
-    public GraphView getGraphView() {
+    public GraphViewInterface getGraphViewInterface() {
         return graphView;
     }
 
     /**
      * @return marker manager
      */
-    public MarkerManager getMarkerManager() {
-        return graphListManager.getMarkerManager();
+    public MarkerManagerInterface getMarkerManagerInterface() {
+        return getSignalManagerInterface().getMarkerManagerInterface();
     }
 
     /**
      * @return average frequency manager
      */
-    public AverageFrequencyManager getAverageFrequencyManager() {
+    public AverageFrequencyManagerInterface getAverageFrequencyManager() {
         return graphListManager.getAverageFrequencyManager();
     }
 
+    public SignalManagerInterface getSignalManagerInterface() {
+        return graphView.getSignalManager();
+    }
+
+    GraphListManager getGraphListManager() {
+        return graphListManager;
+    }
+
+    public BackgroundManagerInterface getBackgroundManagerInterface() {
+        return graphView.getBackgroundManager();
+    }
 }

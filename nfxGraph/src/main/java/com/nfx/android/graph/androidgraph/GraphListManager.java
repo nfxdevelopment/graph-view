@@ -31,13 +31,10 @@ class GraphListManager {
      */
     private final Handler handler = new Handler();
     /**
-     * Manager to handle the display of markers
-     */
-    private MarkerManager markerManager;
-    /**
      * Manager to handle the display of average frequency analysers
      */
     private AverageFrequencyManager averageFrequencyManager;
+
     /**
      * Adapter for recycler view
      */
@@ -45,24 +42,22 @@ class GraphListManager {
 
     /**
      * @param context    context which the list is in
-     * @param graphView  graph view relating to data shown in list
      * @param parentView parent of this
      */
-    GraphListManager(Context context, GraphView graphView, View parentView) {
+    GraphListManager(Context context, View parentView) {
         this.parentView = parentView;
         this.context = context;
-        markerManager = new MarkerManager(context, graphView, graphListAdapter);
         averageFrequencyManager = new AverageFrequencyManager(graphListAdapter);
     }
 
     /**
      * Sets up the link between the adapter and parent view
      */
-    public void initialise() {
-        RecyclerView mMarkerInformation =
+    void initialise() {
+        RecyclerView listInformation =
                 (RecyclerView) parentView.findViewById(R.id.list_information);
-        mMarkerInformation.setAdapter(graphListAdapter);
-        mMarkerInformation.setLayoutManager(new LinearLayoutManager(context));
+        listInformation.setAdapter(graphListAdapter);
+        listInformation.setLayoutManager(new LinearLayoutManager(context));
 
         Runnable runnable = new Runnable() {
             @Override
@@ -75,14 +70,11 @@ class GraphListManager {
         handler.postDelayed(runnable, listUpdateInMs);
     }
 
-    /**
-     * @return marker manager to add are remove markers
-     */
-    MarkerManager getMarkerManager() {
-        return markerManager;
-    }
-
     AverageFrequencyManager getAverageFrequencyManager() {
         return averageFrequencyManager;
+    }
+
+    GraphListAdapter getGraphListAdapter() {
+        return graphListAdapter;
     }
 }

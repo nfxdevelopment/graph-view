@@ -3,6 +3,7 @@ package com.nfx.android.graph.androidgraph;
 import android.util.Log;
 
 import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
+import com.nfx.android.graph.graphbufferinput.InputListener;
 
 /**
  * NFX Development
@@ -11,7 +12,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
  * A signal buffer holds a buffer with additional information on how it should be displayed on
  * screen. This can be used to pass buffer information between graphical and input objects.
  */
-public class SignalBuffer {
+public class SignalBuffer extends InputListener implements SignalBufferInterface {
     private static final String TAG = "SignalBuffer";
     /**
      * Information about the scaling of signal in the y axis
@@ -41,24 +42,6 @@ public class SignalBuffer {
     }
 
     /**
-     * Sets the member buffer. Please ensure data is normalised to 0-1 before setting. If the
-     * buffer passed in does not match the size of the member buffer. It will not be set and a
-     * Log warning is displayed.
-     *
-     * @param buffer source for buffer copy
-     */
-    public void setBuffer(float[] buffer) {
-        synchronized (this) {
-            if(this.buffer.length == buffer.length) {
-                System.arraycopy(buffer, 0, this.buffer, 0, this.buffer.length);
-            } else {
-                Log.e(TAG, "Buffer passed " + buffer.length +
-                        " in does not match size of signal buffer " + this.buffer.length);
-            }
-        }
-    }
-
-    /**
      * This will return a buffer with the desired {@code numberOfPoints} size. It will
      * logarithmically scale (if required)  the buffer so the receiving buffer can plot in a linear
      * fashion The algorithm works out each new point separately. More often than not the new sample
@@ -70,7 +53,8 @@ public class SignalBuffer {
      * @param minimumXValue maximum value of scaled buffer
      * @param scaleToParameters target axis
      * */
-    void getScaledMinimumMaximumBuffers(float[] minimumValuesBuffer, float[]
+    @Override
+    public void getScaledMinimumMaximumBuffers(float[] minimumValuesBuffer, float[]
             maximumValuesBuffer,
                                         float minimumXValue, float maximumXValue,
                                         AxisParameters scaleToParameters) {
@@ -236,6 +220,7 @@ public class SignalBuffer {
      *
      * @return float array with raw information
      */
+    @Override
     public float[] getUnscaledBuffer() {
         return buffer;
     }
@@ -247,7 +232,7 @@ public class SignalBuffer {
      * @param scalePosition value between mMinimumX and mMaximumX
      * @return the value at given position
      */
-    float getValueAtPosition(float scalePosition) {
+    public float getValueAtPosition(float scalePosition) {
         if(scalePosition < xAxisParameters.getMinimumValue() ||
                 scalePosition > xAxisParameters.getMaximumValue()) {
             return 0;
@@ -348,6 +333,37 @@ public class SignalBuffer {
         return displayValue;
     }
 
+    @Override
+    public void inputBlockSizeUpdate(int blockSize) {
+        synchronized(this) {
+            buffer = new float[blockSize];
+        }
+    }
+
+    /**
+     * Sets the member buffer. Please ensure data is normalised to 0-1 before setting. If the
+     * buffer passed in does not match the size of the member buffer. It will not be set and a
+     * Log warning is displayed.
+     *
+     * @param buffer source for buffer copy
+     */
+    @Override
+    public void bufferUpdate(float[] buffer) {
+        synchronized(this) {
+            if(this.buffer.length == buffer.length) {
+                System.arraycopy(buffer, 0, this.buffer, 0, this.buffer.length);
+            } else {
+                Log.e(TAG, "Buffer passed " + buffer.length +
+                        " in does not match size of signal buffer " + this.buffer.length);
+            }
+        }
+    }
+
+    @Override
+    public void inputRemoved() {
+        // TODO Look at a way to automate the removal of a signal
+    }
+
     /**
      * Find the minimum value for a given range within buffer
      *
@@ -371,16 +387,12 @@ public class SignalBuffer {
         return buffer.length;
     }
 
-    void setSizeOfBuffer(int sizeOfBuffer) {
-        synchronized(this) {
-            buffer = new float[sizeOfBuffer];
-        }
-    }
-
+    @Override
     public ZoomDisplay getYZoomDisplay() {
         return yZoomDisplay;
     }
 
+    @Override
     public AxisParameters getXAxisParameters() {
         return xAxisParameters;
     }

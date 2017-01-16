@@ -9,36 +9,26 @@ import android.util.SparseArray;
  * This is the bare bones of an buffer input. Other objects can subscribe to buffer and settings
  * updates. Inherit from this class and implement the input type
  */
-public abstract class Input {
+public abstract class Input implements InputInterface {
     /**
      * Interface to update buffer data
      */
     private final SparseArray<InputListener> inputListeners = new SparseArray<>();
+    /**
+     * Is the input running
+     */
+    boolean running = false;
     /**
      * Used to pause the input
      */
     boolean paused = false;
 
     /**
-     * Initialise anything that needs to be setup prior to start
-     */
-    public abstract void initialise();
-
-    /**
-     * Start the listeners
-     */
-    public abstract void start();
-
-    /**
-     * Stop the listeners
-     */
-    public abstract void stop();
-
-    /**
      * Add a listening object
      *
      * @param inputListener listener object
      */
+    @Override
     public void addInputListener(InputListener inputListener) {
         inputListeners.put(inputListener.hashCode(), inputListener);
     }
@@ -93,18 +83,43 @@ public abstract class Input {
     /**
      * @return if the input is paused
      */
-    public boolean getPaused() {
+    @Override
+    public boolean isPaused() {
         return paused;
     }
 
     /**
-     * Set the input to pause/start
-     *
-     * @param paused set true to pause
+     * pause the input
      */
-    public void setPaused(boolean paused) {
-        this.paused = paused;
+    @Override
+    public void pause() {
+        this.paused = true;
+    }
+
+    /**
+     * unpause the input signal
+     */
+    @Override
+    public void unpause() {
+        this.paused = false;
     }
 
     public abstract int getBufferSize();
+
+    /**
+     * @return is the audio capture thread running
+     */
+    @Override
+    public boolean isRunning() {
+        return running;
+    }
+
+    /**
+     * @return input listeners for use of transferring the signal
+     */
+    @Override
+    public SparseArray<InputListener> getInputListeners() {
+        return inputListeners;
+    }
+
 }

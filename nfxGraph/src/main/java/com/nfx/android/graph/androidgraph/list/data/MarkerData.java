@@ -2,9 +2,9 @@ package com.nfx.android.graph.androidgraph.list.data;
 
 import android.graphics.Color;
 
-import com.nfx.android.graph.androidgraph.GraphView;
+import com.nfx.android.graph.androidgraph.GraphViewInterface;
 import com.nfx.android.graph.androidgraph.Marker;
-import com.nfx.android.graph.androidgraph.SignalBuffer;
+import com.nfx.android.graph.androidgraph.SignalBufferInterface;
 
 /**
  * NFX Development
@@ -13,8 +13,8 @@ import com.nfx.android.graph.androidgraph.SignalBuffer;
  * An object that holds the values to display in the floating widgets.
  */
 public class MarkerData implements Marker.MarkerUpdateInterface {
-    private final GraphView.GraphSignalInputInterface graphSignalInputInterface;
-    private final SignalBuffer signalBuffer;
+    private final GraphViewInterface graphViewInterface;
+    private final SignalBufferInterface signalBufferInterface;
     private float xValue = 0;
     private float yValue = 0;
     private int markerColor = Color.BLACK;
@@ -22,10 +22,10 @@ public class MarkerData implements Marker.MarkerUpdateInterface {
     private boolean xIsInteger = false;
     private boolean yIsInteger = false;
 
-    public MarkerData(GraphView.GraphSignalInputInterface graphSignalInputInterface,
-                      SignalBuffer signalBuffer) {
-        this.graphSignalInputInterface = graphSignalInputInterface;
-        this.signalBuffer = signalBuffer;
+    public MarkerData(GraphViewInterface graphViewInterface,
+                      SignalBufferInterface signalBufferInterface) {
+        this.graphViewInterface = graphViewInterface;
+        this.signalBufferInterface = signalBufferInterface;
     }
 
     public float getXValue() {
@@ -51,11 +51,11 @@ public class MarkerData implements Marker.MarkerUpdateInterface {
         // so it has been flipped, then scaled to the minimum value.
         // So we need to reverse this, retrieve and convert back to the decibel value
         this.xValue = xValue;
-        yValue *= signalBuffer.getYZoomDisplay().getZoomLevelPercentage();
-        yValue += signalBuffer.getYZoomDisplay().getDisplayOffsetPercentage();
-        float miniMumValue = graphSignalInputInterface.getGraphParameters().
+        yValue *= signalBufferInterface.getYZoomDisplay().getZoomLevelPercentage();
+        yValue += signalBufferInterface.getYZoomDisplay().getDisplayOffsetPercentage();
+        float miniMumValue = graphViewInterface.getGraphParameters().
                 getYAxisParameters().getMinimumValue();
-        float axisSpan = graphSignalInputInterface.getGraphParameters().
+        float axisSpan = graphViewInterface.getGraphParameters().
                 getYAxisParameters().getAxisSpan();
         this.yValue = miniMumValue + yValue * axisSpan;
     }

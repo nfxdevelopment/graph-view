@@ -1,6 +1,7 @@
 package com.nfx.android.graph.androidgraph;
 
 import android.graphics.Canvas;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
@@ -8,10 +9,7 @@ import android.util.SparseArray;
 import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.graph.graphbufferinput.InputListener;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,13 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * This is the middle man between the graph drawer and the input. All inputs are registered with
  * this manager and it will ask to create a drawer objects for these
  */
-public class SignalManager {
+class SignalManager implements SignalManagerInterface {
     private static final String TAG = SignalManager.class.getName();
     /**
      * parent object
      */
-    private final GraphView graphView;
-
+    private final GraphViewInterface graphViewInterface;
     /**
      * Array of drawers to display signals
      */
@@ -38,18 +35,14 @@ public class SignalManager {
     private final Map<Integer, SignalBuffer> signalBuffers = new
             ConcurrentHashMap<>();
     /**
-     * Handles the drawing of a unlimited amount of Markers
-     **/
-    private final List<Marker> markers = new Vector<>();
+     * Marker integration
+     */
+    private MarkerManager markerManager;
     /**
      * Label point to denote 0 seconds
      */
     @Nullable
     private LabelPointer xAxisZeroIntersect;
-    /**
-     * Show a pointer and line to show the yAxis Zero Intercept
-     */
-    private boolean showYAxisIntercept = false;
     /**
      * Current drawable area
      */
@@ -57,14 +50,13 @@ public class SignalManager {
     /**
      * Constructor
      *
-     * @param graphView needed to set the axis zoom levels
+     * @param graphViewInterface needed to set the axis zoom levels
      */
-    SignalManager(GraphView graphView) {
-        this.graphView = graphView;
-    }
+    SignalManager(GraphViewInterface graphViewInterface, GraphListManager graphListManager) {
+        this.graphViewInterface = graphViewInterface;
 
-    public List<Marker> getMarkers() {
-        return markers;
+        markerManager = new MarkerManager(graphViewInterface, this,
+                graphListManager.getGraphListAdapter());
     }
 
     /**
@@ -72,83 +64,59 @@ public class SignalManager {
      * signal with the given id and display a warning
      *  @param sizeOfBuffer size of the buffer to create
      * @param xAxisParameters scale of buffer x axis
-     * @param color color of signal
+     * @param colour colour of signal
      */
-    InputListener addSignalBuffer(int id, int sizeOfBuffer, AxisParameters xAxisParameters,
-                                  int color) {
+    @Override
+    public InputListener addSignal(int id, int sizeOfBuffer, AxisParameters xAxisParameters,
+                                   int colour) {
         SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, xAxisParameters);
-        return addSignalBuffer(id, signalBuffer, color);
+        addSignal(id, signalBuffer, colour);
+        return signalBuffer;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public InputListener addSignalBuffer(int id, SignalBuffer signalBuffer, int color) {
-        SignalBufferInterface signalBufferInterface = new SignalBufferInterface(signalBuffer);
+    @Override
+    public void addSignal(int id, SignalBuffer signalBuffer, int colour) {
         synchronized(this) {
             if(signalBuffers.put(id, signalBuffer) != null) {
                 Log.w(TAG, "signal id exists, overwriting");
             }
         }
 
-        Signal signal = new Signal(graphView.getGraphParameters(),
-                signalBufferInterface, graphView.getXZoomDisplay());
+        Signal signal = new Signal(graphViewInterface.getGraphParameters(),
+                signalBuffer, graphViewInterface.getGraphXZoomDisplay());
         signal.surfaceChanged(drawableArea);
-        signal.setColour(color);
-        if(showYAxisIntercept) {
-            signal.enableYAxisZeroIntercept(color);
-        } else {
-            signal.disableYAxisZeroIntercept();
-        }
+        signal.setColour(colour);
 
         synchronized(this) {
             signalDrawers.put(id, signal);
-            updateMarkers(id);
-        }
-
-        return signalBufferInterface;
-    }
-
-    /**
-     * Add a marker to the graph on a specific signal
-     *
-     * @param colour                colour of the marker
-     * @param id                    signal id for marker to track
-     * @param markerUpdateInterface interface to the marker
-     */
-    void addMarker(int colour, int id, Marker.MarkerUpdateInterface markerUpdateInterface) {
-        Marker marker = new Marker(id, graphView.getGraphSignalInputInterface(),
-                signalDrawers.get(id).getSignalBufferInterface(),
-                markerUpdateInterface);
-
-        marker.surfaceChanged(drawableArea);
-        marker.setColour(colour);
-
-        markers.add(marker);
-    }
-
-    /**
-     * Update the markers with signal Id to look at the correct signal buffer
-     *
-     * @param signalId signal id
-     */
-    private void updateMarkers(int signalId) {
-        for(Marker marker : markers) {
-            if(marker.getSignalId() == signalId) {
-                marker.setSignalInterface(signalDrawers.get(signalId).getSignalBufferInterface());
-            }
+            markerManager.updateMarkers(id);
         }
     }
 
-    /**
-     * Remove all markers attached to a specific signal
-     *
-     * @param signalId signal id
-     */
-    void removeMarkers(int signalId) {
-        for(Iterator<Marker> iterator = markers.iterator(); iterator.hasNext(); ) {
-            Marker marker = iterator.next();
-            if(marker.getSignalId() == signalId) {
-                iterator.remove();
-            }
+
+    @Override
+    public boolean hasSignal(int id) {
+        return signalBuffers.containsKey(id);
+    }
+
+    @Override
+    @Nullable
+    public HorizontalLabelPointer enableTriggerLevelPointer(int signalId, @ColorInt int colour) {
+        Signal signal = signalDrawers.valueAt(signalId);
+        if(signal != null) {
+            return signal.enableTriggerLevelPointer(colour);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public HorizontalLabelPointer getTriggerLevelPointer(int signalId) {
+        Signal signal = signalDrawers.valueAt(signalId);
+        if(signal != null) {
+            return signal.getTriggerLevelPointer();
+        } else {
+            return null;
         }
     }
 
@@ -157,12 +125,13 @@ public class SignalManager {
      *
      * @param id id of the signal to remove
      */
-    void removedSignalBuffer(int id) {
+    @Override
+    public void removeSignal(int id) {
         synchronized(this) {
             signalBuffers.remove(id);
             signalDrawers.remove(id);
         }
-        removeMarkers(id);
+        markerManager.removeMarkers(id);
     }
 
     /**
@@ -178,12 +147,10 @@ public class SignalManager {
             int key = signalDrawers.keyAt(i);
             signalDrawers.get(key).surfaceChanged(drawableArea);
         }
-        for(Marker marker : markers) {
-            marker.surfaceChanged(drawableArea);
-        }
         if(xAxisZeroIntersect != null) {
             xAxisZeroIntersect.surfaceChanged(drawableArea);
         }
+        markerManager.surfaceChanged(drawableArea);
     }
 
     /**
@@ -198,12 +165,10 @@ public class SignalManager {
                 int key = signalDrawers.keyAt(i);
                 signalDrawers.get(key).doDraw(canvas);
             }
-            for(Marker marker : markers) {
-                marker.doDraw(canvas);
-            }
             if(xAxisZeroIntersect != null) {
                 xAxisZeroIntersect.doDraw(canvas);
             }
+            markerManager.doDraw(canvas);
         }
     }
 
@@ -220,7 +185,7 @@ public class SignalManager {
     /**
      * @return signal buffers
      */
-    public Map<Integer, SignalBuffer> getSignalBuffers() {
+    private Map<Integer, SignalBuffer> getSignalBuffers() {
         return signalBuffers;
     }
 
@@ -228,11 +193,63 @@ public class SignalManager {
      * Displays the zero crossing point on a signal graph. Note this is only applicable on a time vs
      * amplitude plot
      */
-    public void enableXAxisZeroIntersect(int colour) {
+    public LabelPointer enableXAxisZeroIntersect(int colour) {
         xAxisZeroIntersect = new VerticalLabelPointer(
-                graphView.getGraphSignalInputInterface().getGraphXZoomDisplay());
+                graphViewInterface.getGraphXZoomDisplay());
         xAxisZeroIntersect.surfaceChanged(drawableArea);
         xAxisZeroIntersect.setColour(colour);
+
+        return xAxisZeroIntersect;
+    }
+
+    public void enableYAxisIntercept(int signalId) {
+        Signal signal = signalDrawers.valueAt(signalId);
+        if(signal != null) {
+            signal.enableYAxisZeroIntercept(signal.getColour());
+        }
+    }
+
+    public void disableYAxisIntercept(int signalId) {
+        Signal signal = signalDrawers.valueAt(signalId);
+        if(signal != null) {
+            signal.disableYAxisZeroIntercept();
+        }
+    }
+
+    @Override
+    public SignalBufferInterface getSignalBufferInterface(int signalId) {
+        return getSignalBuffers().get(signalId);
+    }
+
+    @Override
+    public MarkerManagerInterface getMarkerManagerInterface() {
+        return markerManager;
+    }
+
+    @Nullable
+    @Override
+    public SignalBuffer signalWithinCatchmentArea(float positionY) {
+        SignalBuffer signalBufferToReturn = null;
+        if(signalBuffers.size() == 1) {
+            signalBufferToReturn = (SignalBuffer) signalBuffers.values().toArray()[0];
+        } else {
+            // Ensure that the first zoom display is taken by setting a default point that is
+            // completely off screen
+            float nearestCentrePoint = 1000000;
+            for(SignalBuffer signalBuffer : signalBuffers.values()) {
+                float signalCentrePoint = 0.5f;
+                signalCentrePoint -= signalBuffer.getYZoomDisplay().getDisplayOffsetPercentage();
+                signalCentrePoint /= signalBuffer.getYZoomDisplay().getZoomLevelPercentage();
+
+                float touchSignalCentreDifference = Math.abs(positionY - signalCentrePoint);
+
+                if(touchSignalCentreDifference < nearestCentrePoint) {
+                    nearestCentrePoint = touchSignalCentreDifference;
+                    signalBufferToReturn = signalBuffer;
+                }
+            }
+        }
+        return signalBufferToReturn;
     }
 
     /**
@@ -242,27 +259,14 @@ public class SignalManager {
         xAxisZeroIntersect = null;
     }
 
-    @Nullable
-    public LabelPointer getXAxisZeroIntersect() {
-        return xAxisZeroIntersect;
-    }
-
-    public void enableYAxisIntercept() {
-        showYAxisIntercept = true;
-        for(int i = 0; i < signalDrawers.size(); i++) {
-            Signal signal = signalDrawers.valueAt(i);
-            signal.enableYAxisZeroIntercept(signal.getColour());
-        }
-    }
-
-    public void disableYAxisIntercept() {
-        showYAxisIntercept = false;
-        for(int i = 0; i < signalDrawers.size(); i++) {
-            signalDrawers.valueAt(i).disableYAxisZeroIntercept();
-        }
-    }
-
     public SparseArray<Signal> getSignalDrawers() {
         return signalDrawers;
+    }
+
+    /**
+     * @return the manager for marker drawing
+     */
+    public MarkerManagerInterface getMarkerManager() {
+        return markerManager;
     }
 }

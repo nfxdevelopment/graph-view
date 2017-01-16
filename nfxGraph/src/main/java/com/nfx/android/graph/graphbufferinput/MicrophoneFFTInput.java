@@ -1,6 +1,6 @@
 package com.nfx.android.graph.graphbufferinput;
 
-import com.nfx.android.graph.androidgraph.GraphView;
+import com.nfx.android.graph.androidgraph.GraphViewInterface;
 import com.nfx.android.graph.graphbufferinput.windowing.HannWindow;
 import com.nfx.android.graph.graphbufferinput.windowing.Window;
 
@@ -26,15 +26,15 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     /**
      * The interface in which to send updates to
      */
-    private final GraphView.GraphSignalInputInterface graphSignalInputInterface;
+    private final GraphViewInterface graphViewInterface;
     /**
      * Buffer to pass to the fft class
      */
-    protected float[] fftBuffer;
+    private float[] fftBuffer;
     /**
      * Last fft buffer to be converted
      */
-    protected float[] magnitudeBuffer;
+    private float[] magnitudeBuffer;
     /**
      * Number of historical buffers to store
      */
@@ -63,13 +63,13 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     /**
      * Constructor to initialise microphone for listening
      *
-     * @param graphSignalInputInterface interface to graph information
+     * @param graphViewInterface interface to graph information
      * @param binSize set the bin size of the fft
      */
-    public MicrophoneFFTInput(GraphView.GraphSignalInputInterface graphSignalInputInterface,
+    public MicrophoneFFTInput(GraphViewInterface graphViewInterface,
                               int binSize) {
         super(binSize);
-        this.graphSignalInputInterface = graphSignalInputInterface;
+        this.graphViewInterface = graphViewInterface;
     }
 
     @Override
@@ -108,8 +108,8 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         }
     }
 
-    protected void applyMagnitudeConversions(float buffer[]) {
-        if(graphSignalInputInterface != null) {
+    private void applyMagnitudeConversions(float buffer[]) {
+        if(graphViewInterface != null) {
             buffer = window.applyWindow(buffer);
             System.arraycopy(buffer, 0, fftBuffer, 0, buffer.length);
             fftCalculations.realForwardFull(fftBuffer);
@@ -130,7 +130,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
                 // Then flip the buffer to allow simple display on screen. (Screens display top to
                 // bottom, graphs show bottom to top)
                 magnitudeBuffer[i] = 20f * (float) Math.log10(magnitudeBuffer[i]);
-                magnitudeBuffer[i] /= graphSignalInputInterface.getGraphParameters().
+                magnitudeBuffer[i] /= graphViewInterface.getGraphParameters().
                         getYAxisParameters().getMinimumValue(); // Scale to negative 140 db
                 magnitudeBuffer[i] = 1f - magnitudeBuffer[i];
             }
@@ -184,4 +184,13 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         this.window = window;
     }
 
+    @Override
+    public boolean hasTriggerDetection() {
+        return false;
+    }
+
+    @Override
+    public TriggerDetection getTriggerDetection() {
+        return null;
+    }
 }

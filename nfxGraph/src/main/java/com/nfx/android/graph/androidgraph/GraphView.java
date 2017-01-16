@@ -8,9 +8,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.nfx.android.graph.R;
-import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
 import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
-import com.nfx.android.graph.graphbufferinput.InputListener;
 
 /**
  * NFX Development
@@ -21,12 +19,7 @@ import com.nfx.android.graph.graphbufferinput.InputListener;
  * has the ability to
  * handle a resize at runtime.
  */
-public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
-    /**
-     * An interface to update the signal data
-     */
-    private final GraphSignalInputInterface graphSignalInputInterface = new
-            GraphSignalInputInterface();
+public class GraphView extends SurfaceView implements SurfaceHolder.Callback, GraphViewInterface {
     /**
      * Parameter limits for the graph shown
      */
@@ -52,14 +45,23 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * The thread that updates the surface
      **/
     private GraphManagerThread graphManagerThread;
+    /**
+     * GraphListManager that handles text boxes
+     */
+    private GraphListManager graphListManager;
+    /**
+     * Drawable area for whole Graph view
+     */
+    private DrawableArea drawableArea;
 
     /**
      * Constructor for graph manager
      *
      * @param context current application context
      */
-    public GraphView(Context context) {
+    public GraphView(Context context, GraphListManager graphListManager) {
         super(context);
+        this.graphListManager = graphListManager;
         initialise();
     }
 
@@ -67,8 +69,9 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * @param context application context
      * @param attrs   attributes to be applied
      */
-    public GraphView(Context context, AttributeSet attrs) {
+    public GraphView(Context context, AttributeSet attrs, GraphListManager graphListManager) {
         super(context, attrs);
+        this.graphListManager = graphListManager;
         initialise(attrs);
     }
 
@@ -77,9 +80,17 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      * @param attrs        attributes to be applied
      * @param defStyleAttr style attributes
      */
-    public GraphView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public GraphView(Context context, AttributeSet attrs, int defStyleAttr,
+                     GraphListManager graphListManager) {
         super(context, attrs, defStyleAttr);
+        this.graphListManager = graphListManager;
         initialise(attrs);
+    }
+
+    public GraphView(Context context) {
+        super(context);
+        this.graphListManager = new GraphListManager(context, this);
+        initialise(null);
     }
 
     /**
@@ -127,7 +138,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
 
         graphManagerThread = new GraphManagerThread();
         backgroundManager = new BackgroundManager(getContext(), graphParameters);
-        signalManager = new SignalManager(this);
+        signalManager = new SignalManager(this, graphListManager);
 
 
         if(graphParameters.getXAxisParameters().getAxisScale() == Scale.logarithmic) {
@@ -138,15 +149,6 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
 
         xZoomDisplay = new ZoomDisplay(1f, 0f);
         yZoomDisplay = new ZoomDisplay(1f, 0f);
-    }
-
-    /**
-     * Returns the signal input interface for the graph manager
-     *
-     * @return GraphSignalInputInterface object
-     */
-    public GraphSignalInputInterface getGraphSignalInputInterface() {
-        return graphSignalInputInterface;
     }
 
     /**
@@ -170,7 +172,7 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
      */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        DrawableArea drawableArea = new DrawableArea(0, 0, width, height);
+        drawableArea = new DrawableArea(0, 0, width, height);
         backgroundManager.surfaceChanged(drawableArea);
         signalManager.surfaceChanged(drawableArea);
     }
@@ -229,14 +231,14 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
     /**
      * @return the manager for background drawing
      */
-    public BackgroundManager getBackgroundManager() {
+    public BackgroundManagerInterface getBackgroundManager() {
         return backgroundManager;
     }
 
     /**
      * @return the manager for drawing signals
      */
-    public SignalManager getSignalManager() {
+    public SignalManagerInterface getSignalManager() {
         return signalManager;
     }
 
@@ -258,11 +260,26 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
         backgroundManager.setXAxisLinear();
     }
 
+    @Override
+    public ZoomDisplay getGraphXZoomDisplay() {
+        return xZoomDisplay;
+    }
+
+    @Override
+    public ZoomDisplay getGraphYZoomDisplay() {
+        return yZoomDisplay;
+    }
+
     /**
      * @return parameters and limits of the current graph
      */
     public GraphParameters getGraphParameters() {
         return graphParameters;
+    }
+
+    @Override
+    public DrawableArea getDrawableArea() {
+        return drawableArea;
     }
 
     /**
@@ -339,32 +356,5 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback {
             this.run = run;
         }
 
-    }
-
-    /**
-     * An interface to update the signals on the graph from an external object without exposing
-     * graph manager
-     */
-    public class GraphSignalInputInterface {
-        public InputListener addInput(int id, int sizeOfBuffer, AxisParameters xAxisParameters,
-                                      int color) {
-            return signalManager.addSignalBuffer(id, sizeOfBuffer, xAxisParameters, color);
-        }
-
-        public void removeInput(int id) {
-            signalManager.removedSignalBuffer(id);
-        }
-
-        public ZoomDisplay getGraphXZoomDisplay() {
-            return getXZoomDisplay();
-        }
-
-        public ZoomDisplay getGraphYZoomDisplay() {
-            return getYZoomDisplay();
-        }
-
-        public GraphParameters getGraphParameters() {
-            return graphParameters;
-        }
     }
 }

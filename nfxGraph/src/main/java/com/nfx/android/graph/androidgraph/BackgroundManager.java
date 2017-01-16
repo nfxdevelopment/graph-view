@@ -13,7 +13,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
  * It makes batch calls to DoDraw functions of all it's members and individual sizing options
  * are possible by overriding surfaceChanged
  */
-public class BackgroundManager {
+class BackgroundManager implements BackgroundManagerInterface {
     /**
      * An object which draws onto the canvas
      **/
@@ -189,7 +189,8 @@ public class BackgroundManager {
      *
      * @param colour colour to set
      */
-    void setBackgroundColour(int colour) {
+    @Override
+    public void setBackgroundColour(int colour) {
         background.setColour(colour);
     }
 
@@ -198,7 +199,8 @@ public class BackgroundManager {
      *
      * @param colour colour to set
      */
-    void setGridLineColour(int colour) {
+    @Override
+    public void setGridLineColour(int colour) {
         xGridLines.setColour(colour);
         yGridLines.setColour(colour);
         boarder.setColour(colour);

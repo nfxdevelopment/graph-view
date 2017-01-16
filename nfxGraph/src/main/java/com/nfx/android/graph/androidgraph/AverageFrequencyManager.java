@@ -2,7 +2,7 @@ package com.nfx.android.graph.androidgraph;
 
 import com.nfx.android.graph.androidgraph.list.bindadapters.GraphListAdapter;
 import com.nfx.android.graph.androidgraph.list.data.AverageFrequencyData;
-import com.nfx.android.graph.graphbufferinput.MicrophoneInput;
+import com.nfx.android.graph.graphbufferinput.InputInterface;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
  * <p>
  * A Object to calculate the average frequency on a time plot
  */
-public class AverageFrequencyManager {
+class AverageFrequencyManager implements AverageFrequencyManagerInterface {
     /**
      * List of all the markers
      */
@@ -31,7 +31,7 @@ public class AverageFrequencyManager {
         this.graphListAdapter = graphListAdapter;
     }
 
-    public void addAverageFrequencyListener(int signalId, int signalColor, MicrophoneInput input) {
+    public void addAverageFrequencyListener(int signalId, int signalColor, InputInterface input) {
         AverageFrequencyData averageFrequencyData =
                 new AverageFrequencyData(input.getSampleRate(), signalColor);
 

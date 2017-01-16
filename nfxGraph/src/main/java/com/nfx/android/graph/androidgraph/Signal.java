@@ -14,7 +14,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
  * This object will draw a signal on screen. The object has the ability to draw either in a
  * logarithmic or linear fashion at runtime
  */
-public class Signal extends DrawableObject {
+class Signal extends DrawableObject {
     /**
      * The buffer which will be drawn by this object
      */
@@ -276,11 +276,13 @@ public class Signal extends DrawableObject {
         yAxisZeroIntercept = null;
     }
 
-    public void enableTriggerLevelPointer(int colour) {
+    HorizontalLabelPointer enableTriggerLevelPointer(int colour) {
         triggerLevelLabelPointer = new HorizontalLabelPointer(signalBufferInterface
                 .getYZoomDisplay());
         triggerLevelLabelPointer.surfaceChanged(getDrawableArea());
         triggerLevelLabelPointer.setColour(colour);
+
+        return triggerLevelLabelPointer;
     }
 
     public void disableTriggerLevelPointer() {
@@ -288,7 +290,7 @@ public class Signal extends DrawableObject {
     }
 
     @Nullable
-    public HorizontalLabelPointer getTriggerLevelPointer() {
+    HorizontalLabelPointer getTriggerLevelPointer() {
         return triggerLevelLabelPointer;
     }
 }

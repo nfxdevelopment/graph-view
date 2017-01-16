@@ -1,14 +1,14 @@
 package com.nfx.android.graph.androidgraph;
 
-import android.content.Context;
-import android.support.v4.content.ContextCompat;
+import android.graphics.Canvas;
 
-import com.nfx.android.graph.R;
 import com.nfx.android.graph.androidgraph.list.bindadapters.GraphListAdapter;
 import com.nfx.android.graph.androidgraph.list.data.MarkerData;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * NFX Development
@@ -17,16 +17,20 @@ import java.util.List;
  * This object will handle all interactions with the markers. Currently there is only one
  * configuration for the markers but in the long run there will be more.
  */
-public class MarkerManager {
+class MarkerManager implements MarkerManagerInterface {
 
-    /**
-     * Context for marker list
-     */
-    private final Context context;
     /**
      * Graph view where markers will be displayed
      */
-    private final GraphView graphView;
+    private final GraphViewInterface graphViewInterface;
+    /**
+     * Used to get signal information
+     */
+    private final SignalManagerInterface signalManagerInterface;
+    /**
+     * Handles the drawing of a unlimited amount of Markers
+     **/
+    private final List<Marker> markers = new Vector<>();
     /**
      * List of all the markers
      */
@@ -35,43 +39,53 @@ public class MarkerManager {
      * Object to control the list view of marker information
      */
     private GraphListAdapter graphListAdapter;
+    /**
+     * Current drawable area
+     */
+    private DrawableArea drawableArea = new DrawableArea(0, 0, 0, 0);
 
     private boolean xIsInteger = false;
     private boolean yIsInteger = false;
 
     /**
-     * @param context           context where the markers will be displayed
-     * @param graphView         Holder of marker drawing
+     * @param signalManagerInterface         Holder of marker drawing
      * @param graphListAdapter  adapter for the recycler view which is displaying the marker data
      */
-    MarkerManager(Context context, GraphView graphView, GraphListAdapter graphListAdapter) {
-        this.context = context;
-        this.graphView = graphView;
+    MarkerManager(GraphViewInterface graphViewInterface,
+                  SignalManagerInterface signalManagerInterface, GraphListAdapter
+                          graphListAdapter) {
+        this.graphViewInterface = graphViewInterface;
+        this.signalManagerInterface = signalManagerInterface;
         this.graphListAdapter = graphListAdapter;
     }
 
     /**
-     * Sets the markers on or off on a specific signal
-     *
-     * @param signalId signal to apply the markers to
-     * @param isShown  are the markers shown on the signal
+     * Call with the canvas to draw on
+     * @param canvas canvas to draw the objects onto
      */
-    public void setMarkers(int signalId, boolean isShown) {
-        if(isShown) {
-            addMarker(signalId, ContextCompat.getColor(context, R.color.marker1));
-            addMarker(signalId, ContextCompat.getColor(context, R.color.marker2));
+    public void doDraw(Canvas canvas) {
+        for(Marker marker : markers) {
+            marker.doDraw(canvas);
+        }
+    }
 
-            graphListAdapter.setMarkerList(markerList);
-        } else {
-            removeMarker(signalId);
-            markerList.clear();
-            graphListAdapter.removeMarkerList();
+    /**
+     * Call when the surface view changes it's dimensions the objects have to called in the correct
+     * order to ensure they take up the correct space
+     *
+     * @param drawableArea the available area to draw
+     */
+    public void surfaceChanged(DrawableArea drawableArea) {
+        this.drawableArea = drawableArea;
+        for(Marker marker : markers) {
+            marker.surfaceChanged(drawableArea);
         }
     }
 
     /**
      * Represents the X number as a floating point
      */
+    @Override
     public void representXAsFloat() {
         xIsInteger = false;
     }
@@ -79,6 +93,7 @@ public class MarkerManager {
     /**
      * Represents the X number as a floating point
      */
+    @Override
     public void representYAsFloat() {
         yIsInteger = false;
     }
@@ -86,6 +101,7 @@ public class MarkerManager {
     /**
      * Represents the X number as a integer
      */
+    @Override
     public void representXAsInteger() {
         xIsInteger = true;
     }
@@ -93,8 +109,21 @@ public class MarkerManager {
     /**
      * Represents the X number as a integer
      */
+    @Override
     public void representYAsInteger() {
         yIsInteger = true;
+    }
+
+    @Override
+    public Marker markerWithinCatchmentArea(float positionX, float catchmentArea) {
+        for(Marker marker : markers) {
+            if(positionX < (marker.getMarkerPositionInPx() + catchmentArea) &&
+                    positionX > (marker.getMarkerPositionInPx() - catchmentArea)) {
+                return marker;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -103,13 +132,38 @@ public class MarkerManager {
      * @param signalId signal id to apply markers to
      * @param colour   colour of marker
      */
-    private void addMarker(int signalId, int colour) {
-        MarkerData markerData = new MarkerData(graphView.getGraphSignalInputInterface(),
-                graphView.getSignalManager().getSignalBuffers().get(signalId));
+    @Override
+    public void addMarker(int signalId, int colour) {
+        MarkerData markerData = new MarkerData(graphViewInterface,
+                signalManagerInterface.getSignalBufferInterface(signalId));
         markerData.setXIsInteger(xIsInteger);
         markerData.setYIsInteger(yIsInteger);
         markerList.add(markerData);
-        graphView.getSignalManager().addMarker(colour, signalId, markerData);
+
+        Marker marker = new Marker(signalId, graphViewInterface,
+                signalManagerInterface.getSignalBufferInterface(signalId), markerData);
+
+        marker.surfaceChanged(drawableArea);
+        marker.setColour(colour);
+
+        markers.add(marker);
+
+        graphListAdapter.setMarkerList(markerList);
+    }
+
+    /**
+     * Update the markers with signal Id to look at the correct signal buffer
+     *
+     * @param signalId signal id
+     */
+    @Override
+    public void updateMarkers(int signalId) {
+        for(Marker marker : markers) {
+            if(marker.getSignalId() == signalId) {
+                marker.setSignalInterface(signalManagerInterface.getSignalBufferInterface
+                        (signalId));
+            }
+        }
     }
 
     /**
@@ -117,8 +171,15 @@ public class MarkerManager {
      *
      * @param signalId a signal id
      */
-    private void removeMarker(int signalId) {
-        graphView.getSignalManager().removeMarkers(signalId);
+    @Override
+    public void removeMarkers(int signalId) {
+        for(Iterator<Marker> iterator = markers.iterator(); iterator.hasNext(); ) {
+            Marker marker = iterator.next();
+            if(marker.getSignalId() == signalId) {
+                iterator.remove();
+            }
+        }
+        markerList.clear();
+        graphListAdapter.removeMarkerList();
     }
-
 }

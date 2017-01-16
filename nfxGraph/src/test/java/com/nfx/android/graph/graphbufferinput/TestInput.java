@@ -1,5 +1,7 @@
 package com.nfx.android.graph.graphbufferinput;
 
+import android.support.annotation.Nullable;
+
 /**
  * NFX Development
  * Created by nick on 14/12/15.
@@ -30,8 +32,24 @@ class TestInput extends Input {
     }
 
     @Override
+    public int getSampleRate() {
+        return 0;
+    }
+
+    @Override
     public int getBufferSize() {
         return 8000;
+    }
+
+    @Override
+    public boolean hasTriggerDetection() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public TriggerDetection getTriggerDetection() {
+        return null;
     }
 
     void generateRandomBufferInput() {
