@@ -131,7 +131,6 @@ class SignalManager implements SignalManagerInterface {
             signalBuffers.remove(id);
             signalDrawers.remove(id);
         }
-        markerManager.removeMarkers(id);
     }
 
     /**

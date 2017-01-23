@@ -37,8 +37,18 @@ class TestInput extends Input {
     }
 
     @Override
+    public void setSampleRate(int sampleRate) throws Exception {
+        // N/a
+    }
+
+    @Override
     public int getBufferSize() {
         return 8000;
+    }
+
+    @Override
+    public void setBufferSize(int bufferSize) {
+        // N/a
     }
 
     @Override

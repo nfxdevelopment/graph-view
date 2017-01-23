@@ -198,6 +198,7 @@ public abstract class MicrophoneInput extends Input {
      *
      * @param sampleRate sample rate to set
      */
+    @Override
     public void setSampleRate(int sampleRate) throws Exception {
         boolean running = isRunning();
 
@@ -226,7 +227,7 @@ public abstract class MicrophoneInput extends Input {
      *
      * @param inputBlockSize block size to set to
      */
-    public void setInputBlockSize(int inputBlockSize) {
+    void setInputBlockSize(int inputBlockSize) {
         boolean running = isRunning();
 
         if(running) {

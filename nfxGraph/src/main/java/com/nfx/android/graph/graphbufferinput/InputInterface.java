@@ -26,7 +26,11 @@ public interface InputInterface {
 
     int getSampleRate();
 
+    void setSampleRate(int sampleRate) throws Exception;
+
     int getBufferSize();
+
+    void setBufferSize(int bufferSize);
 
     void addInputListener(InputListener inputListener);
 
@@ -38,5 +42,4 @@ public interface InputInterface {
 
     @Nullable
     TriggerDetection getTriggerDetection();
-
 }

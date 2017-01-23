@@ -3,6 +3,7 @@ package com.nfx.android.graph.androidgraph;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.support.annotation.Nullable;
 import android.util.SparseBooleanArray;
 
 import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
@@ -61,6 +62,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * The axis text to be displayed if needed
      */
+    @Nullable
     AxisText axisText;
     /**
      * An offset in relation to drawable area 0-1
@@ -481,6 +483,7 @@ public abstract class GridLines extends DrawableObject {
     /**
      * @return axis text displayed which could be null
      */
+    @Nullable
     private AxisText getAxisText() {
         return axisText;
     }

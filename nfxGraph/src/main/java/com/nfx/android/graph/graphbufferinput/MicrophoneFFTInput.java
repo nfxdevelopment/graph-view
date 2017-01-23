@@ -13,7 +13,7 @@ import org.jtransforms.fft.FloatFFT_1D;
  * This class takes the microphone input and computes the fft of signal. In addition to this the
  * final buffer is logarithmic
  */
-public class MicrophoneFFTInput extends MicrophoneInput {
+public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFTInputInterface {
 
     // NW pulled from other magnitude scales. This will ensure a signal of +1 to -1 is equal to 0db
     // This fudge factor is added to the output to make a realistically
@@ -30,11 +30,11 @@ public class MicrophoneFFTInput extends MicrophoneInput {
     /**
      * Buffer to pass to the fft class
      */
-    private float[] fftBuffer;
+    protected float[] fftBuffer;
     /**
      * Last fft buffer to be converted
      */
-    private float[] magnitudeBuffer;
+    protected float[] magnitudeBuffer;
     /**
      * Number of historical buffers to store
      */
@@ -68,7 +68,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
      */
     public MicrophoneFFTInput(GraphViewInterface graphViewInterface,
                               int binSize) {
-        super(binSize);
+        super(binSize * 2);
         this.graphViewInterface = graphViewInterface;
     }
 
@@ -93,6 +93,11 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         return inputBlockSize / 2;
     }
 
+    @Override
+    public void setBufferSize(int bufferSize) {
+        setInputBlockSize(bufferSize * 2);
+    }
+
     /**
      * This takes the last read buffer and does a FFT calculation on it. It then converts the values
      * into dB. This may take a while so we have to optimise this as much as possible
@@ -108,7 +113,7 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         }
     }
 
-    private void applyMagnitudeConversions(float buffer[]) {
+    protected void applyMagnitudeConversions(float buffer[]) {
         if(graphViewInterface != null) {
             buffer = window.applyWindow(buffer);
             System.arraycopy(buffer, 0, fftBuffer, 0, buffer.length);
@@ -174,12 +179,24 @@ public class MicrophoneFFTInput extends MicrophoneInput {
         }
     }
 
-    public void setNumberOfHistoryBuffers(int sNumberOfHistoryBuffers) {
-        this.numberOfHistoryBuffers = sNumberOfHistoryBuffers;
-
-        historyMagnitudeBuffers = new float[sNumberOfHistoryBuffers][inputBlockSize / 2];
+    @Override
+    public int getNumberOfHistoryBuffers() {
+        return this.numberOfHistoryBuffers;
     }
 
+    @Override
+    public void setNumberOfHistoryBuffers(int numberOfHistoryBuffers) {
+        this.numberOfHistoryBuffers = numberOfHistoryBuffers;
+
+        historyMagnitudeBuffers = new float[numberOfHistoryBuffers][inputBlockSize / 2];
+    }
+
+    @Override
+    public Window getWindow() {
+        return window;
+    }
+
+    @Override
     public void setWindow(Window window) {
         this.window = window;
     }

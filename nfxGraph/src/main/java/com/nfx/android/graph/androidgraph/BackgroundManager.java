@@ -152,6 +152,8 @@ class BackgroundManager implements BackgroundManagerInterface {
         yGridLines.removeAllChildGridLines();
 
         xGridLines.setChildGridLineScale(Scale.logarithmic);
+
+        forceGridLineValueRecalculate();
     }
 
     /**
@@ -163,14 +165,11 @@ class BackgroundManager implements BackgroundManagerInterface {
         // round the loop. results eg. 22500 = 30000 | 0.05 = 0.1
         float iterator = 1f;
         float divisor = iterator;
-        int i = 1;
         while((graphParameters.getXAxisParameters().getMaximumValue() / divisor) > 1f) {
             divisor += iterator;
-            i++;
             if(divisor >= (iterator * 10)) {
                 iterator *= 10f;
                 divisor = iterator;
-                i = 1;
             }
         }
 
@@ -182,6 +181,8 @@ class BackgroundManager implements BackgroundManagerInterface {
         yGridLines.removeAllChildGridLines();
 
         xGridLines.setChildGridLineScale(Scale.linear);
+
+        forceGridLineValueRecalculate();
     }
 
     /**
@@ -223,10 +224,14 @@ class BackgroundManager implements BackgroundManagerInterface {
         yGridLines.showAxisText(context);
     }
 
-    public void forceGridLineValueRecalculate() {
+    private void forceGridLineValueRecalculate() {
         boarderText.calculateValuesToDisplay();
-        yGridLines.axisText.calculateGridLineValues();
-        xGridLines.axisText.calculateGridLineValues();
+        if(yGridLines.axisText != null) {
+            yGridLines.axisText.calculateGridLineValues();
+        }
+        if(xGridLines.axisText != null) {
+            xGridLines.axisText.calculateGridLineValues();
+        }
     }
 
     public GridLines getXGridLines() {

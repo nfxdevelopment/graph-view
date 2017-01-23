@@ -19,4 +19,8 @@ public interface GraphViewInterface {
     GraphParameters getGraphParameters();
 
     DrawableArea getDrawableArea();
+
+    void setXAxisLogarithmic();
+
+    void setXAxisLinear();
 }

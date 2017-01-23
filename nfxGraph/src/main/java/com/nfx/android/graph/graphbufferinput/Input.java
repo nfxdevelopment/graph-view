@@ -104,8 +104,6 @@ public abstract class Input implements InputInterface {
         this.paused = false;
     }
 
-    public abstract int getBufferSize();
-
     /**
      * @return is the audio capture thread running
      */
