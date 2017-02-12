@@ -74,8 +74,6 @@ public class GraphManager extends RelativeLayout {
         FrameLayout graphView = (FrameLayout)findViewById(R.id.graph);
         graphView.addView(this.graphView);
 
-        this.graphView.getBackgroundManager().setBackgroundColour(
-                ContextCompat.getColor(getContext(), R.color.background));
         this.graphView.getBackgroundManager().setGridLineColour(
                 ContextCompat.getColor(getContext(), R.color.gridLines));
 
