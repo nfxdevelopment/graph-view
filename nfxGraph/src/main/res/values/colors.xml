@@ -17,7 +17,6 @@
     <color name="navy">#000080</color>
     <color name="black">#000000</color>
 
-
     <color name="background">@color/black</color>
     <color name="gridLines">@color/gray</color>
     <color name="marker1">@color/aqua</color>

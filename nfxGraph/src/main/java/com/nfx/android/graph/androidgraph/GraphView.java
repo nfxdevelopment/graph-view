@@ -3,6 +3,7 @@ package com.nfx.android.graph.androidgraph;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -118,6 +119,10 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback, Gr
 
             backgroundManager.setShowAxisText(
                     a.getBoolean(R.styleable.GraphManager_show_axis_text, true));
+
+            backgroundManager.setBackgroundColour(
+                    a.getColor(R.styleable.GraphManager_background_color,
+                            ContextCompat.getColor(getContext(), R.color.background)));
 
             if(!a.getBoolean(R.styleable.GraphManager_disable_background_scrolling, false)) {
                 backgroundManager.setXZoomDisplay(xZoomDisplay);

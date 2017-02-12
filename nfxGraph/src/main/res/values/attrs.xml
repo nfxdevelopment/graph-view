@@ -5,6 +5,7 @@
         <attr name="minimum_y_value" format="reference|float" />
         <attr name="maximum_y_value" format="reference|float" />
         <attr name="show_axis_text" format="reference|boolean"/>
+        <attr name="background_color" format="reference|color"/>
         <attr name="disable_background_scrolling" format="reference|boolean"/>
     </declare-styleable>
 </resources>
