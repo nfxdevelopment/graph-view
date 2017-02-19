@@ -2,9 +2,12 @@ package com.nfx.android.graph.graphbufferinput;
 
 import com.nfx.android.graph.androidgraph.GraphViewInterface;
 import com.nfx.android.graph.graphbufferinput.windowing.HannWindow;
+import com.nfx.android.graph.graphbufferinput.windowing.NoWindow;
 import com.nfx.android.graph.graphbufferinput.windowing.Window;
 
 import org.jtransforms.fft.FloatFFT_1D;
+
+import java.lang.reflect.Array;
 
 /**
  * NFX Development
@@ -28,13 +31,21 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
      */
     private final GraphViewInterface graphViewInterface;
     /**
-     * Buffer to pass to the fft class
+     * An interface to provide FFT buffers
      */
-    protected float[] fftBuffer;
+    private InputFftListener inputFftListener;
+    /**
+     * converted fft signal is stored here
+     */
+    private float[] fftBuffer;
     /**
      * Last fft buffer to be converted
      */
-    protected float[] magnitudeBuffer;
+    private double[] magnitudeBuffer;
+    /**
+     * Last fft buffer to be converted
+     */
+    private double[] phaseBuffer;
     /**
      * Number of historical buffers to store
      */
@@ -46,7 +57,7 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     /**
      * Buffer with the finished data in
      */
-    private float[] returnedMagnitudeBuffer;
+    protected float[] returnedMagnitudeBuffer;
     /**
      * Stores a history of the previous buffers
      */
@@ -58,7 +69,7 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     /**
      * Window to apply to signal prior to FFT
      */
-    private Window window = new HannWindow();
+    private Window window = new NoWindow();
 
     /**
      * Constructor to initialise microphone for listening
@@ -78,8 +89,9 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
 
         fftCalculations = new FloatFFT_1D(inputBlockSize);
 
-        fftBuffer = new float[inputBlockSize * 2];
-        magnitudeBuffer = new float[inputBlockSize / 2];
+        fftBuffer = new float[inputBlockSize];
+        magnitudeBuffer = new double[inputBlockSize/2];
+        phaseBuffer = new double[inputBlockSize/2];
         returnedMagnitudeBuffer = new float[inputBlockSize / 2];
 
         historyMagnitudeBuffers = new float[numberOfHistoryBuffers][inputBlockSize / 2];
@@ -90,12 +102,12 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
 
     @Override
     public int getBufferSize() {
-        return inputBlockSize / 2;
+        return inputBlockSize;
     }
 
     @Override
     public void setBufferSize(int bufferSize) {
-        setInputBlockSize(bufferSize * 2);
+        setInputBlockSize(bufferSize);
     }
 
     /**
@@ -107,52 +119,59 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     @Override
     protected synchronized void readDone(float[] buffer) {
         if(isRunning()) {
-            applyMagnitudeConversions(buffer);
+            transformSignalToFftSignal(buffer);
             applyingFFTAveraging();
             notifyListenersOfBufferChange(returnedMagnitudeBuffer);
         }
     }
 
-    protected void applyMagnitudeConversions(float buffer[]) {
+    protected void transformSignalToFftSignal(float[] buffer) {
+        buffer = applyWindow(buffer);
+        applyFft(buffer);
+        convertPowerAndPhase();
+        if(inputFftListener != null) {
+            inputFftListener.fftBufferUpdate(magnitudeBuffer, phaseBuffer);
+        }
+
+        applyMagnitudeConversions();
+    }
+
+    private float[] applyWindow(float[] buffer) {
+        return window.applyWindow(buffer);
+    }
+
+    private void applyFft(float[] buffer) {
+        System.arraycopy(buffer, 0, fftBuffer, 0, buffer.length);
+        fftCalculations.realForward(fftBuffer);
+    }
+
+    private void convertPowerAndPhase() {
+        int bufferLength = magnitudeBuffer.length;
+        double scale = bufferLength * FUDGE;
+
+        for(int i = 0; i < bufferLength; i++) {
+            double real = fftBuffer[i * 2];
+            double imaginary = fftBuffer[i * 2 + 1];
+            magnitudeBuffer[i] = Math.sqrt(real * real + imaginary * imaginary) / scale;
+            phaseBuffer[i] = Math.atan2(imaginary, real);
+        }
+    }
+
+    private void applyMagnitudeConversions() {
         if(graphViewInterface != null) {
-            buffer = window.applyWindow(buffer);
-            System.arraycopy(buffer, 0, fftBuffer, 0, buffer.length);
-            fftCalculations.realForwardFull(fftBuffer);
-
-            float real, imaginary;
-
-            int bufferLength = magnitudeBuffer.length;
+            int bufferLength = returnedMagnitudeBuffer.length;
 
             for(int i = 0; i < bufferLength; ++i) {
-                real = fftBuffer[i * 2];
-                imaginary = fftBuffer[i * 2 + 1];
-                final float scale = buffer.length * FUDGE;
-                magnitudeBuffer[i] = (float) Math.sqrt(real * real + imaginary * imaginary) /
-                        scale;
 
                 // Convert the signal into decibels so it is easier to read on screen.
                 // 20*log(value) / scaledToAxisMinimum
                 // Then flip the buffer to allow simple display on screen. (Screens display top to
                 // bottom, graphs show bottom to top)
-                magnitudeBuffer[i] = 20f * (float) Math.log10(magnitudeBuffer[i]);
-                magnitudeBuffer[i] /= graphViewInterface.getGraphParameters().
+                returnedMagnitudeBuffer[i] = 20f * (float) Math.log10(magnitudeBuffer[i]);
+                returnedMagnitudeBuffer[i] /= graphViewInterface.getGraphParameters().
                         getYAxisParameters().getMinimumValue(); // Scale to negative 140 db
-                magnitudeBuffer[i] = 1f - magnitudeBuffer[i];
+                returnedMagnitudeBuffer[i] = 1f - returnedMagnitudeBuffer[i];
             }
-        }
-    }
-
-    /**
-     * takes in a buffer and applies a hanning window to it.
-     *
-     * @param buffer buffer to apply the hanning window to
-     */
-    private void applyHanningWindow(float[] buffer) {
-        int bufferLength = buffer.length;
-        double twoPi = 2.0 * Math.PI;
-
-        for(int n = 1; n < bufferLength; n++) {
-            buffer[n] *= 0.5 * (1 - Math.cos((twoPi * n) / (bufferLength - 1)));
         }
     }
 
@@ -165,10 +184,10 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
             historyIndex = 0;
         }
 
-        int bufferLength = magnitudeBuffer.length;
+        int bufferLength = returnedMagnitudeBuffer.length;
 
         System.arraycopy(
-                magnitudeBuffer, 0, historyMagnitudeBuffers[historyIndex], 0, bufferLength);
+                returnedMagnitudeBuffer, 0, historyMagnitudeBuffers[historyIndex], 0, bufferLength);
 
         for(int i = 0; i < bufferLength; ++i) {
             returnedMagnitudeBuffer[i] = 0;
@@ -177,6 +196,11 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
             }
             returnedMagnitudeBuffer[i] /= numberOfHistoryBuffers;
         }
+    }
+
+    @Override
+    public void setInputFftListener(InputFftListener inputFftListener) {
+        this.inputFftListener = inputFftListener;
     }
 
     @Override
