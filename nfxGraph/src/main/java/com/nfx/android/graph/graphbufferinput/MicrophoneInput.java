@@ -91,9 +91,7 @@ public abstract class MicrophoneInput extends Input {
                         channelConfig,
                         audioFormat, bufferSizeInBytes);
             } catch(RuntimeException e) {
-                throw new RuntimeException("Your input device cannot use sample rate: " +
-                        sampleRate +
-                        ". Please select anther sample rate");
+                throw new RuntimeException(e.getMessage());
             }
 
             running = true;
@@ -137,22 +135,22 @@ public abstract class MicrophoneInput extends Input {
         audioInput.startRecording();
         while(running) {
 
-            int bytesRead;
+            int unitsRead;
             if(audioInput.getAudioFormat() == AudioFormat.ENCODING_PCM_FLOAT) {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    bytesRead = audioInput.read(bufferFloat, 0, inputBlockSize, AudioRecord
+                    unitsRead = audioInput.read(bufferFloat, 0, inputBlockSize, AudioRecord
                             .READ_BLOCKING);
                 } else {
                     throw new RuntimeException("ENCODING_PCM_FLOAT is not supported below Android" +
                             " Version 6.0");
                 }
             } else if(audioInput.getAudioFormat() == AudioFormat.ENCODING_PCM_16BIT) {
-                bytesRead = audioInput.read(bufferShort, 0, inputBlockSize);
+                unitsRead = audioInput.read(bufferShort, 0, inputBlockSize);
                 for(int i = 0; i < inputBlockSize; i++) {
                     bufferFloat[i] = (float) bufferShort[i] / (float) Short.MAX_VALUE;
                 }
             } else if(audioInput.getAudioFormat() == AudioFormat.ENCODING_PCM_8BIT) {
-                bytesRead = audioInput.read(bufferByte, 0, inputBlockSize);
+                unitsRead = audioInput.read(bufferByte, 0, inputBlockSize);
                 for(int i = 0; i < inputBlockSize; i++) {
                     bufferFloat[i] = (float) bufferByte[i] / (float) Byte.MAX_VALUE;
                 }
@@ -161,8 +159,8 @@ public abstract class MicrophoneInput extends Input {
                         " ENCODING_PCM_16BIT , ENCODING_PCM_8BIT is supported");
             }
 
-            if(bytesRead < 0) {
-                Log.e(TAG, "Audio read failed: error " + bytesRead);
+            if(unitsRead < 0) {
+                Log.e(TAG, "Audio read failed: error " + unitsRead);
                 running = false;
                 break;
             }
