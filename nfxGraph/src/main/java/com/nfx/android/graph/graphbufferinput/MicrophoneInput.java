@@ -161,7 +161,9 @@ public abstract class MicrophoneInput extends Input {
 
             if(unitsRead < 0) {
                 Log.e(TAG, "Audio read failed: error " + unitsRead);
-                running = false;
+                audioInput.stop();
+                audioInput.release();
+                audioInput = null;
                 break;
             }
 
@@ -170,7 +172,7 @@ public abstract class MicrophoneInput extends Input {
             }
         }
 
-        if(audioInput.getState() == AudioRecord.RECORDSTATE_RECORDING)
+        if(audioInput != null && audioInput.getState() == AudioRecord.RECORDSTATE_RECORDING)
             audioInput.stop();
     }
 
