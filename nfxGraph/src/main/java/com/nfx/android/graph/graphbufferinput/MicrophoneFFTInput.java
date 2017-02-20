@@ -102,7 +102,7 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
 
     @Override
     public int getBufferSize() {
-        return inputBlockSize;
+        return inputBlockSize / 2;
     }
 
     @Override
