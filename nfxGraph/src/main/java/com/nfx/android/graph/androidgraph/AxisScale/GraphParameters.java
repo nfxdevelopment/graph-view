@@ -9,8 +9,15 @@ import com.nfx.android.graph.androidgraph.Scale;
  * An object that holds the information for both axis of the graph
  */
 public class GraphParameters {
-    private final AxisParameters xAxisParameters = new AxisParameters(0, 1, Scale.linear);
-    private final AxisParameters yAxisParameters = new AxisParameters(0, 1, Scale.linear);
+    private AxisParameters xAxisParameters = new AxisParameters(0, 1, Scale.linear);
+    private AxisParameters yAxisParameters = new AxisParameters(0, 1, Scale.linear);
+
+    public GraphParameters(){};
+
+    public GraphParameters(AxisParameters xAxisParameters, AxisParameters yAxisParameters) {
+        this.xAxisParameters = xAxisParameters;
+        this.yAxisParameters = yAxisParameters;
+    }
 
     /**
      * @return x axis parameters
