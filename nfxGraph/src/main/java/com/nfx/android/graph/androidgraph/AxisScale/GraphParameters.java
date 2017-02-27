@@ -12,7 +12,7 @@ public class GraphParameters {
     private AxisParameters xAxisParameters = new AxisParameters(0, 1, Scale.linear);
     private AxisParameters yAxisParameters = new AxisParameters(0, 1, Scale.linear);
 
-    public GraphParameters(){};
+    public GraphParameters(){}
 
     public GraphParameters(AxisParameters xAxisParameters, AxisParameters yAxisParameters) {
         this.xAxisParameters = xAxisParameters;

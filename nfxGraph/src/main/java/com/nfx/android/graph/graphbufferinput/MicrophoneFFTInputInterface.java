@@ -16,4 +16,6 @@ public interface MicrophoneFFTInputInterface extends InputInterface {
     Window getWindow();
 
     void setWindow(Window window);
+
+    InputFftListener getInputFftListener();
 }
