@@ -234,4 +234,10 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     public TriggerDetection getTriggerDetection() {
         return null;
     }
+
+    @Override
+    public InputFftListener getInputFftListener() {
+        return inputFftListener;
+    }
+
 }
