@@ -32,6 +32,10 @@ class YAxisText extends AxisText {
      */
     @Override
     public void doDraw(Canvas canvas) {
+        if(gridLineValues.length != gridLines.getNumberOfGridLines()) {
+            gridLineValues = new String[gridLines.getNumberOfGridLines()];
+            calculateGridLineValues();
+        }
 
         float lastTextDrawn = gridLines.getDrawableArea().getHeight() -
                 gridLines.intersectZoomCompensated(0) *

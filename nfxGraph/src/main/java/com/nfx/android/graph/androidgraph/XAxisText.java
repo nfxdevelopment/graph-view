@@ -32,6 +32,11 @@ class XAxisText extends AxisText {
      */
     @Override
     public void doDraw(Canvas canvas) {
+        if(gridLineValues.length != gridLines.getNumberOfGridLines()) {
+            gridLineValues = new String[gridLines.getNumberOfGridLines()];
+            calculateGridLineValues();
+        }
+
         float lastTextDrawn = gridLines.intersectZoomCompensated(0) *
                 gridLines.getDrawableArea().getWidth();
         if(lastTextDrawn < 0) {

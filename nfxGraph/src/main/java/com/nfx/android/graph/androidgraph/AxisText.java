@@ -21,7 +21,7 @@ abstract class AxisText extends DrawableObject {
     /**
      * Store the values in a array as working the value every draw was memory intensive
      */
-    final String[] gridLineValues;
+    String[] gridLineValues;
     /**
      * The Bounds of the display text
      */

@@ -153,7 +153,7 @@ public abstract class GridLines extends DrawableObject {
      *
      * @param numberOfGridLines amount of grid lines
      */
-    void setNumberOfGridLines(int numberOfGridLines) {
+    public void setNumberOfGridLines(int numberOfGridLines) {
         this.numberOfGridLines = numberOfGridLines;
     }
 
