@@ -29,7 +29,7 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     /**
      * The interface in which to send updates to
      */
-    private final GraphViewInterface graphViewInterface;
+    protected final GraphViewInterface graphViewInterface;
     /**
      * An interface to provide FFT buffers
      */
@@ -41,7 +41,7 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     /**
      * Last fft buffer to be converted
      */
-    private double[] magnitudeBuffer;
+    protected double[] magnitudeBuffer;
     /**
      * Last fft buffer to be converted
      */
@@ -157,7 +157,7 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
         }
     }
 
-    private void applyMagnitudeConversions() {
+    protected void applyMagnitudeConversions() {
         if(graphViewInterface != null) {
             int bufferLength = returnedMagnitudeBuffer.length;
 
