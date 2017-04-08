@@ -298,6 +298,9 @@ public abstract class GridLines extends DrawableObject {
         this.zoomDisplay = zoomDisplay;
 
         zoomDisplay.addListener(zoomChangeListener);
+        for(GridLines gridLines : childGridLines.values()) {
+            gridLines.setZoomDisplay(zoomDisplay);
+        }
     }
 
     /**
@@ -306,6 +309,10 @@ public abstract class GridLines extends DrawableObject {
     private void removeZoomDisplay() {
         zoomDisplay.removeListener(zoomChangeListener);
         zoomDisplay = new ZoomDisplay(1f, 0f);
+
+        for(GridLines gridLines : childGridLines.values()) {
+            gridLines.removeZoomDisplay();
+        }
     }
 
     /**
@@ -443,11 +450,11 @@ public abstract class GridLines extends DrawableObject {
         float left = intersect(majorGridLine);
         // remove fixed zoom offsets to get true relative intersects
         left *= getFixedZoomDisplay().getZoomLevelPercentage();
-        left -= getFixedZoomDisplay().getDisplayOffsetPercentage();
+        left += getFixedZoomDisplay().getDisplayOffsetPercentage();
         float right = intersect(majorGridLine + 1);
         // remove fixed zoom offsets to get true relative intersects
         right *= getFixedZoomDisplay().getZoomLevelPercentage();
-        right -= getFixedZoomDisplay().getDisplayOffsetPercentage();
+        right += getFixedZoomDisplay().getDisplayOffsetPercentage();
 
         gridLine.surfaceChanged(parentDrawableArea);
 

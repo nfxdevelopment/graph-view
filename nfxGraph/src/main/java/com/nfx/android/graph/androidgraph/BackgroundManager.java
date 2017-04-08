@@ -135,21 +135,32 @@ class BackgroundManager implements BackgroundManagerInterface {
     void setXAxisLogarithmic() {
         // We want the decades located on the major grid lines but want the max to be 22.05K
         // therefore we have to do a fudge to make 100K the maximum and zoom to 0 - 22.05K
-        float max = graphParameters.getXAxisParameters().getMaximumValue();
+        float maxValue = graphParameters.getXAxisParameters().getMaximumValue();
+        float minValue = graphParameters.getXAxisParameters().getMinimumValue();
+        float max = maxValue;
         int i = 0;
         while(max >= 1) {
             i++;
             max /= 10;
         }
-        float newMax = (float) Math.pow(10, i);
+        double virtualMax = Math.pow(10, i);
 
-        xGridLines.setNumberOfGridLines(i);
-        xGridLines.getFixedZoomDisplay().setZoomLevelPercentage(1f /
-                graphParameters.getXAxisParameters().scaledAxisToGraphPosition(newMax));
+        // Plus one to account for the far right hand side last grid line
+        xGridLines.setNumberOfGridLines(i+1);
+
+        double virtualMaxLog = Math.log(virtualMax) / Math.log(2);
+
+        double logMinimum = Math.log(minValue) / Math.log(2);
+        logMinimum /= virtualMaxLog;
+
+        double logMaximum = Math.log(maxValue) / Math.log(2);
+        logMaximum /= virtualMaxLog;
+
+        xGridLines.getFixedZoomDisplay().setZoomLevelPercentage((float)(logMaximum - logMinimum));
+        xGridLines.getFixedZoomDisplay().setDisplayOffsetPercentage((float)logMinimum);
 
         // Axis are reset so lets remove all the children
         xGridLines.removeAllChildGridLines();
-        yGridLines.removeAllChildGridLines();
 
         xGridLines.setChildGridLineScale(Scale.logarithmic);
 
@@ -163,9 +174,17 @@ class BackgroundManager implements BackgroundManagerInterface {
         // This will scale the x axis in a logical fashion. it will round up to a value based on
         // the iterator. The iterator will grown by a factor of 10 after each 10 iterations round
         // round the loop. results eg. 22500 = 30000 | 0.05 = 0.1
+
         float iterator = 1f;
         float divisor = iterator;
-        while((graphParameters.getXAxisParameters().getMaximumValue() / divisor) > 1f) {
+
+        float minValue = graphParameters.getXAxisParameters().getMinimumValue();
+        float maxValue = graphParameters.getXAxisParameters().getMaximumValue();
+
+        xGridLines.getFixedZoomDisplay().setDisplayOffsetPercentage(0);
+        xGridLines.getFixedZoomDisplay().setZoomLevelPercentage(1);
+
+        while((maxValue / divisor) > 1f) {
             divisor += iterator;
             if(divisor >= (iterator * 10)) {
                 iterator *= 10f;
@@ -173,12 +192,18 @@ class BackgroundManager implements BackgroundManagerInterface {
             }
         }
 
-        xGridLines.getFixedZoomDisplay().setZoomLevelPercentage(
-                graphParameters.getXAxisParameters().getMaximumValue() / divisor);
+        int lowerGridLines = (int)(minValue / iterator);
+        float remainder = minValue % iterator;
+
+        if(remainder > 0) {
+            xGridLines.getFixedZoomDisplay().setZoomLevelPercentage(1f - (remainder / (maxValue - (minValue - remainder))));
+            xGridLines.getFixedZoomDisplay().setDisplayOffsetPercentage((remainder / (maxValue - (minValue - remainder))));
+        }
+
+        xGridLines.setNumberOfGridLines((int)(divisor / iterator) + 1 - lowerGridLines);
 
         // Axis are reset so lets remove all the children
         xGridLines.removeAllChildGridLines();
-        yGridLines.removeAllChildGridLines();
 
         xGridLines.setChildGridLineScale(Scale.linear);
 
