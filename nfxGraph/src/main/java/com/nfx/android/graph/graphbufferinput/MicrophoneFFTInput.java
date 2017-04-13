@@ -97,6 +97,7 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
         historyMagnitudeBuffers = new float[numberOfHistoryBuffers][inputBlockSize / 2];
 
         notifyListenersOfInputBlockSizeChange(inputBlockSize / 2);
+        inputFftListener.updateBufferSize(inputBlockSize);
 
     }
 

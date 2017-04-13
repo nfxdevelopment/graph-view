@@ -6,4 +6,5 @@ package com.nfx.android.graph.graphbufferinput;
  */
 public interface InputFftListener {
     void fftBufferUpdate(double[] magnitudes, double[] phase);
+    void updateBufferSize(int bufferSize);
 }
