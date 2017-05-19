@@ -1,13 +1,10 @@
 package com.nfx.android.graph.graphbufferinput;
 
 import com.nfx.android.graph.androidgraph.GraphViewInterface;
-import com.nfx.android.graph.graphbufferinput.windowing.HannWindow;
 import com.nfx.android.graph.graphbufferinput.windowing.NoWindow;
 import com.nfx.android.graph.graphbufferinput.windowing.Window;
 
 import org.jtransforms.fft.FloatFFT_1D;
-
-import java.lang.reflect.Array;
 
 /**
  * NFX Development
@@ -31,6 +28,14 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
      */
     protected final GraphViewInterface graphViewInterface;
     /**
+     * Last fft buffer to be converted
+     */
+    protected double[] magnitudeBuffer;
+    /**
+     * Buffer with the finished data in
+     */
+    protected float[] returnedMagnitudeBuffer;
+    /**
      * An interface to provide FFT buffers
      */
     private InputFftListener inputFftListener;
@@ -38,10 +43,6 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
      * converted fft signal is stored here
      */
     private float[] fftBuffer;
-    /**
-     * Last fft buffer to be converted
-     */
-    protected double[] magnitudeBuffer;
     /**
      * Last fft buffer to be converted
      */
@@ -54,10 +55,6 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
      * Computes the FFT
      */
     private FloatFFT_1D fftCalculations = null;
-    /**
-     * Buffer with the finished data in
-     */
-    protected float[] returnedMagnitudeBuffer;
     /**
      * Stores a history of the previous buffers
      */
@@ -201,11 +198,6 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     }
 
     @Override
-    public void setInputFftListener(InputFftListener inputFftListener) {
-        this.inputFftListener = inputFftListener;
-    }
-
-    @Override
     public int getNumberOfHistoryBuffers() {
         return this.numberOfHistoryBuffers;
     }
@@ -240,6 +232,11 @@ public class MicrophoneFFTInput extends MicrophoneInput implements MicrophoneFFT
     @Override
     public InputFftListener getInputFftListener() {
         return inputFftListener;
+    }
+
+    @Override
+    public void setInputFftListener(InputFftListener inputFftListener) {
+        this.inputFftListener = inputFftListener;
     }
 
 }

@@ -1,5 +1,14 @@
 apply plugin: 'com.android.library'
 
+ext {
+    VERSION = '0.0.1'
+    DESCRIPTION = 'A flexible graph view which can display static or dynamic data'
+    GROUPID = 'com.nfx.android'
+    ARTIFACTID = 'graph-view'
+    GITREPO = 'https://github.com/nfxdevelopment/graph-view.git'
+    PROJECTURL = 'https://github.com/nfxdevelopment/graph-view'
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
@@ -7,7 +16,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName VERSION
     }
     buildTypes {
         release {
@@ -31,3 +40,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.yqritc:recyclerview-multiple-viewtypes-adapter:1.1.0'
 }
+
+apply from: 'install.gradle'
+apply from: 'bintray.gradle'

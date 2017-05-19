@@ -19,10 +19,6 @@ abstract class AxisText extends DrawableObject {
      */
     final GridLines gridLines;
     /**
-     * Store the values in a array as working the value every draw was memory intensive
-     */
-    String[] gridLineValues;
-    /**
      * The Bounds of the display text
      */
     final Rect bounds = new Rect();
@@ -30,6 +26,10 @@ abstract class AxisText extends DrawableObject {
      * graph scale limits
      */
     private final AxisParameters axisParameters;
+    /**
+     * Store the values in a array as working the value every draw was memory intensive
+     */
+    String[] gridLineValues;
 
     /**
      * Constructor

@@ -7,8 +7,6 @@ import com.nfx.android.graph.graphbufferinput.windowing.Window;
  * Created by nick on 23/01/17.
  */
 public interface MicrophoneFFTInputInterface extends InputInterface {
-    void setInputFftListener(InputFftListener inputFftListener);
-
     int getNumberOfHistoryBuffers();
 
     void setNumberOfHistoryBuffers(int numberOfHistoryBuffers);
@@ -18,4 +16,6 @@ public interface MicrophoneFFTInputInterface extends InputInterface {
     void setWindow(Window window);
 
     InputFftListener getInputFftListener();
+
+    void setInputFftListener(InputFftListener inputFftListener);
 }

@@ -1,1 +1,1 @@
-include ':nfxGraph', ':app'
+include ':graph-view', ':app'
