@@ -44,8 +44,11 @@ public class AverageFrequency {
 
         int numberOfSamplesBetweenFirstAndLast = indexOfLastZeroCrossingPoint -
                 indexOfFirstZeroCrossingPoint;
-        frequency = ((numberOfZeroCrossingPoints * sampleRate) /
-                numberOfSamplesBetweenFirstAndLast) / 2;
+        
+        if(numberOfSamplesBetweenFirstAndLast > 0) {
+            frequency = ((numberOfZeroCrossingPoints * sampleRate) /
+                    numberOfSamplesBetweenFirstAndLast) / 2;
+        }
 
         return frequency;
     }
