@@ -10,7 +10,7 @@ The Graph View library provides a flexible static or dynamic graph view for andr
 * Zooming/Panning objects for the background and signal
 * User definable colors
 
-<img src="https://cloud.githubusercontent.com/assets/16980993/26276594/24e94334-3d72-11e7-9d8c-9f9026083885.png" width="255">
+<img src="https://cloud.githubusercontent.com/assets/16980993/26276594/24e94334-3d72-11e7-9d8c-9f9026083885.png" height="255">
 
 ## Usage
 
@@ -101,5 +101,6 @@ Please push back changes to help the library mature.
 
 ## Projects Featuring Graph view
 [NFX Specscope](https://play.google.com/store/apps/details?id=com.nfx.android.specscope)
-<img src="https://cloud.githubusercontent.com/assets/16980993/26276800/7bc5809c-3d76-11e7-85e5-baac303c61e8.png" width="255">
+
+<img src="https://cloud.githubusercontent.com/assets/16980993/26276800/7bc5809c-3d76-11e7-85e5-baac303c61e8.png" height="255">
 
