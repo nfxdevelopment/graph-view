@@ -1,22 +1,16 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
-ext {
-    VERSION = '0.0.1'
-    DESCRIPTION = 'A flexible graph view which can display static or dynamic data'
-    GROUPID = 'com.nfx.android'
-    ARTIFACTID = 'graph-view'
-    GITREPO = 'https://github.com/nfxdevelopment/graph-view.git'
-    PROJECTURL = 'https://github.com/nfxdevelopment/graph-view'
-}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.3'
+
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 11
         targetSdkVersion 25
-        versionCode 1
-        versionName VERSION
     }
     buildTypes {
         release {
@@ -24,15 +18,24 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    productFlavors {
+    lintOptions {
+        disable 'InvalidPackage'
     }
 
-    // `return void` removes the lint error: `Not all execution paths return a value`.
-    return void
+    publish {
+        bintrayUser = properties.getProperty("bintray.user")
+        bintrayKey = properties.getProperty("bintray.apikey")
+        userOrg = 'nfxdevelopment'
+        groupId = 'com.nfx.android'
+        artifactId = 'graph-view'
+        publishVersion = '0.0.1'
+        desc = 'A flexible graph view which can display static or dynamic data'
+        website = 'https://github.com/nfxdevelopment/graph-view'
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     testCompile "org.robolectric:robolectric:3.1.2"
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -40,6 +43,3 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.yqritc:recyclerview-multiple-viewtypes-adapter:1.1.0'
 }
-
-apply from: 'install.gradle'
-apply from: 'bintray.gradle'
