@@ -15,8 +15,8 @@ import com.nfx.android.graph.graphbufferinput.InputListener;
  */
 public class GraphViewSample extends AppCompatActivity{
 
+    private final TestInput testInput = new TestInput();
     private GraphManager graphManager;
-    private TestInput testInput = new TestInput();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

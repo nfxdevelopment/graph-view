@@ -463,6 +463,7 @@ public abstract class GridLines extends DrawableObject {
 
         if(axisText != null) {
             // We want out children Axis to have the same drawable area as our own.
+            //noinspection ConstantConditions
             gridLine.getAxisText().getDrawableArea().setDrawableArea(axisText.getDrawableArea());
             gridLine.getAxisText().calculateGridLineValues();
         }

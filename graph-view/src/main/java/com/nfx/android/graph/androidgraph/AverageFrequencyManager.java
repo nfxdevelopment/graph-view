@@ -1,5 +1,7 @@
 package com.nfx.android.graph.androidgraph;
 
+import android.annotation.SuppressLint;
+
 import com.nfx.android.graph.androidgraph.list.bindadapters.GraphListAdapter;
 import com.nfx.android.graph.androidgraph.list.data.AverageFrequencyData;
 import com.nfx.android.graph.graphbufferinput.InputInterface;
@@ -19,6 +21,7 @@ class AverageFrequencyManager implements AverageFrequencyManagerInterface {
     /**
      * List of all the markers
      */
+    @SuppressLint("UseSparseArrays")
     private AbstractMap<Integer, AverageFrequencyData> averageFrequencyDataMap = new HashMap<>();
 
 
