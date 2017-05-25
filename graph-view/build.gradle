@@ -28,7 +28,7 @@ android {
         userOrg = 'nfxdevelopment'
         groupId = 'com.nfx.android'
         artifactId = 'graph-view'
-        publishVersion = '0.0.2'
+        publishVersion = '0.0.3'
         desc = 'A flexible graph view which can display static or dynamic data'
         website = 'https://github.com/nfxdevelopment/graph-view'
     }
