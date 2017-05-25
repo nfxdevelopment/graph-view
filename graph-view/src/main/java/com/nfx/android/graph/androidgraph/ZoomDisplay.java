@@ -91,18 +91,7 @@ public class ZoomDisplay extends Observable {
      *                                nothing happens
      */
     public void setDisplayOffsetPercentage(float displayOffsetPercentage) {
-        if(displayOffsetPercentage < minimumZoomLevel) {
-            displayOffsetPercentage = minimumZoomLevel;
-        } else if(displayOffsetPercentage > MAXIMUM_ZOOM_LEVEL) {
-            displayOffsetPercentage = MAXIMUM_ZOOM_LEVEL;
-        }
-
-        // Ensure that the zoom level will be within the bounds of the screen
-        if((displayOffsetPercentage + zoomLevelPercentage) > maximumZoomLevel) {
-            this.displayOffsetPercentage = maximumZoomLevel - zoomLevelPercentage;
-        } else {
-            this.displayOffsetPercentage = displayOffsetPercentage;
-        }
+        this.displayOffsetPercentage = displayOffsetPercentage;
 
         setChanged();
         notifyObservers();
@@ -132,15 +121,6 @@ public class ZoomDisplay extends Observable {
             return;
         } else if(zoomLevelPercentage > MAXIMUM_ZOOM_LEVEL) {
             zoomLevelPercentage = MAXIMUM_ZOOM_LEVEL;
-        }
-
-        // Ensure that the zoom level will be within the bounds of the screen
-        if((zoomLevelPercentage + displayOffsetPercentage) > maximumZoomLevel) {
-            displayOffsetPercentage = maximumZoomLevel - zoomLevelPercentage;
-        }
-        if((maximumZoomLevel - zoomLevelPercentage) < minimumZoomLevel) {
-            displayOffsetPercentage = minimumZoomLevel;
-            zoomLevelPercentage = maximumZoomLevel - minimumZoomLevel;
         }
 
         this.zoomLevelPercentage = zoomLevelPercentage;

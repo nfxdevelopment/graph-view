@@ -124,6 +124,15 @@ public class GraphView extends SurfaceView implements SurfaceHolder.Callback, Gr
                     a.getColor(R.styleable.GraphManager_background_color,
                             ContextCompat.getColor(getContext(), R.color.background)));
 
+
+            if(a.getBoolean(R.styleable.GraphManager_limit_x_axis_offset, true)) {
+                xZoomDisplay = new ZoomDisplayWithOffsetBounds(1f, 0f);
+            }
+
+            if(a.getBoolean(R.styleable.GraphManager_limit_y_axis_offset, true)) {
+                yZoomDisplay = new ZoomDisplayWithOffsetBounds(1f, 0f);
+            }
+
             if(!a.getBoolean(R.styleable.GraphManager_disable_background_scrolling, false)) {
                 backgroundManager.setXZoomDisplay(xZoomDisplay);
                 backgroundManager.setYZoomDisplay(yZoomDisplay);

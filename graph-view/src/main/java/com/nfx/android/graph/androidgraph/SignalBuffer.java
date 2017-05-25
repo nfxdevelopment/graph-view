@@ -33,12 +33,12 @@ public class SignalBuffer extends InputListener implements SignalBufferInterface
      * @param xAxisParameters parameters of x axis
      */
     @SuppressWarnings("WeakerAccess")
-    public SignalBuffer(int sizeOfBuffer, AxisParameters xAxisParameters) {
+    public SignalBuffer(int sizeOfBuffer, AxisParameters xAxisParameters, ZoomDisplay zoomDisplay) {
         this.xAxisParameters = xAxisParameters;
 
         buffer = new float[sizeOfBuffer];
 
-        yZoomDisplay = new ZoomDisplay(1f, 0f);
+        yZoomDisplay = zoomDisplay;
     }
 
     /**

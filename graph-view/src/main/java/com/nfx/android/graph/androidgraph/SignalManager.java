@@ -69,7 +69,14 @@ class SignalManager implements SignalManagerInterface {
     @Override
     public InputListener addSignal(int id, int sizeOfBuffer, AxisParameters xAxisParameters,
                                    int colour) {
-        SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, xAxisParameters);
+        ZoomDisplay zoomDisplay = new ZoomDisplayWithOffsetBounds(1f, 0f);
+        if(graphViewInterface.getGraphYZoomDisplay() instanceof ZoomDisplayWithOffsetBounds) {
+            zoomDisplay = new ZoomDisplayWithOffsetBounds(1f, 0f);
+        } else if(graphViewInterface.getGraphYZoomDisplay() != null) {
+            zoomDisplay = new ZoomDisplay(1f, 0f);
+        }
+
+        SignalBuffer signalBuffer = new SignalBuffer(sizeOfBuffer, xAxisParameters, zoomDisplay);
         addSignal(id, signalBuffer, colour);
         return signalBuffer;
     }
