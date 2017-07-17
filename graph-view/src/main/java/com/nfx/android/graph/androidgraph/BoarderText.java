@@ -11,7 +11,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
 /**
  * NFX Development
  * Created by nick on 24/11/15.
- * <p/>
+ * <p>
  * As the boarder is draw separately to the axis is separated. This allows us to display a always
  * up to date value on the boarders
  */

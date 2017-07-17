@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * NFX Development
  * Created by nick on 31/10/15.
- * <p/>
+ * <p>
  * This is the middle man between the graph drawer and the input. All inputs are registered with
  * this manager and it will ask to create a drawer objects for these
  */

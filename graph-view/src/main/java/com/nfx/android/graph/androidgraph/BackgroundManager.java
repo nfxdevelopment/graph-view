@@ -8,7 +8,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
 /**
  * NFX Development
  * Created by nick on 28/10/15.
- * <p/>
+ * <p>
  * The background manager holders many drawable objects which are considered background objects
  * It makes batch calls to DoDraw functions of all it's members and individual sizing options
  * are possible by overriding surfaceChanged

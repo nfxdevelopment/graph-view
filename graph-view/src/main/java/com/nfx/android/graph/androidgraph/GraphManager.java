@@ -13,7 +13,7 @@ import com.nfx.android.graph.R;
 /**
  * NFX Development
  * Created by nick on 22/07/16.
- * <p/>
+ * <p>
  * Managers the creation of the graph and it's views. At the top level there is a graph view and
  * markers. See layout file
  */

@@ -10,7 +10,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
 /**
  * NFX Development
  * Created by nick on 29/10/15.
- * <p/>
+ * <p>
  * Base class for drawing axis text onto a canvas
  */
 abstract class AxisText extends DrawableObject {

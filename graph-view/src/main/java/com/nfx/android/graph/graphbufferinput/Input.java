@@ -5,7 +5,7 @@ import android.util.SparseArray;
 /**
  * NFX Development
  * Created by nick on 10/11/15.
- * <p/>
+ * <p>
  * This is the bare bones of an buffer input. Other objects can subscribe to buffer and settings
  * updates. Inherit from this class and implement the input type
  */

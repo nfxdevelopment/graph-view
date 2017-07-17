@@ -9,7 +9,7 @@ import android.util.Log;
 /**
  * NFX Development
  * Created by nick on 10/11/15.
- * <p/>
+ * <p>
  * Sets up the microphone for listening, the data taken and sent on to the interface
  * The touch events are handled by this object to manipulate the microphone input
  */

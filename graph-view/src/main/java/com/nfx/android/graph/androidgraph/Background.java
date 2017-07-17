@@ -6,7 +6,7 @@ import android.graphics.Color;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
- * <p/>
+ * <p>
  * Fills the given drawableArea with a color. The default is Black
  */
 class Background extends DrawableObject {

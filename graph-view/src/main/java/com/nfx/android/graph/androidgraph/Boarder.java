@@ -6,7 +6,7 @@ import android.graphics.Color;
 /**
  * NFX Development
  * Created by nick on 28/10/15.
- * <p/>
+ * <p>
  * This will draw 4 lines around the outer edge of the viewable area.
  * It will also take into account the stroke width to ensure the whole line is viewable
  */

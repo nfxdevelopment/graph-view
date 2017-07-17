@@ -9,7 +9,7 @@ import com.nfx.android.graph.androidgraph.SignalBufferInterface;
 /**
  * NFX Development
  * Created by nick on 5/08/16.
- * <p/>
+ * <p>
  * An object that holds the values to display in the floating widgets.
  */
 public class MarkerData implements Marker.MarkerUpdateInterface {

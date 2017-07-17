@@ -6,7 +6,7 @@ import java.util.Observer;
 /**
  * NFX Development
  * Created by nick on 15/07/16.
- * <p/>
+ * <p>
  * An interface for subscribes to get information about view zoom level changes
  */
 abstract class ZoomChangedListener implements Observer {

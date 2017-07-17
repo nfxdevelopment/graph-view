@@ -4,7 +4,7 @@ import android.graphics.Rect;
 
 /**
  * Created by nick on 25/10/15.
- * <p/>
+ * <p>
  * A helper class to advise drawable objects where to draw within the canvas
  */
 class DrawableArea {

@@ -8,7 +8,7 @@ import com.nfx.android.graph.graphbufferinput.InputListener;
 /**
  * NFX Development
  * Created by nick on 31/10/15.
- * <p/>
+ * <p>
  * A signal buffer holds a buffer with additional information on how it should be displayed on
  * screen. This can be used to pass buffer information between graphical and input objects.
  */

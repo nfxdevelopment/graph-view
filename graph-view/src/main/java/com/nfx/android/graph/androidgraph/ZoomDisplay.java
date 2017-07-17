@@ -7,7 +7,7 @@ import java.util.Observable;
 /**
  * NFX Development
  * Created by nick on 27/10/15.
- * <p/>
+ * <p>
  * A helper class which will hold the zoom values of a given view. A listener can get updates
  * when the surface size has changed.
  */

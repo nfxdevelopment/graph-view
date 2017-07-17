@@ -10,7 +10,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
- * <p/>
+ * <p>
  * This object will draw a signal on screen. The object has the ability to draw either in a
  * logarithmic or linear fashion at runtime
  */

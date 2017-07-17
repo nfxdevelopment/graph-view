@@ -9,7 +9,7 @@ import android.view.View;
 /**
  * NFX Development
  * Created by nick on 23/11/15.
- * <p/>
+ * <p>
  * Merges the use of ScaleGestureDetector and GestureDetectorCompat so all touch interactions are
  * passed to the listener through medium
  */

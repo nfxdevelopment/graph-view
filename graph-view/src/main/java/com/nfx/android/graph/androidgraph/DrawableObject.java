@@ -5,7 +5,7 @@ import android.graphics.Paint;
 
 /**
  * Created by nick on 25/10/15.
- * <p/>
+ * <p>
  * An abstract class which can be inherited to implement a widget that can be drawn onto a Canvas
  */
 abstract class DrawableObject {

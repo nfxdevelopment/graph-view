@@ -14,7 +14,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.GraphParameters;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
- * <p/>
+ * <p>
  * The GraphManager handles or instructs the drawing of the graph. It will start displaying when
  * the surface is created and will only removeAllChildGridLines when the surface is destroyed. It
  * has the ability to

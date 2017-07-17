@@ -9,7 +9,7 @@ import com.nfx.android.graph.androidgraph.AxisScale.AxisParameters;
 /**
  * NFX Development
  * Created by nick on 29/10/15.
- * <p/>
+ * <p>
  * Used to draw text onto a canvas to display the values of grid lines in the Y axis
  */
 class XAxisText extends AxisText {

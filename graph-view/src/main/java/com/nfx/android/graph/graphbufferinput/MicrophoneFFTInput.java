@@ -9,7 +9,7 @@ import org.jtransforms.fft.FloatFFT_1D;
 /**
  * NFX Development
  * Created by nick on 30/11/15.
- * <p/>
+ * <p>
  * This class takes the microphone input and computes the fft of signal. In addition to this the
  * final buffer is logarithmic
  */

@@ -7,7 +7,7 @@ import android.graphics.Paint;
 /**
  * NFX Development
  * Created by nick on 25/10/15.
- * <p/>
+ * <p>
  * Draws a marker onto a graph
  */
 public class Marker extends DrawableObject {

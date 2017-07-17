@@ -5,7 +5,7 @@ import com.nfx.android.graph.androidgraph.Scale;
 /**
  * NFX Development
  * Created by nick on 12/08/16.
- * <p/>
+ * <p>
  * An object that holds the information for both axis of the graph
  */
 public class GraphParameters {
