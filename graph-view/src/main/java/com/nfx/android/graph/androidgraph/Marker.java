@@ -65,51 +65,53 @@ public class Marker extends DrawableObject {
 
     @Override
     public void doDraw(Canvas canvas) {
-        float xValue = graphViewInterface.getGraphParameters().getXAxisParameters().
-                graphPositionToScaledAxis(markerPosition);
-        float yValue = signalInterface.getValueAtPosition(xValue);
-        markerUpdateInterface.markerPositionUpdate(xValue, yValue);
+        if (signalInterface != null && markerUpdateInterface != null && graphViewInterface != null) {
+            float xValue = graphViewInterface.getGraphParameters().getXAxisParameters().
+                    graphPositionToScaledAxis(markerPosition);
+            float yValue = signalInterface.getValueAtPosition(xValue);
+            markerUpdateInterface.markerPositionUpdate(xValue, yValue);
 
-        float centreX, centreY;
+            float centreX, centreY;
 
-        if(markerPosition <
-                graphViewInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
-            centreX = getDrawableArea().getLeft();
-        } else if(markerPosition >
-                graphViewInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
-            centreX = getDrawableArea().getRight();
-        } else {
-            centreX = getMarkerPositionInPx();
+            if (markerPosition <
+                    graphViewInterface.getGraphXZoomDisplay().getDisplayOffsetPercentage()) {
+                centreX = getDrawableArea().getLeft();
+            } else if (markerPosition >
+                    graphViewInterface.getGraphXZoomDisplay().getFarSideOffsetPercentage()) {
+                centreX = getDrawableArea().getRight();
+            } else {
+                centreX = getMarkerPositionInPx();
+            }
+
+            float yPosition = (1f - signalInterface.getValueAtPosition(xValue));
+
+            if (yPosition < 0) {
+                centreY = getDrawableArea().getTop();
+            } else if (yPosition > 1) {
+                centreY = getDrawableArea().getBottom();
+            } else {
+                centreY = getDrawableArea().getTop() + yPosition * getDrawableArea().getHeight();
+            }
+
+            canvas.drawCircle(
+                    centreX,
+                    centreY,
+                    circleRadius,
+                    paint
+            );
+            canvas.drawLine(centreX - circleRadius,
+                    centreY,
+                    centreX + circleRadius,
+                    centreY,
+                    paint
+            );
+            canvas.drawLine(centreX,
+                    centreY - circleRadius,
+                    centreX,
+                    centreY + circleRadius,
+                    paint
+            );
         }
-
-        float yPosition = (1f - signalInterface.getValueAtPosition(xValue));
-
-        if(yPosition < 0) {
-            centreY = getDrawableArea().getTop();
-        } else if(yPosition > 1) {
-            centreY = getDrawableArea().getBottom();
-        } else {
-            centreY = getDrawableArea().getTop() + yPosition * getDrawableArea().getHeight();
-        }
-
-        canvas.drawCircle(
-                centreX,
-                centreY,
-                circleRadius,
-                paint
-        );
-        canvas.drawLine(centreX - circleRadius,
-                centreY,
-                centreX + circleRadius,
-                centreY,
-                paint
-        );
-        canvas.drawLine(centreX,
-                centreY - circleRadius,
-                centreX,
-                centreY + circleRadius,
-                paint
-        );
     }
 
     @Override

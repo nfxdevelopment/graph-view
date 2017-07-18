@@ -64,8 +64,10 @@ class MarkerManager implements MarkerManagerInterface {
      * @param canvas canvas to draw the objects onto
      */
     public void doDraw(Canvas canvas) {
-        for(Marker marker : markers) {
-            marker.doDraw(canvas);
+        synchronized (markers) {
+            for (Marker marker : markers) {
+                marker.doDraw(canvas);
+            }
         }
     }
 
@@ -77,8 +79,11 @@ class MarkerManager implements MarkerManagerInterface {
      */
     public void surfaceChanged(DrawableArea drawableArea) {
         this.drawableArea = drawableArea;
-        for(Marker marker : markers) {
-            marker.surfaceChanged(drawableArea);
+
+        synchronized (markers) {
+            for (Marker marker : markers) {
+                marker.surfaceChanged(drawableArea);
+            }
         }
     }
 
@@ -116,10 +121,13 @@ class MarkerManager implements MarkerManagerInterface {
 
     @Override
     public Marker markerWithinCatchmentArea(float positionX, float catchmentArea) {
-        for(Marker marker : markers) {
-            if(positionX < (marker.getMarkerPositionInPx() + catchmentArea) &&
-                    positionX > (marker.getMarkerPositionInPx() - catchmentArea)) {
-                return marker;
+
+        synchronized (markers) {
+            for (Marker marker : markers) {
+                if (positionX < (marker.getMarkerPositionInPx() + catchmentArea) &&
+                        positionX > (marker.getMarkerPositionInPx() - catchmentArea)) {
+                    return marker;
+                }
             }
         }
 
@@ -146,7 +154,9 @@ class MarkerManager implements MarkerManagerInterface {
         marker.surfaceChanged(drawableArea);
         marker.setColour(colour);
 
-        markers.add(marker);
+        synchronized (markers) {
+            markers.add(marker);
+        }
 
         graphListAdapter.setMarkerList(markerList);
     }
@@ -158,10 +168,12 @@ class MarkerManager implements MarkerManagerInterface {
      */
     @Override
     public void updateMarkers(int signalId) {
-        for(Marker marker : markers) {
-            if(marker.getSignalId() == signalId) {
-                marker.setSignalInterface(signalManagerInterface.getSignalBufferInterface
-                        (signalId));
+        synchronized (markers) {
+            for (Marker marker : markers) {
+                if (marker.getSignalId() == signalId) {
+                    marker.setSignalInterface(signalManagerInterface.getSignalBufferInterface
+                            (signalId));
+                }
             }
         }
     }
@@ -173,10 +185,12 @@ class MarkerManager implements MarkerManagerInterface {
      */
     @Override
     public void removeMarkers(int signalId) {
-        for(Iterator<Marker> iterator = markers.iterator(); iterator.hasNext(); ) {
-            Marker marker = iterator.next();
-            if(marker.getSignalId() == signalId) {
-                iterator.remove();
+        synchronized (markers) {
+            for (Iterator<Marker> iterator = markers.iterator(); iterator.hasNext(); ) {
+                Marker marker = iterator.next();
+                if (marker.getSignalId() == signalId) {
+                    iterator.remove();
+                }
             }
         }
         markerList.clear();
