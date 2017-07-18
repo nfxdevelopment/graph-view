@@ -6,9 +6,9 @@ import com.nfx.android.graph.androidgraph.list.bindadapters.GraphListAdapter;
 import com.nfx.android.graph.androidgraph.list.data.MarkerData;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * NFX Development
@@ -30,7 +30,7 @@ class MarkerManager implements MarkerManagerInterface {
     /**
      * Handles the drawing of a unlimited amount of Markers
      **/
-    private final List<Marker> markers = new ArrayList<>();
+    private final List<Marker> markers = new Vector<>();
     /**
      * List of all the markers
      */
@@ -64,11 +64,8 @@ class MarkerManager implements MarkerManagerInterface {
      * @param canvas canvas to draw the objects onto
      */
     public void doDraw(Canvas canvas) {
-        List<Marker> list = Collections.synchronizedList(markers);
-        synchronized (list) {
-            for (Marker marker : list) {
-                marker.doDraw(canvas);
-            }
+        for(Marker marker : markers) {
+            marker.doDraw(canvas);
         }
     }
 
@@ -80,11 +77,8 @@ class MarkerManager implements MarkerManagerInterface {
      */
     public void surfaceChanged(DrawableArea drawableArea) {
         this.drawableArea = drawableArea;
-        List<Marker> list = Collections.synchronizedList(markers);
-        synchronized (list) {
-            for (Marker marker : list) {
-                marker.surfaceChanged(drawableArea);
-            }
+        for(Marker marker : markers) {
+            marker.surfaceChanged(drawableArea);
         }
     }
 
@@ -122,13 +116,10 @@ class MarkerManager implements MarkerManagerInterface {
 
     @Override
     public Marker markerWithinCatchmentArea(float positionX, float catchmentArea) {
-        List<Marker> list = Collections.synchronizedList(markers);
-        synchronized (list) {
-            for (Marker marker : list) {
-                if (positionX < (marker.getMarkerPositionInPx() + catchmentArea) &&
-                        positionX > (marker.getMarkerPositionInPx() - catchmentArea)) {
-                    return marker;
-                }
+        for(Marker marker : markers) {
+            if(positionX < (marker.getMarkerPositionInPx() + catchmentArea) &&
+                    positionX > (marker.getMarkerPositionInPx() - catchmentArea)) {
+                return marker;
             }
         }
 
@@ -167,14 +158,10 @@ class MarkerManager implements MarkerManagerInterface {
      */
     @Override
     public void updateMarkers(int signalId) {
-
-        List<Marker> list = Collections.synchronizedList(markers);
-        synchronized (list) {
-            for (Marker marker : list) {
-                if (marker.getSignalId() == signalId) {
-                    marker.setSignalInterface(signalManagerInterface.getSignalBufferInterface
-                            (signalId));
-                }
+        for(Marker marker : markers) {
+            if(marker.getSignalId() == signalId) {
+                marker.setSignalInterface(signalManagerInterface.getSignalBufferInterface
+                        (signalId));
             }
         }
     }
@@ -186,13 +173,10 @@ class MarkerManager implements MarkerManagerInterface {
      */
     @Override
     public void removeMarkers(int signalId) {
-        List<Marker> list = Collections.synchronizedList(markers);
-        synchronized (list) {
-            for (Iterator<Marker> iterator = list.iterator(); iterator.hasNext(); ) {
-                Marker marker = iterator.next();
-                if (marker.getSignalId() == signalId) {
-                    iterator.remove();
-                }
+        for(Iterator<Marker> iterator = markers.iterator(); iterator.hasNext(); ) {
+            Marker marker = iterator.next();
+            if(marker.getSignalId() == signalId) {
+                iterator.remove();
             }
         }
         markerList.clear();

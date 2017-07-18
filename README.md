@@ -16,7 +16,7 @@ The Graph View library provides a flexible static or dynamic graph view for andr
 
 Add this to your module dependencies:
 ```groovy
-    compile 'com.nfx.android:graph-view:0.0.4'
+    compile 'com.nfx.android:graph-view:0.0.1'
 ````
 
 Add the view into your layout
