@@ -12,6 +12,7 @@ import com.nfx.android.graph.graphbufferinput.InputListener;
  * A signal buffer holds a buffer with additional information on how it should be displayed on
  * screen. This can be used to pass buffer information between graphical and input objects.
  */
+@SuppressWarnings("WeakerAccess")
 public class SignalBuffer extends InputListener implements SignalBufferInterface {
     private static final String TAG = "SignalBuffer";
     /**
@@ -322,7 +323,7 @@ public class SignalBuffer extends InputListener implements SignalBufferInterface
      * @return maximum value
      */
     private float maximumValueForGivenRange(int minimumArrayPosition, int maxArrayPosition) {
-        float displayValue = 0;
+        float displayValue = buffer[minimumArrayPosition];
 
         for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
             if(buffer[g] > displayValue) {
@@ -372,7 +373,7 @@ public class SignalBuffer extends InputListener implements SignalBufferInterface
      * @return maximum value
      */
     private float minimumValueForGivenRange(int minimumArrayPosition, int maxArrayPosition) {
-        float displayValue = 1;
+        float displayValue = buffer[minimumArrayPosition];
 
         for(int g = minimumArrayPosition; g <= maxArrayPosition; ++g) {
             if(buffer[g] < displayValue) {
